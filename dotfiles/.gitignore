@@ -1,0 +1,10 @@
+*.swp
+*.py[cod]
+*.DS_Store
+
+eggs/
+.eggs/
+*.egg-info/
+
+*/builds/score/*.pdf
+*/segments/*/*.pdf
