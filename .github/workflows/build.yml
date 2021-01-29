@@ -1,6 +1,6 @@
 # Github workflow to test Pang
 
-name: pang
+name: build
 
 on:
   push:
