@@ -3,7 +3,6 @@ import random
 
 import numpy as np
 
-import abjad
 from abjadext import nauert
 
 from . import noteserver

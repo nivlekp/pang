@@ -5,6 +5,8 @@ import pang
 
 def test_cloud___init___01():
     cloud = pang.Cloud()
+    assert cloud.arrival_model == "M"
+    assert cloud.service_model == "M"
 
 
 def test_cloud___init___02():
