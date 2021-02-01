@@ -1,0 +1,3 @@
+[submodule "abjad-scripts"]
+	path = abjad-scripts
+	url = https://github.com/nivlekp/abjad-scripts
