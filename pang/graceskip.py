@@ -3,7 +3,9 @@ import abjad
 
 def _get_tuplet_multiplier(container):
     parentage = abjad.get.parentage(container)
-    tuplets = [component for component in parentage if isinstance(component, abjad.Tuplet)]
+    tuplets = [
+        component for component in parentage if isinstance(component, abjad.Tuplet)
+    ]
     if tuplets == []:
         return abjad.NonreducedFraction((1, 1))
     multiplier = tuplets[0].multiplier
@@ -22,7 +24,7 @@ def _get_longest_durations(voices):
                 assert isinstance(container, abjad.BeforeGraceContainer)
                 duration = abjad.get.duration(container)
                 multiplier = _get_tuplet_multiplier(container)
-                stored_duration, stored_multiplier= longest_durations.get(
+                stored_duration, stored_multiplier = longest_durations.get(
                     measure_number, (abjad.Duration(0), 1)
                 )
                 if duration > stored_duration:
@@ -58,7 +60,7 @@ def pad_voices_with_grace_skips(voices):
             else:
                 multiplier = stored_multiplier / multiplier
                 multiplier = multiplier.reduce()
-                if multiplier== 1:
+                if multiplier == 1:
                     skip = abjad.Skip(stored_duration)
                 else:
                     skip = abjad.Skip(stored_duration, multiplier=multiplier)
