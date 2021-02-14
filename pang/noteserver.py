@@ -5,7 +5,11 @@ def _get_closest_server(servers):
     return idx, offset_instance
 
 
-class NoteServer(object):
+class NoteServer:
+    """
+    Note Server.
+    """
+
     def __init__(self, rest_threshold=0.0):
         self._durations = []
         self._pitches = []

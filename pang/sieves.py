@@ -5,7 +5,6 @@ def gen_pitches_from_sieve(sieve, origin, low, high):
 
         A simple sieve:
 
-        >>> import abjad
         >>> sieve = abjad.Pattern(indices=[0, 1, 7], period=12)
         >>> gen_pitches_from_sieve(sieve=sieve, origin=6, low=-12, high=11)
         [-11, -6, -5, 1, 6, 7]
