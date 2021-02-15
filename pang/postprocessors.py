@@ -66,3 +66,29 @@ def pad_voices_with_grace_skips(voices):
                     skip = abjad.Skip(stored_duration, multiplier=multiplier)
                 container = abjad.BeforeGraceContainer([skip])
                 abjad.attach(container, first_leaf)
+
+
+class OttavaHandler:
+    """
+    Ottava Handler.
+    """
+
+    pass
+
+
+class ManualOttavaHandler(OttavaHandler):
+    """
+    Manual Ottava Handler.
+    """
+
+    def __init__(self, n=1):
+        self._n = n
+
+    def __call__(self, voice):
+        first_leaf = abjad.get.leaf(voice, 0)
+        ottava = abjad.Ottava(n=self.n)
+        abjad.attach(ottava, first_leaf)
+
+    @property
+    def n(self):
+        return self._n
