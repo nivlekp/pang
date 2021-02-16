@@ -73,7 +73,8 @@ class OttavaHandler:
     Ottava Handler.
     """
 
-    pass
+    def __call__(self, voice):
+        raise NotImplementedError
 
 
 class ManualOttavaHandler(OttavaHandler):
@@ -92,3 +93,38 @@ class ManualOttavaHandler(OttavaHandler):
     @property
     def n(self):
         return self._n
+
+
+class VerboseOttavaHandler(OttavaHandler):
+    """
+    Verbose Ottava Handler.
+    """
+
+    def __init__(self, high_threshold=32, low_threshold=-31):
+        self._high_threshold = high_threshold
+        self._low_threshold = low_threshold
+
+    def __call__(self, voice):
+        for logical_tie in abjad.iterate(voice).logical_ties():
+            leaf = logical_tie[0]
+            if isinstance(leaf, abjad.Rest):
+                continue
+            assert isinstance(leaf, abjad.Note)
+            if leaf.written_pitch > self.high_threshold:
+                self._attach_note_name(leaf, abjad.Up)
+            if leaf.written_pitch < self.low_threshold:
+                self._attach_note_name(leaf, abjad.Down)
+
+    def _attach_note_name(self, leaf, direction):
+        assert isinstance(leaf, abjad.Note)
+        pitch_name = leaf.written_pitch.pitch_class.name[0]
+        markup = abjad.Markup(pitch_name, direction=direction)
+        abjad.attach(markup, leaf)
+
+    @property
+    def high_threshold(self):
+        return self._high_threshold
+
+    @property
+    def low_threshold(self):
+        return self._low_threshold

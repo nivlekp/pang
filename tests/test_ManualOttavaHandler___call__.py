@@ -28,7 +28,6 @@ def test_ManualOttavaHandler___call___02():
     handler(voice_0)
     staff = abjad.Staff([voice_0, voice_1], simultaneous=True)
     string = abjad.lilypond(staff)
-    abjad.show(staff)
     assert string == abjad.String.normalize(
         r"""
         \new Staff
