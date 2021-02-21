@@ -39,6 +39,7 @@ isort-check:
 	--project=abjad \
 	--project=abjadext \
 	--thirdparty=ply \
+	--thirdparty=numpy \
 	--thirdparty=roman \
 	--thirdparty=uqbar \
 	--trailing-comma \
@@ -53,6 +54,7 @@ isort-reformat:
 	--project=abjad \
 	--project=abjadext \
 	--thirdparty=ply \
+	--thirdparty=numpy \
 	--thirdparty=roman \
 	--thirdparty=uqbar \
 	--trailing-comma \
