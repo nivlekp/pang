@@ -104,7 +104,6 @@ class Cloud:
     def _simulate_queue(self):
         """
         Simulate the queue based on the queue type.
-        At the moment, this only works for M/M/1 queue.
         """
         # TODO: model rest_threshold
         assert self._instances is not None and len(self._instances) > 0

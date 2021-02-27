@@ -1,6 +1,6 @@
 def gen_pitches_from_sieve(sieve, origin, low, high):
     r"""
-    Generates pitches from a sieve (an abjad.Pattern object).
+    Generates pitches from a sieve (an ``abjad.Pattern`` object).
     ..  container:: example
 
         A simple sieve:

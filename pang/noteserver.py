@@ -15,7 +15,6 @@ class NoteServer:
         self._pitches = []
         self._offset_instance = 0.0
         self._rest_threshold = rest_threshold
-        pass
 
     def serve(self, curr_time, duration, pitch):
         """
@@ -36,6 +35,10 @@ class NoteServer:
     @property
     def offset_instance(self):
         return self._offset_instance
+
+    @property
+    def pitch_set(self):
+        return self._pitch_set
 
     @property
     def pitches(self):
