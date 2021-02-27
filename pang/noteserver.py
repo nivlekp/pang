@@ -1,3 +1,6 @@
+from abjadext import nauert
+
+
 def _get_closest_server(servers):
     offset_instance, idx = min(
         (server.offset_instance, idx) for (idx, server) in enumerate(servers)
@@ -33,6 +36,10 @@ class NoteServer:
         return self._durations
 
     @property
+    def durations_in_millisecond(self):
+        return [duration * 1000 for duration in self._durations]
+
+    @property
     def offset_instance(self):
         return self._offset_instance
 
@@ -43,3 +50,9 @@ class NoteServer:
     @property
     def pitches(self):
         return self._pitches
+
+    @property
+    def q_event_sequence(self):
+        return nauert.QEventSequence.from_millisecond_pitch_pairs(
+            tuple(zip(self.durations_in_millisecond, self.pitches))
+        )
