@@ -1,8 +1,8 @@
 import pytest
 
 import abjad
-from abjadext import nauert
 import pang
+from abjadext import nauert
 
 
 @pytest.fixture(autouse=True)

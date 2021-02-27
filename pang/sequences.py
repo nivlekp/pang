@@ -257,10 +257,15 @@ class AtaxicCloud(Sequence):
 
     def _gen_pitches(self):
         if isinstance(self._pitch_set, list):
-            return [random.choice(self._pitch_set) for _ in range(self._number_of_notes)]
+            return [
+                random.choice(self._pitch_set) for _ in range(self._number_of_notes)
+            ]
         else:
             assert isinstance(self._pitch_set, abjad.PitchSet)
-            return [random.choice(list(self._pitch_set)).number for _ in range(self._number_of_notes)]
+            return [
+                random.choice(list(self._pitch_set)).number
+                for _ in range(self._number_of_notes)
+            ]
 
     @property
     def arrival_model(self):
