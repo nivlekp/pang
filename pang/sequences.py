@@ -49,12 +49,39 @@ class Sequence:
         self._durations = self._gen_durations()
         self._pitches = self._gen_pitches()
 
-    def extend(self, sequence):
-        assert isinstance(sequence, type(self))
+    def extend(self, sequence, time_gap=0):
+        """
+        Extends a sequence with another.
+
+        ..  container:: example
+
+            >>> instances = [0, 1, 2, 3]
+            >>> durations = [0.5, 0.5, 0.5, 0.5]
+            >>> sequence_0 = pang.ManualSequence(
+            ...     instances=instances,
+            ...     durations=durations,
+            ...     sequence_duration=4,
+            ... )
+            >>> sequence_1 = pang.ManualSequence(
+            ...     instances=instances,
+            ...     durations=durations,
+            ... )
+            >>> sequence_0.extend(sequence_1)
+            >>> string = abjad.storage(sequence_0)
+            >>> print(string)
+            pang.ManualSequence(
+                instances=[0, 1, 2, 3, 4, 5, 6, 7],
+                durations=[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+                pitches=[0, 0, 0, 0, 0, 0, 0, 0],
+                sequence_duration=7.5,
+                nservers=1,
+                )
+        """
+        assert isinstance(sequence, (type(self), Sequence))
         # Currently this only supports when the sequences have the same number
         # of servers.
         assert sequence.nservers == self.nservers
-        offset = self.sequence_duration
+        offset = self.sequence_duration + time_gap
         new_instances = [i + offset for i in sequence.instances]
         self._instances.extend(new_instances)
         self._durations.extend(sequence.durations)
@@ -105,6 +132,18 @@ class Sequence:
 
     def superpose(self, sequence):
         assert isinstance(sequence, type(self))
+        # Currently this only supports when the sequences have the same number
+        # of servers.
+        assert sequence.nservers == self.nservers
+        durations = self._durations + sequence.durations
+        instances = self._instances + sequence.instances
+        pitches = self._pitches + sequence.pitches
+        instances_tuple, durations_tuple, pitches_tuple = zip(
+            *sorted(zip(instances, durations, pitches))
+        )
+        self._instances = list(instances_tuple)
+        self._durations = list(durations_tuple)
+        self._pitches = list(pitches_tuple)
 
     @abc.abstractmethod
     def _gen_durations(self):
@@ -157,7 +196,9 @@ class Sequence:
         """
         Returns the sequence duration in seconds.
         """
-        return self._sequence_duration
+        offsets = [i + d for i, d in zip(self._instances, self._durations)]
+        last_offset = max(offsets)
+        return max(self._sequence_duration, last_offset)
 
     @property
     def servers(self):
@@ -316,13 +357,22 @@ class ManualSequence(Sequence):
         Initializing a sequence manually.
 
         >>> instances = [0, 1, 2, 3]
-        >>> durations = [0.5, 0.5, 0.5, 0.5]
+        >>> durations = [1, 1, 0.5, 0.5]
         >>> pitches = [0, 0, 0, 0]
         >>> sequence = pang.ManualSequence(
         ...     instances=instances,
         ...     durations=durations,
         ...     pitches=pitches,
         ... )
+        >>> string = abjad.storage(sequence)
+        >>> print(string)
+        pang.ManualSequence(
+            instances=[0, 1, 2, 3],
+            durations=[1, 1, 0.5, 0.5],
+            pitches=[0, 0, 0, 0],
+            sequence_duration=3.5,
+            nservers=1,
+            )
     """
 
     def __init__(
