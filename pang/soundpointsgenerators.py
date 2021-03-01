@@ -21,8 +21,76 @@ class SoundPointsGenerator:
 
 
 class AtaxicSoundPointsGenerator(SoundPointsGenerator):
-    """
-    Ataxic sound-point generator.
+    r"""
+    Ataxic sound points generator.
+
+    ..  container:: example
+
+        Initializing an ataxic cloud.
+
+        >>> pitch_set = list(range(10))
+        >>> sound_points_generator = pang.AtaxicSoundPointsGenerator(
+        ...     pitch_set=pitch_set,
+        ... )
+        >>> sequence = pang.Sequence(
+        ...     sound_points_generator=sound_points_generator,
+        ...     sequence_duration=4,
+        ... )
+        >>> sequence.simulate_queue()
+        >>> server = sequence.servers[0]
+        >>> q_event_sequence = server.q_event_sequence
+        >>> quantizer = nauert.Quantizer()
+        >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
+        >>> result = quantizer(q_event_sequence, attack_point_optimizer=optimizer)
+        >>> abjad.show(result) # doctest: +SKIP
+
+        ..  docs::
+
+            >>> string = abjad.lilypond(result)
+            >>> print(string)
+            \new Voice
+            {
+                {
+                    \tempo 4=60
+                    %%% \time 4/4 %%%
+                    r8
+                    e'8
+                    \times 2/3 {
+                        \times 4/5 {
+                            r32
+                            c'16
+                            ~
+                            c'16
+                            ~
+                        }
+                        \times 2/3 {
+                            c'16
+                            r8
+                        }
+                        r8
+                    }
+                    r4
+                    \times 2/3 {
+                        r8
+                        r16.
+                        d'32
+                        ~
+                        d'8
+                        ~
+                    }
+                }
+                {
+                    d'32.
+                    c'64
+                    ~
+                    c'16
+                    ~
+                    c'8
+                    ~
+                    c'4
+                    r2
+                }
+            }
     """
 
     def __init__(
@@ -45,9 +113,9 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
         np.random.seed(self._seed)
         random.seed(self._seed)
         self._number_of_notes = round(sequence_duration * self._arrival_rate)
-        durations = self._gen_durations()
-        instances = self._gen_instances()
+        instances = self._gen_instances(sequence_duration)
         pitches = self._gen_pitches()
+        durations = self._gen_durations()
         return (instances, durations, pitches)
 
     def _gen_durations(self):
@@ -58,14 +126,12 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
         else:
             raise Exception
 
-    def _gen_instances(self):
+    def _gen_instances(self, sequence_duration):
         if self._arrival_model == "markov":
-            instances = np.random.uniform(
-                0.0, self._sequence_duration, self._number_of_notes
-            )
+            instances = np.random.uniform(0.0, sequence_duration, self._number_of_notes)
             return sorted(instances)
         elif self.arrival_model == "deterministic":
-            each_duration = self._sequence_duration / self._number_of_notes
+            each_duration = sequence_duration / self._number_of_notes
             instances = [i * each_duration for i in range(self._number_of_notes)]
             return np.array(instances)
         else:
@@ -87,6 +153,26 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
 class ManualSoundPointsGenerator(SoundPointsGenerator):
     """
     Manual sound-point generator.
+
+    ..  container:: example
+
+        Initializing a sequence manually.
+
+        >>> instances = [0, 1, 2, 3]
+        >>> durations = [1, 1, 0.5, 0.5]
+        >>> sound_points_generator = pang.ManualSoundPointsGenerator(
+        ...     instances=instances,
+        ...     durations=durations,
+        ... )
+        >>> sequence = pang.Sequence(
+        ...     sound_points_generator=sound_points_generator,
+        ... )
+        >>> print(sequence.instances)
+        [0, 1, 2, 3]
+        >>> print(sequence.durations)
+        [1, 1, 0.5, 0.5]
+        >>> print(sequence.sequence_duration)
+        3.5
     """
 
     def __init__(

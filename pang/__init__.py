@@ -8,9 +8,14 @@ from .postprocessors import (
 )
 from .sequences import Sequence
 from .sieves import gen_pitches_from_sieve
-from .soundpointsgenerators import ManualSoundPointsGenerator, SoundPointsGenerator
+from .soundpointsgenerators import (
+    AtaxicSoundPointsGenerator,
+    ManualSoundPointsGenerator,
+    SoundPointsGenerator,
+)
 
 __all__ = [
+    "AtaxicSoundPointsGenerator",
     "Cloud",
     "NoteServer",
     "ManualOttavaHandler",
