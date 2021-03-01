@@ -3,23 +3,19 @@ import numpy as np
 import pang
 
 
-def test_sequencesimulate_queue_00():
-    arrival_rate = 1
-    service_rate = 2
+def test_Sequence_simulate_queue_00():
+    instances = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    durations = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+    sound_points_generator = pang.ManualSoundPointsGenerator(
+        instances=instances,
+        durations=durations,
+    )
     sequence_duration = 10
-    sequence = pang.AtaxicCloud(
-        arrival_rate=arrival_rate,
-        service_rate=service_rate,
+    sequence = pang.Sequence(
+        sound_points_generator=sound_points_generator,
         sequence_duration=sequence_duration,
-        queue_type="M/M/1",
-        rest_threshold=0.0,
     )
 
-    number_of_notes = sequence.number_of_notes
-    assert number_of_notes == sequence_duration * arrival_rate
-
-    sequence._instances = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    sequence._durations = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
     sequence.simulate_queue()
     np.testing.assert_almost_equal(
         sequence.servers[0].durations,
@@ -70,22 +66,18 @@ def test_sequencesimulate_queue_00():
 
 
 def test_sequencesimulate_queue_01():
-    arrival_rate = 1
-    service_rate = 2
+    instances = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    durations = [2.1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+    sound_points_generator = pang.ManualSoundPointsGenerator(
+        instances=instances,
+        durations=durations,
+    )
     sequence_duration = 10
-    sequence = pang.AtaxicCloud(
-        arrival_rate=arrival_rate,
-        service_rate=service_rate,
+    sequence = pang.Sequence(
+        sound_points_generator=sound_points_generator,
         sequence_duration=sequence_duration,
-        queue_type="M/M/1",
-        rest_threshold=0.0,
     )
 
-    number_of_notes = sequence.number_of_notes
-    assert number_of_notes == sequence_duration * arrival_rate
-
-    sequence._instances = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    sequence._durations = [2.1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
     sequence.simulate_queue()
     np.testing.assert_almost_equal(
         sequence.servers[0].durations,
@@ -130,23 +122,18 @@ def test_sequencesimulate_queue_01():
 
 
 def test_sequencesimulate_queue_02():
-    arrival_rate = 1
-    service_rate = 2
+    instances = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    durations = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+    sound_points_generator = pang.ManualSoundPointsGenerator(
+        instances=instances,
+        durations=durations,
+    )
     sequence_duration = 10
-    sequence = pang.AtaxicCloud(
-        arrival_rate=arrival_rate,
-        service_rate=service_rate,
+    sequence = pang.Sequence(
+        sound_points_generator=sound_points_generator,
         sequence_duration=sequence_duration,
-        queue_type="M/M/1",
-        rest_threshold=0.0,
     )
 
-    number_of_notes = sequence.number_of_notes
-    assert number_of_notes == sequence_duration * arrival_rate
-
-    sequence._instances = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    sequence._durations = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
-    assert len(sequence.instances) == len(sequence.durations)
     sequence.simulate_queue()
     np.testing.assert_almost_equal(
         sequence.servers[0].durations,
@@ -199,23 +186,18 @@ def test_sequencesimulate_queue_02():
 
 
 def test_sequencesimulate_queue_03():
-    arrival_rate = 1
-    service_rate = 2
+    instances = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    durations = [2.1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+    sound_points_generator = pang.ManualSoundPointsGenerator(
+        instances=instances,
+        durations=durations,
+    )
     sequence_duration = 10
-    sequence = pang.AtaxicCloud(
-        arrival_rate=arrival_rate,
-        service_rate=service_rate,
+    sequence = pang.Sequence(
+        sound_points_generator=sound_points_generator,
         sequence_duration=sequence_duration,
-        queue_type="M/M/1",
-        rest_threshold=0.0,
     )
 
-    number_of_notes = sequence.number_of_notes
-    assert number_of_notes == sequence_duration * arrival_rate
-
-    sequence._instances = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    sequence._durations = [2.1, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
-    assert len(sequence.instances) == len(sequence.durations)
     sequence.simulate_queue()
     np.testing.assert_almost_equal(
         sequence.servers[0].durations,
@@ -262,23 +244,18 @@ def test_sequencesimulate_queue_03():
 
 
 def test_sequencesimulate_queue_04():
-    arrival_rate = 1
-    service_rate = 2
+    instances = [1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9]
+    durations = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+    sound_points_generator = pang.ManualSoundPointsGenerator(
+        instances=instances,
+        durations=durations,
+    )
     sequence_duration = 10
-    sequence = pang.AtaxicCloud(
-        arrival_rate=arrival_rate,
-        service_rate=service_rate,
+    sequence = pang.Sequence(
+        sound_points_generator=sound_points_generator,
         sequence_duration=sequence_duration,
-        queue_type="M/M/1",
-        rest_threshold=0.0,
     )
 
-    number_of_notes = sequence.number_of_notes
-    assert number_of_notes == sequence_duration * arrival_rate
-
-    sequence._instances = [1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9]
-    sequence._durations = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
-    assert len(sequence.instances) == len(sequence.durations)
     sequence.simulate_queue()
     np.testing.assert_almost_equal(
         sequence.servers[0].durations,

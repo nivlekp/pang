@@ -6,16 +6,17 @@ from .postprocessors import (
     VerboseOttavaHandler,
     pad_voices_with_grace_skips,
 )
-from .sequences import AtaxicCloud, ManualSequence, Sequence
+from .sequences import Sequence
 from .sieves import gen_pitches_from_sieve
+from .soundpointsgenerators import ManualSoundPointsGenerator, SoundPointsGenerator
 
 __all__ = [
-    "AtaxicCloud",
     "Cloud",
     "NoteServer",
     "ManualOttavaHandler",
-    "ManualSequence",
+    "ManualSoundPointsGenerator",
     "Sequence",
+    "SoundPointsGenerator",
     "VerboseOttavaHandler",
     "OttavaHandler",
     "_get_closest_server",

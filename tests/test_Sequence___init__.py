@@ -1,14 +1,17 @@
 import pang
 
 
-def test_ManualSequence___init___01():
+def test_Sequence___init___01():
     instances = [0, 1, 2, 3]
     durations = [0.5, 0.5, 0.5, 0.5]
     pitches = [0, 0, 0, 0]
-    sequence = pang.ManualSequence(
+    sound_points_generator = pang.ManualSoundPointsGenerator(
         instances=instances,
         durations=durations,
         pitches=pitches,
+    )
+    sequence = pang.Sequence(
+        sound_points_generator=sound_points_generator,
     )
     assert sequence.instances == instances
     assert sequence.durations == durations
@@ -16,12 +19,15 @@ def test_ManualSequence___init___01():
     assert sequence.sequence_duration == 3.5
 
 
-def test_ManualSequence___init___02():
+def test_Sequence___init___02():
     instances = [0, 1, 2, 3]
     durations = [0.5, 0.5, 0.5, 0.5]
-    sequence = pang.ManualSequence(
+    sound_points_generator = pang.ManualSoundPointsGenerator(
         instances=instances,
         durations=durations,
+    )
+    sequence = pang.Sequence(
+        sound_points_generator=sound_points_generator,
     )
     assert sequence.instances == instances
     assert sequence.durations == durations
