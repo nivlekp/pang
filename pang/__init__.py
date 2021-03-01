@@ -6,7 +6,7 @@ from .postprocessors import (
     VerboseOttavaHandler,
     pad_voices_with_grace_skips,
 )
-from .sequences import AtaxicCloud, Sequence
+from .sequences import AtaxicCloud, ManualSequence, Sequence
 from .sieves import gen_pitches_from_sieve
 
 __all__ = [
@@ -14,6 +14,7 @@ __all__ = [
     "Cloud",
     "NoteServer",
     "ManualOttavaHandler",
+    "ManualSequence",
     "Sequence",
     "VerboseOttavaHandler",
     "OttavaHandler",

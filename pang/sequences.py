@@ -35,10 +35,30 @@ class Sequence:
         self._number_of_notes = round(self._sequence_duration * self._arrival_rate)
         self._seed = seed
 
+    def __len__(self):
+        return len(self.durations)
+
+    def __repr__(self):
+        """
+        Gets interpreter representation.
+        """
+        return abjad.StorageFormatManager(self).get_repr_format()
+
     def _gen_sequence(self):
         self._instances = self._gen_instances()
         self._durations = self._gen_durations()
         self._pitches = self._gen_pitches()
+
+    def extend(self, sequence):
+        assert isinstance(sequence, type(self))
+        # Currently this only supports when the sequences have the same number
+        # of servers.
+        assert sequence.nservers == self.nservers
+        offset = self.sequence_duration
+        new_instances = [i + offset for i in sequence.instances]
+        self._instances.extend(new_instances)
+        self._durations.extend(sequence.durations)
+        self._pitches.extend(sequence.pitches)
 
     def simulate_queue(self):
         """
@@ -82,6 +102,9 @@ class Sequence:
                     servers[server_index].serve(
                         curr_time, self._durations[index], self._pitches[index]
                     )
+
+    def superpose(self, sequence):
+        assert isinstance(sequence, type(self))
 
     @abc.abstractmethod
     def _gen_durations(self):
@@ -128,6 +151,13 @@ class Sequence:
         Returns the number of servers.
         """
         return len(self._servers)
+
+    @property
+    def sequence_duration(self):
+        """
+        Returns the sequence duration in seconds.
+        """
+        return self._sequence_duration
 
     @property
     def servers(self):
@@ -218,6 +248,7 @@ class AtaxicCloud(Sequence):
         rest_threshold=0.0,
         seed=123456,
     ):
+        # TODO: get rid of the extra nservers variable
         self._arrival_model, self._service_model, nservers = tuple(
             queue_type.split("/")
         )
@@ -274,3 +305,46 @@ class AtaxicCloud(Sequence):
     @property
     def service_model(self):
         return self._service_model
+
+
+class ManualSequence(Sequence):
+    """
+    Manual Sequence.
+
+    ..  container:: example
+
+        Initializing a sequence manually.
+
+        >>> instances = [0, 1, 2, 3]
+        >>> durations = [0.5, 0.5, 0.5, 0.5]
+        >>> pitches = [0, 0, 0, 0]
+        >>> sequence = pang.ManualSequence(
+        ...     instances=instances,
+        ...     durations=durations,
+        ...     pitches=pitches,
+        ... )
+    """
+
+    def __init__(
+        self,
+        instances=[0],
+        durations=[1],
+        pitches=None,
+        sequence_duration=None,
+        nservers=1,
+    ):
+        assert len(instances) == len(durations)
+        if pitches is None:
+            pitches = [0] * len(instances)
+        assert len(instances) == len(pitches)
+        instances.sort()
+        self._instances = instances
+        self._durations = durations
+        self._pitches = pitches
+        offsets = [i + d for i, d in zip(instances, durations)]
+        last_offset = max(offsets)
+        if sequence_duration is None:
+            sequence_duration = last_offset
+        else:
+            sequence_duration = max(sequence_duration, last_offset)
+        super().__init__(nservers=nservers, sequence_duration=sequence_duration)
