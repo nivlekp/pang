@@ -177,8 +177,8 @@ class ManualSoundPointsGenerator(SoundPointsGenerator):
 
     def __init__(
         self,
-        instances=[0],
-        durations=[1],
+        instances=[],
+        durations=[],
         pitches=None,
     ):
         assert len(instances) == len(durations)

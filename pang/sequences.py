@@ -15,7 +15,7 @@ class Sequence:
         self,
         sound_points_generator=None,
         nservers=1,
-        sequence_duration=1,
+        sequence_duration=0,
     ):
         self._servers = [NoteServer() for _ in range(nservers)]
         # if pitch_set is None:
@@ -165,7 +165,10 @@ class Sequence:
         Returns the sequence duration in seconds.
         """
         offsets = [i + d for i, d in zip(self._instances, self._durations)]
-        last_offset = max(offsets)
+        if offsets != []:
+            last_offset = max(offsets)
+        else:
+            last_offset = 0
         return max(self._sequence_duration, last_offset)
 
     @property
