@@ -19,6 +19,39 @@ class SoundPointsGenerator:
         """
         return abjad.StorageFormatManager(self).get_repr_format()
 
+    def _gen_durations(self):
+        """
+        Generates durations.
+        """
+        # Since a number of SoundPointsGenerators would probably use this
+        # method, it is currently located in the base class.
+        assert hasattr(self, "_service_model")
+        assert hasattr(self, "_number_of_notes")
+        if self._service_model == "markov":
+            return np.random.exponential(1 / self._service_rate, self._number_of_notes)
+        elif self._service_model == "deterministic":
+            return np.array([1 / self._service_rate] * self._number_of_notes)
+        else:
+            raise Exception
+
+    def _gen_instances(self, sequence_duration):
+        """
+        Generates durations.
+        """
+        # Since a number of SoundPointsGenerators would probably use this
+        # method, it is currently located in the base class.
+        assert hasattr(self, "_arrival_model")
+        assert hasattr(self, "_number_of_notes")
+        if self._arrival_model == "markov":
+            instances = np.random.uniform(0.0, sequence_duration, self._number_of_notes)
+            return sorted(instances)
+        elif self._arrival_model == "deterministic":
+            each_duration = sequence_duration / self._number_of_notes
+            instances = [i * each_duration for i in range(self._number_of_notes)]
+            return np.array(instances)
+        else:
+            raise Exception
+
 
 class AtaxicSoundPointsGenerator(SoundPointsGenerator):
     r"""
@@ -101,6 +134,7 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
         arrival_model="markov",
         service_model="markov",
         seed=123456,
+        order="idp",
     ):
         self._arrival_rate = arrival_rate
         self._service_rate = service_rate
@@ -108,34 +142,20 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
         self._arrival_model = arrival_model
         self._service_model = service_model
         self._seed = seed
+        self._order = order  # For preserving past scores and examples
 
     def __call__(self, sequence_duration):
         np.random.seed(self._seed)
         random.seed(self._seed)
         self._number_of_notes = round(sequence_duration * self._arrival_rate)
-        instances = self._gen_instances(sequence_duration)
-        pitches = self._gen_pitches()
-        durations = self._gen_durations()
+        for char in self._order:
+            if char == "i":
+                instances = self._gen_instances(sequence_duration)
+            if char == "d":
+                durations = self._gen_durations()
+            if char == "p":
+                pitches = self._gen_pitches()
         return (instances, durations, pitches)
-
-    def _gen_durations(self):
-        if self._service_model == "markov":
-            return np.random.exponential(1 / self._service_rate, self._number_of_notes)
-        elif self.service_model == "deterministic":
-            return np.array([1 / self._service_rate] * self._number_of_notes)
-        else:
-            raise Exception
-
-    def _gen_instances(self, sequence_duration):
-        if self._arrival_model == "markov":
-            instances = np.random.uniform(0.0, sequence_duration, self._number_of_notes)
-            return sorted(instances)
-        elif self.arrival_model == "deterministic":
-            each_duration = sequence_duration / self._number_of_notes
-            instances = [i * each_duration for i in range(self._number_of_notes)]
-            return np.array(instances)
-        else:
-            raise Exception
 
     def _gen_pitches(self):
         if isinstance(self._pitch_set, list):
@@ -191,3 +211,63 @@ class ManualSoundPointsGenerator(SoundPointsGenerator):
 
     def __call__(self, sequence_duration):
         return (self._instances, self._durations, self._pitches)
+
+
+class RandomWalkSoundPointsGenerator(SoundPointsGenerator):
+    """
+    Sound points generator, with pitches chosen with a random walk process.
+    """
+
+    def __init__(
+        self,
+        arrival_rate=1,
+        service_rate=1,
+        arrival_model="markov",
+        service_model="markov",
+        pitch_set=[0],
+        origin=None,
+        seed=123456,
+        order="idp",
+    ):
+        self._arrival_rate = arrival_rate
+        self._service_rate = service_rate
+        self._arrival_model = arrival_model
+        self._service_model = service_model
+        self._pitch_set = pitch_set
+        if origin is None:
+            origin = round(len(pitch_set) / 2)
+        assert origin < len(pitch_set) and origin >= 0
+        self._origin = origin
+        self._seed = seed
+        self._order = order
+
+    def __call__(self, sequence_duration):
+        np.random.seed(self._seed)
+        random.seed(self._seed)
+        self._number_of_notes = round(sequence_duration * self._arrival_rate)
+        for char in self._order:
+            if char == "i":
+                instances = self._gen_instances(sequence_duration)
+            if char == "d":
+                durations = self._gen_durations()
+            if char == "p":
+                pitches = self._gen_pitches()
+        return (instances, durations, pitches)
+
+    def _gen_pitches(self):
+        """
+        Generates pitches using a simple walk algorithm
+        """
+        pitch_set = self._pitch_set
+        pitches = []
+        index = self._origin
+        if self._number_of_notes == 0:
+            return pitches
+        for i in range(self._number_of_notes):
+            pitches.append(pitch_set[index])
+            index += random.choice([1, -1])
+            if index >= len(pitch_set):
+                index = len(pitch_set) - 1
+            elif index < 0:
+                index = 0
+        return pitches

@@ -11,6 +11,7 @@ from .sieves import gen_pitches_from_sieve
 from .soundpointsgenerators import (
     AtaxicSoundPointsGenerator,
     ManualSoundPointsGenerator,
+    RandomWalkSoundPointsGenerator,
     SoundPointsGenerator,
 )
 
@@ -20,6 +21,7 @@ __all__ = [
     "NoteServer",
     "ManualOttavaHandler",
     "ManualSoundPointsGenerator",
+    "RandomWalkSoundPointsGenerator",
     "Sequence",
     "SoundPointsGenerator",
     "VerboseOttavaHandler",
