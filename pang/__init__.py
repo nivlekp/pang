@@ -10,6 +10,7 @@ from .sequences import Sequence
 from .sieves import gen_pitches_from_sieve
 from .soundpointsgenerators import (
     AtaxicSoundPointsGenerator,
+    GRWSoundPointsGenerator,
     ManualSoundPointsGenerator,
     RandomWalkSoundPointsGenerator,
     SoundPointsGenerator,
@@ -18,6 +19,7 @@ from .soundpointsgenerators import (
 __all__ = [
     "AtaxicSoundPointsGenerator",
     "Cloud",
+    "GRWSoundPointsGenerator",
     "NoteServer",
     "ManualOttavaHandler",
     "ManualSoundPointsGenerator",

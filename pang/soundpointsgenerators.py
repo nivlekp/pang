@@ -11,7 +11,17 @@ class SoundPointsGenerator:
     """
 
     def __call__(self, sequence_duration):
-        raise NotImplementedError
+        np.random.seed(self._seed)
+        random.seed(self._seed)
+        self._number_of_notes = round(sequence_duration * self._arrival_rate)
+        for char in self._order:
+            if char == "i":
+                instances = self._gen_instances(sequence_duration)
+            if char == "d":
+                durations = self._gen_durations()
+            if char == "p":
+                pitches = self._gen_pitches()
+        return (instances, durations, pitches)
 
     def __repr__(self):
         """
@@ -144,19 +154,6 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
         self._seed = seed
         self._order = order  # For preserving past scores and examples
 
-    def __call__(self, sequence_duration):
-        np.random.seed(self._seed)
-        random.seed(self._seed)
-        self._number_of_notes = round(sequence_duration * self._arrival_rate)
-        for char in self._order:
-            if char == "i":
-                instances = self._gen_instances(sequence_duration)
-            if char == "d":
-                durations = self._gen_durations()
-            if char == "p":
-                pitches = self._gen_pitches()
-        return (instances, durations, pitches)
-
     def _gen_pitches(self):
         if isinstance(self._pitch_set, list):
             return [
@@ -241,22 +238,9 @@ class RandomWalkSoundPointsGenerator(SoundPointsGenerator):
         self._seed = seed
         self._order = order
 
-    def __call__(self, sequence_duration):
-        np.random.seed(self._seed)
-        random.seed(self._seed)
-        self._number_of_notes = round(sequence_duration * self._arrival_rate)
-        for char in self._order:
-            if char == "i":
-                instances = self._gen_instances(sequence_duration)
-            if char == "d":
-                durations = self._gen_durations()
-            if char == "p":
-                pitches = self._gen_pitches()
-        return (instances, durations, pitches)
-
     def _gen_pitches(self):
         """
-        Generates pitches using a simple walk algorithm
+        Generates pitches using a simple random walk algorithm.
         """
         pitch_set = self._pitch_set
         pitches = []
@@ -266,6 +250,57 @@ class RandomWalkSoundPointsGenerator(SoundPointsGenerator):
         for i in range(self._number_of_notes):
             pitches.append(pitch_set[index])
             index += random.choice([1, -1])
+            if index >= len(pitch_set):
+                index = len(pitch_set) - 1
+            elif index < 0:
+                index = 0
+        return pitches
+
+
+class GRWSoundPointsGenerator(SoundPointsGenerator):
+    """
+    Gaussian (sampled) random walk sound points generator.
+    """
+
+    def __init__(
+        self,
+        arrival_rate=1,
+        service_rate=1,
+        arrival_model="markov",
+        service_model="markov",
+        pitch_set=[0],
+        origin=None,
+        mean=0,
+        standard_deviation=1,
+        seed=123456,
+        order="idp",
+    ):
+        self._arrival_rate = arrival_rate
+        self._service_rate = service_rate
+        self._arrival_model = arrival_model
+        self._service_model = service_model
+        self._pitch_set = pitch_set
+        if origin is None:
+            origin = round(len(pitch_set) / 2)
+        assert origin < len(pitch_set) and origin >= 0
+        self._origin = origin
+        self._mean = mean
+        self._standard_deviation = standard_deviation
+        self._seed = seed
+        self._order = order
+
+    def _gen_pitches(self):
+        """
+        Generates pitches using a round-off normal distribution.
+        """
+        pitch_set = self._pitch_set
+        pitches = []
+        index = self._origin
+        if self._number_of_notes == 0:
+            return pitches
+        for i in range(self._number_of_notes):
+            pitches.append(pitch_set[index])
+            index += round(np.random.normal(self._mean, self._standard_deviation))
             if index >= len(pitch_set):
                 index = len(pitch_set) - 1
             elif index < 0:

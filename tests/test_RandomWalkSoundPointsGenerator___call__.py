@@ -17,7 +17,6 @@ def test_RandomWalkSoundPointsGenerator___call___01():
     while previous_pitch is None:
         previous_pitch = sequence.servers[0].pitches[index]
         index += 1
-    print(sequence.servers[0].pitches[index:])
     for pitch in sequence.servers[0].pitches[index:]:
         if pitch is not None:
             difference = pitch - previous_pitch
