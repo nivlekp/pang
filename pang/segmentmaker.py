@@ -35,7 +35,7 @@ class SegmentMaker:
             <BLANKLINE>
             #(ly:set-option 'relative-includes #t)
             <BLANKLINE>
-            \include "lilypond/single-voice-staff.ily"
+            \include "source/_stylesheets/single-voice-staff.ily"
             <BLANKLINE>
             \context Score = "Score"
             <<
