@@ -5,7 +5,7 @@ def make_single_staff_score_template(
     voice_names=["Voice"], staff_name="Staff", score_name="Score", simultaneous=True
 ):
     r"""
-    Single-staff score template.
+    Make single-staff score template.
 
     ..  container:: example
 
