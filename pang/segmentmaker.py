@@ -101,6 +101,8 @@ class SegmentMaker:
     def _get_lilypond_includes(self):
         if self._environment == "docs":
             return ["source/_stylesheets/single-voice-staff.ily"]
+        else:
+            return ["../../stylesheets/stylesheet.ily"]
 
     def _make_lilypond_file(self):
         includes = self._get_lilypond_includes()
