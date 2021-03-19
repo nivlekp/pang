@@ -71,7 +71,7 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
 
         Initializing an ataxic cloud.
 
-        >>> pitch_set = list(range(10))
+        >>> pitch_set = list(range(24))
         >>> sound_points_generator = pang.AtaxicSoundPointsGenerator(
         ...     pitch_set=pitch_set,
         ... )
@@ -97,7 +97,7 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
                     \tempo 4=60
                     %%% \time 4/4 %%%
                     r8
-                    e'8
+                    a'8
                     \times 2/3 {
                         \times 4/5 {
                             r32
@@ -116,14 +116,14 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
                     \times 2/3 {
                         r8
                         r16.
-                        d'32
+                        f'32
                         ~
-                        d'8
+                        f'8
                         ~
                     }
                 }
                 {
-                    d'32.
+                    f'32.
                     c'64
                     ~
                     c'16
@@ -168,7 +168,7 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
 
 
 class ManualSoundPointsGenerator(SoundPointsGenerator):
-    """
+    r"""
     Manual sound-point generator.
 
     ..  container:: example
@@ -190,6 +190,32 @@ class ManualSoundPointsGenerator(SoundPointsGenerator):
         [1, 1, 0.5, 0.5]
         >>> print(sequence.sequence_duration)
         3.5
+
+        >>> sequence.simulate_queue()
+        >>> server = sequence.servers[0]
+        >>> q_event_sequence = server.q_event_sequence
+        >>> quantizer = nauert.Quantizer()
+        >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
+        >>> result = quantizer(q_event_sequence, attack_point_optimizer=optimizer)
+        >>> abjad.show(result) # doctest: +SKIP
+
+        ..  docs::
+
+            >>> string = abjad.lilypond(result)
+            >>> print(string)
+            \new Voice
+            {
+                {
+                    \tempo 4=60
+                    %%% \time 4/4 %%%
+                    c'4
+                    c'4
+                    c'8
+                    r8
+                    c'8
+                    r8
+                }
+            }
     """
 
     def __init__(
@@ -211,8 +237,77 @@ class ManualSoundPointsGenerator(SoundPointsGenerator):
 
 
 class RandomWalkSoundPointsGenerator(SoundPointsGenerator):
-    """
+    r"""
     Sound points generator, with pitches chosen with a random walk process.
+
+    ..  container:: example
+
+        Initializing an ataxic cloud.
+
+        >>> pitch_set = list(range(20))
+        >>> sound_points_generator = pang.RandomWalkSoundPointsGenerator(
+        ...     pitch_set=pitch_set,
+        ... )
+        >>> sequence = pang.Sequence(
+        ...     sound_points_generator=sound_points_generator,
+        ...     sequence_duration=4,
+        ... )
+        >>> sequence.simulate_queue()
+        >>> server = sequence.servers[0]
+        >>> q_event_sequence = server.q_event_sequence
+        >>> quantizer = nauert.Quantizer()
+        >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
+        >>> result = quantizer(q_event_sequence, attack_point_optimizer=optimizer)
+        >>> abjad.show(result) # doctest: +SKIP
+
+        ..  docs::
+
+            >>> string = abjad.lilypond(result)
+            >>> print(string)
+            \new Voice
+            {
+                {
+                    \tempo 4=60
+                    %%% \time 4/4 %%%
+                    r8
+                    bf'8
+                    \times 2/3 {
+                        \times 4/5 {
+                            r32
+                            a'16
+                            ~
+                            a'16
+                            ~
+                        }
+                        \times 2/3 {
+                            a'16
+                            r8
+                        }
+                        r8
+                    }
+                    r4
+                    \times 2/3 {
+                        r8
+                        r16.
+                        bf'32
+                        ~
+                        bf'8
+                        ~
+                    }
+                }
+                {
+                    bf'32.
+                    b'64
+                    ~
+                    b'16
+                    ~
+                    b'8
+                    ~
+                    b'4
+                    r2
+                }
+            }
+
     """
 
     def __init__(
@@ -258,8 +353,76 @@ class RandomWalkSoundPointsGenerator(SoundPointsGenerator):
 
 
 class GRWSoundPointsGenerator(SoundPointsGenerator):
-    """
+    r"""
     Gaussian (sampled) random walk sound points generator.
+
+    ..  container:: example
+
+        >>> pitch_set = list(range(20))
+        >>> sound_points_generator = pang.GRWSoundPointsGenerator(
+        ...     pitch_set=pitch_set,
+        ... )
+        >>> sequence = pang.Sequence(
+        ...     sound_points_generator=sound_points_generator,
+        ...     sequence_duration=4,
+        ... )
+        >>> sequence.simulate_queue()
+        >>> server = sequence.servers[0]
+        >>> q_event_sequence = server.q_event_sequence
+        >>> quantizer = nauert.Quantizer()
+        >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
+        >>> result = quantizer(q_event_sequence, attack_point_optimizer=optimizer)
+        >>> abjad.show(result) # doctest: +SKIP
+
+        ..  docs::
+
+            >>> string = abjad.lilypond(result)
+            >>> print(string)
+            \new Voice
+            {
+                {
+                    \tempo 4=60
+                    %%% \time 4/4 %%%
+                    r8
+                    bf'8
+                    \times 2/3 {
+                        \times 4/5 {
+                            r32
+                            bf'16
+                            ~
+                            bf'16
+                            ~
+                        }
+                        \times 2/3 {
+                            bf'16
+                            r8
+                        }
+                        r8
+                    }
+                    r4
+                    \times 2/3 {
+                        r8
+                        r16.
+                        a'32
+                        ~
+                        a'8
+                        ~
+                    }
+                }
+                {
+                    a'32.
+                    af'64
+                    ~
+                    af'16
+                    ~
+                    af'8
+                    ~
+                    af'4
+                    r2
+                }
+            }
+
+
     """
 
     def __init__(
