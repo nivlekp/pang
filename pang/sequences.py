@@ -1,3 +1,4 @@
+import bisect
 import queue
 
 import abjad
@@ -63,6 +64,7 @@ class Sequence:
 
             >>> print(sequence_0.durations)
             [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+
         """
         assert isinstance(sequence, type(self))
         # Currently this only supports when the sequences have the same number
@@ -73,6 +75,57 @@ class Sequence:
         self._instances.extend(new_instances)
         self._durations.extend(sequence.durations)
         self._pitches.extend(sequence.pitches)
+
+    def insert(self, offset, sequence):
+        """
+        Inserts a sequence into another. ``offset`` should be specified in
+        seconds.
+
+        ..  container:: example
+
+            >>> instances = [0, 1, 2, 3]
+            >>> durations = [0.5, 0.5, 0.5, 0.5]
+            >>> pitches = [0, 0, 0, 0]
+            >>> sound_points_generator = pang.ManualSoundPointsGenerator(
+            ...     instances=instances,
+            ...     durations=durations,
+            ...     pitches=pitches,
+            ... )
+            >>> sequence_0 = pang.Sequence(
+            ...     sound_points_generator=sound_points_generator,
+            ...     sequence_duration=4,
+            ... )
+            >>> pitches = [1, 1, 1, 1]
+            >>> sound_points_generator = pang.ManualSoundPointsGenerator(
+            ...     instances=instances,
+            ...     durations=durations,
+            ...     pitches=pitches,
+            ... )
+            >>> sequence_1 = pang.Sequence(
+            ...     sound_points_generator=sound_points_generator,
+            ...     sequence_duration=4,
+            ... )
+            >>> sequence_0.insert(2, sequence_1)
+            >>> print(sequence_0.instances)
+            [0, 1, 2, 3, 4, 5, 6, 7]
+
+            >>> print(sequence_0.pitches)
+            [0, 0, 1, 1, 1, 1, 0, 0]
+
+            >>> print(sequence_0.durations)
+            [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+
+        """
+        assert isinstance(sequence, type(self))
+        # Currently this only supports when the sequences have the same number
+        # of servers.
+        assert sequence.nservers == self.nservers
+        index = bisect.bisect_left(self._instances, offset)
+        insert_instances = [i + offset for i in sequence.instances]
+        self._instances[index:] = [i + sequence.sequence_duration for i in self._instances[index:]]
+        self._instances[index:index] = insert_instances
+        self._durations[index:index] = sequence.durations
+        self._pitches[index:index] = sequence.pitches
 
     def simulate_queue(self):
         """
