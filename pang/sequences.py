@@ -122,7 +122,9 @@ class Sequence:
         assert sequence.nservers == self.nservers
         index = bisect.bisect_left(self._instances, offset)
         insert_instances = [i + offset for i in sequence.instances]
-        self._instances[index:] = [i + sequence.sequence_duration for i in self._instances[index:]]
+        self._instances[index:] = [
+            i + sequence.sequence_duration for i in self._instances[index:]
+        ]
         self._instances[index:index] = insert_instances
         self._durations[index:index] = sequence.durations
         self._pitches[index:index] = sequence.pitches
