@@ -59,7 +59,8 @@ def test_pad_voices_with_grace_skips_02():
         \new Voice
         {
             {
-                \times 4/5 {
+                \times 4/5
+                {
                     \grace {
                         cs'16
                     }
@@ -80,7 +81,8 @@ def test_pad_voices_with_grace_skips_02():
         \new Voice
         {
             {
-                \times 4/6 {
+                \times 4/6
+                {
                     \grace {
                         s16 * 6/5
                     }
@@ -112,7 +114,8 @@ def test_pad_voices_with_grace_skips_03():
         \new Voice
         {
             {
-                \times 4/5 {
+                \times 4/5
+                {
                     \grace {
                         cs'16
                     }
@@ -133,7 +136,8 @@ def test_pad_voices_with_grace_skips_03():
         \new Voice
         {
             {
-                \times 4/6 {
+                \times 4/6
+                {
                     \grace {
                         ds'16 * 6/5
                     }
