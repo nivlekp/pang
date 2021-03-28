@@ -3,7 +3,7 @@ from abjadext import nauert
 
 class Command:
     """
-    Base command class.
+    Base command class. To be called by SegmentMaker.
     """
 
     def __call__(self):

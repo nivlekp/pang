@@ -5,6 +5,41 @@ import numpy as np
 import abjad
 
 
+class SoundPoint:
+    """
+    SoundPoint / Event.
+    """
+
+    def __init__(self, instance, duration, pitch):
+        self._instance = instance
+        self._duration = duration
+        self._pitch = pitch
+
+    @property
+    def duration(self):
+        return self._duration
+
+    @duration.setter
+    def duration(self, duration):
+        self._duration = duration
+
+    @property
+    def instance(self):
+        return self._instance
+
+    @instance.setter
+    def instance(self, instance):
+        self._instance = instance
+
+    @property
+    def pitch(self):
+        return self._pitch
+
+    @pitch.setter
+    def pitch(self, pitch):
+        self._pitch = pitch
+
+
 class SoundPointsGenerator:
     """
     Abstract base sound-point generator.
@@ -21,7 +56,7 @@ class SoundPointsGenerator:
                 durations = self._gen_durations()
             if char == "p":
                 pitches = self._gen_pitches()
-        return (instances, durations, pitches)
+        return [SoundPoint(i, d, p) for i, d, p in zip(instances, durations, pitches)]
 
     def __repr__(self):
         """
@@ -233,7 +268,10 @@ class ManualSoundPointsGenerator(SoundPointsGenerator):
         self._pitches = pitches
 
     def __call__(self, sequence_duration):
-        return (self._instances, self._durations, self._pitches)
+        return [
+            SoundPoint(i, d, p)
+            for i, d, p in zip(self._instances, self._durations, self._pitches)
+        ]
 
 
 class RandomWalkSoundPointsGenerator(SoundPointsGenerator):

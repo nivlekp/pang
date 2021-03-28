@@ -1,5 +1,6 @@
 from .cloud import Cloud
 from .commands import Command, QuantizeSequenceCommand
+from .indicators import Harmonics, Indicator, attach
 from .noteserver import NoteServer, _get_closest_server
 from .postprocessors import (
     ManualOttavaHandler,
@@ -25,6 +26,8 @@ __all__ = [
     "Cloud",
     "Command",
     "GRWSoundPointsGenerator",
+    "Harmonics",
+    "Indicator",
     "ManualOttavaHandler",
     "ManualSoundPointsGenerator",
     "NoteServer",
@@ -37,6 +40,7 @@ __all__ = [
     "SoundPointsGenerator",
     "VerboseOttavaHandler",
     "_get_closest_server",
+    "attach",
     "gen_pitches_from_sieve",
     "make_single_staff_score_template",
     "pad_voices_with_grace_skips",

@@ -4,7 +4,11 @@ import queue
 import abjad
 
 from .noteserver import NoteServer, _get_closest_server
-from .soundpointsgenerators import ManualSoundPointsGenerator, SoundPointsGenerator
+from .soundpointsgenerators import (
+    ManualSoundPointsGenerator,
+    SoundPoint,
+    SoundPointsGenerator,
+)
 
 
 class Sequence:
@@ -27,11 +31,14 @@ class Sequence:
             sound_points_generator = ManualSoundPointsGenerator()
         assert isinstance(sound_points_generator, SoundPointsGenerator)
         result = sound_points_generator(sequence_duration)
-        self._instances, self._durations, self._pitches = result
+        self._sequence = result
         self._sequence_duration = sequence_duration
 
+    def __getitem__(self, index):
+        return self._sequence[index]
+
     def __len__(self):
-        return len(self.durations)
+        return len(self._sequence)
 
     def __repr__(self):
         """
@@ -72,9 +79,12 @@ class Sequence:
         assert sequence.nservers == self.nservers
         offset = self.sequence_duration + time_gap
         new_instances = [i + offset for i in sequence.instances]
-        self._instances.extend(new_instances)
-        self._durations.extend(sequence.durations)
-        self._pitches.extend(sequence.pitches)
+        self._sequence.extend(
+            [
+                SoundPoint(i, d, p)
+                for i, d, p in zip(new_instances, sequence.durations, sequence.pitches)
+            ]
+        )
 
     def insert(self, offset, sequence):
         """
@@ -120,56 +130,56 @@ class Sequence:
         # Currently this only supports when the sequences have the same number
         # of servers.
         assert sequence.nservers == self.nservers
-        index = bisect.bisect_left(self._instances, offset)
+        index = bisect.bisect_left(self.instances, offset)
         insert_instances = [i + offset for i in sequence.instances]
-        self._instances[index:] = [
-            i + sequence.sequence_duration for i in self._instances[index:]
+        for event in self._sequence[index:]:
+            event.instance += sequence.sequence_duration
+        self._sequence[index:index] = [
+            SoundPoint(i, d, p)
+            for i, d, p in zip(insert_instances, sequence.durations, sequence.pitches)
         ]
-        self._instances[index:index] = insert_instances
-        self._durations[index:index] = sequence.durations
-        self._pitches[index:index] = sequence.pitches
 
     def simulate_queue(self):
         """
         Simulate the queue based on the queue type.
         """
         # TODO: model rest_threshold
-        assert self._instances is not None and len(self._instances) > 0
+        assert self.instances is not None and len(self.instances) > 0
         servers = self._servers
         curr_time = 0.0
         q = queue.Queue()
         arrival_index = 0
-        while arrival_index < len(self._instances) or not q.empty():
+        while arrival_index < len(self.instances) or not q.empty():
             server_index, closest_offset_instance = _get_closest_server(servers)
             if q.empty():
-                if closest_offset_instance > self._instances[arrival_index]:
+                if closest_offset_instance > self.instances[arrival_index]:
                     # previous note has not finished yet, so we should queue
                     # the newly arrived note
                     q.put(arrival_index)
-                    curr_time = self._instances[arrival_index]
+                    curr_time = self.instances[arrival_index]
                     arrival_index = arrival_index + 1
                 else:
-                    curr_time = self._instances[arrival_index]
+                    curr_time = self.instances[arrival_index]
                     servers[server_index].serve(
                         curr_time,
-                        self._durations[arrival_index],
-                        self._pitches[arrival_index],
+                        self.durations[arrival_index],
+                        self.pitches[arrival_index],
                     )
                     arrival_index = arrival_index + 1
             else:  # there's already a client in the queue
                 # queue the current note
                 if (
-                    arrival_index < len(self._instances)
-                    and closest_offset_instance > self._instances[arrival_index]
+                    arrival_index < len(self.instances)
+                    and closest_offset_instance > self.instances[arrival_index]
                 ):
                     q.put(arrival_index)
-                    curr_time = self._instances[arrival_index]
+                    curr_time = self.instances[arrival_index]
                     arrival_index = arrival_index + 1
                 else:
                     index = q.get()
                     curr_time = closest_offset_instance
                     servers[server_index].serve(
-                        curr_time, self._durations[index], self._pitches[index]
+                        curr_time, self.durations[index], self.pitches[index]
                     )
 
     def superpose(self, sequence):
@@ -177,27 +187,28 @@ class Sequence:
         # Currently this only supports when the sequences have the same number
         # of servers.
         assert sequence.nservers == self.nservers
-        durations = self._durations + sequence.durations
-        instances = self._instances + sequence.instances
-        pitches = self._pitches + sequence.pitches
+        durations = self.durations + sequence.durations
+        instances = self.instances + sequence.instances
+        pitches = self.pitches + sequence.pitches
         instances_tuple, durations_tuple, pitches_tuple = zip(
             *sorted(zip(instances, durations, pitches))
         )
-        self._instances = list(instances_tuple)
-        self._durations = list(durations_tuple)
-        self._pitches = list(pitches_tuple)
+        self._sequence = [
+            SoundPoint(i, d, p)
+            for i, d, p in zip(instances_tuple, durations_tuple, pitches_tuple)
+        ]
 
     @property
     def instances(self):
-        return self._instances
+        return [event.instance for event in self._sequence]
 
     @property
     def pitches(self):
-        return self._pitches
+        return [event.pitch for event in self._sequence]
 
     @property
     def durations(self):
-        return self._durations
+        return [event.duration for event in self._sequence]
 
     @property
     def durations_in_millesecond(self):
@@ -205,7 +216,7 @@ class Sequence:
         Returns the duration of each note in millesecond (before queue
         simulation).
         """
-        return [dur * 1000 for dur in self._durations]
+        return [event.duration * 1000 for event in self._sequence]
 
     @property
     def nservers(self):
@@ -219,7 +230,7 @@ class Sequence:
         """
         Returns the sequence duration in seconds.
         """
-        offsets = [i + d for i, d in zip(self._instances, self._durations)]
+        offsets = [i + d for i, d in zip(self.instances, self.durations)]
         if offsets != []:
             last_offset = max(offsets)
         else:
