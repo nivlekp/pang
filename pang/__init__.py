@@ -1,6 +1,6 @@
 from .cloud import Cloud
 from .commands import Command, QuantizeSequenceCommand
-from .indicators import Harmonics, Indicator, attach
+from .indicators import Harmonics, Indicator, attach, decode
 from .noteserver import NoteServer, _get_closest_server
 from .postprocessors import (
     ManualOttavaHandler,
@@ -41,6 +41,7 @@ __all__ = [
     "VerboseOttavaHandler",
     "_get_closest_server",
     "attach",
+    "decode",
     "gen_pitches_from_sieve",
     "make_single_staff_score_template",
     "pad_voices_with_grace_skips",
