@@ -1,6 +1,6 @@
 from .cloud import Cloud
-from .commands import Command, QuantizeSequenceCommand
-from .indicators import Harmonics, Indicator, attach, decode
+from .commands import Command, DecodeCommand, QuantizeSequenceCommand
+from .indicators import Harmonics, Indicator, Red, attach, decode
 from .noteserver import NoteServer, _get_closest_server
 from .postprocessors import (
     ManualOttavaHandler,
@@ -25,6 +25,7 @@ __all__ = [
     "AtaxicSoundPointsGenerator",
     "Cloud",
     "Command",
+    "DecodeCommand",
     "GRWSoundPointsGenerator",
     "Harmonics",
     "Indicator",
@@ -34,6 +35,7 @@ __all__ = [
     "OttavaHandler",
     "QuantizeSequenceCommand",
     "RandomWalkSoundPointsGenerator",
+    "Red",
     "Scope",
     "SegmentMaker",
     "Sequence",

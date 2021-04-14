@@ -67,10 +67,8 @@ class SegmentMaker:
         self._score = score_template
 
     def __call__(self, scope, command):
-        results = command()
-        assert len(results) == 1
-        result = results[0]
-        self._score[scope.voice_name].extend(result)
+        target = self._score[scope.voice_name]
+        command(target)
 
     def _collect_metadata(self):
         metadata = abjad.OrderedDict()

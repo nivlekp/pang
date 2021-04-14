@@ -1,13 +1,24 @@
 from abjadext import nauert
 
+from .indicators import decode
+
 
 class Command:
     """
     Base command class. To be called by SegmentMaker.
     """
 
-    def __call__(self):
+    def __call__(self, target):
         raise NotImplementedError
+
+
+class DecodeCommand(Command):
+    """
+    Command to decode indicator.
+    """
+
+    def __call__(self, target):
+        decode(target)
 
 
 class QuantizeSequenceCommand(Command):
@@ -36,7 +47,7 @@ class QuantizeSequenceCommand(Command):
         self._attach_tempos = attach_tempos
         self._quantizer = nauert.Quantizer()
 
-    def __call__(self):
+    def __call__(self, target):
         sequence = self._sequence
         sequence.simulate_queue()
         results = []
@@ -51,4 +62,6 @@ class QuantizeSequenceCommand(Command):
                 attach_tempos=self._attach_tempos,
             )
             results.append(result)
-        return results
+        assert len(results) == 1
+        result = results[0]
+        target.extend(result)
