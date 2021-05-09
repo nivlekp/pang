@@ -72,6 +72,7 @@ class SegmentMaker:
 
     def _collect_metadata(self):
         metadata = abjad.OrderedDict()
+        metadata["last_tempo"] = self._get_last_tempo()
         metadata["last_time_signature"] = self._get_last_time_signature()
         metadata["empty_beatspan"] = self._get_empty_beatspan()
         self.metadata.update(metadata)
@@ -89,6 +90,12 @@ class SegmentMaker:
                 if empty_beatspan > max_empty_beatspan:
                     max_empty_beatspan = empty_beatspan
         return max_empty_beatspan
+
+    def _get_last_tempo(self):
+        voice = self._score[0][0]
+        last_leaf = abjad.get.leaf(voice, -1)
+        prototype = abjad.MetronomeMark
+        return abjad.get.effective(last_leaf, prototype)
 
     def _get_last_time_signature(self):
         voice = self._score[0][0]
@@ -172,6 +179,13 @@ class SegmentMaker:
             >>> print(string)
             abjad.OrderedDict(
                 [
+                    (
+                        'last_tempo',
+                        abjad.MetronomeMark(
+                            reference_duration=abjad.Duration(1, 4),
+                            units_per_minute=60,
+                            ),
+                        ),
                     (
                         'last_time_signature',
                         abjad.TimeSignature((4, 4)),

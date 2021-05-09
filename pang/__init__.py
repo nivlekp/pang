@@ -17,6 +17,7 @@ from .soundpointsgenerators import (
     GRWSoundPointsGenerator,
     ManualSoundPointsGenerator,
     RandomWalkSoundPointsGenerator,
+    SoundPoint,
     SoundPointsGenerator,
 )
 from .templates import make_single_staff_score_template
@@ -39,6 +40,7 @@ __all__ = [
     "Scope",
     "SegmentMaker",
     "Sequence",
+    "SoundPoint",
     "SoundPointsGenerator",
     "VerboseOttavaHandler",
     "_get_closest_server",
