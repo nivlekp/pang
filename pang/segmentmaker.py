@@ -62,9 +62,11 @@ class SegmentMaker:
         self,
         environment=None,
         score_template=None,
+        segment_name=None,
     ):
         self._environment = environment
         self._score = score_template
+        self._segment_name = segment_name
 
     def __call__(self, scope, command):
         target = self._score[scope.voice_name]
@@ -75,6 +77,7 @@ class SegmentMaker:
         metadata["last_tempo"] = self._get_last_tempo()
         metadata["last_time_signature"] = self._get_last_time_signature()
         metadata["empty_beatspan"] = self._get_empty_beatspan()
+        metadata["segment_name"] = self._segment_name
         self.metadata.update(metadata)
 
     def _get_empty_beatspan(self):
@@ -90,6 +93,18 @@ class SegmentMaker:
                 if empty_beatspan > max_empty_beatspan:
                     max_empty_beatspan = empty_beatspan
         return max_empty_beatspan
+
+    def _get_first_tempo(self):
+        voice = self._score[0][0]
+        first_leaf = abjad.get.leaf(voice, 0)
+        prototype = abjad.MetronomeMark
+        return abjad.get.effective(first_leaf, prototype)
+
+    def _get_first_time_signature(self):
+        voice = self._score[0][0]
+        first_leaf = abjad.get.leaf(voice, 0)
+        prototype = abjad.TimeSignature
+        return abjad.get.effective(first_leaf, prototype)
 
     def _get_last_tempo(self):
         voice = self._score[0][0]
@@ -116,6 +131,18 @@ class SegmentMaker:
         )
         self._lilypond_file = lilypond_file
 
+    def _process_previous_metadata(self, previous_metadata):
+        if previous_metadata is None:
+            return
+        first_tempo = self._get_first_tempo()
+        first_time_signature = self._get_first_time_signature()
+        voice = self._score[0][0]
+        first_leaf = abjad.get.leaf(voice, 0)
+        if first_tempo == previous_metadata["last_tempo"]:
+            abjad.detach(abjad.MetronomeMark, first_leaf)
+        if first_time_signature == previous_metadata["last_time_signature"]:
+            abjad.detach(abjad.TimeSignature, first_leaf)
+
     @property
     def metadata(self):
         r"""
@@ -126,6 +153,7 @@ class SegmentMaker:
             >>> template = pang.make_single_staff_score_template()
             >>> maker = pang.SegmentMaker(
             ...     score_template=template,
+            ...     segment_name="test",
             ... )
             >>> instances = [0, 1, 2, 3]
             >>> durations = [1, 1, 0.5, 0.5]
@@ -194,6 +222,7 @@ class SegmentMaker:
                         'empty_beatspan',
                         abjad.Duration(1, 8),
                         ),
+                    ('segment_name', 'test'),
                     ]
                 )
         """
@@ -213,11 +242,19 @@ class SegmentMaker:
         """
         return self._score
 
-    def run(self, environment=None, metadata=None):
+    @property
+    def segment_name(self):
+        """
+        Returns segment's name.
+        """
+        return self._segment_name
+
+    def run(self, environment=None, metadata=None, previous_metadata=None):
         """
         Runs the segment-maker.
         """
         self._environment = environment
+        self._process_previous_metadata(previous_metadata)
         self._metadata = abjad.OrderedDict(metadata)
         self._make_lilypond_file()
         self._collect_metadata()
