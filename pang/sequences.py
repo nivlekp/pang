@@ -211,9 +211,9 @@ class Sequence:
         return [event.duration for event in self._sequence]
 
     @property
-    def durations_in_millesecond(self):
+    def durations_in_millisecond(self):
         """
-        Returns the duration of each note in millesecond (before queue
+        Returns the duration of each note in millisecond (before queue
         simulation).
         """
         return [event.duration * 1000 for event in self._sequence]
