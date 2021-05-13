@@ -24,7 +24,7 @@ def test_Sequence_superpose_01():
     sequence_1 = pang.Sequence(
         sound_points_generator=sound_points_generator,
     )
-    sequence_0.superpose(sequence_1)
+    sequence_0.superpose(0, sequence_1)
     assert sequence_0.instances == [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5]
     assert sequence_0.durations == [0.5, 0.6, 0.5, 0.6, 0.5, 0.7, 0.5, 0.7]
     assert sequence_0.pitches == [0, 1, 0, 1, 0, 1, 0, 1]

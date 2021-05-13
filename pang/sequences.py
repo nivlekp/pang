@@ -182,13 +182,53 @@ class Sequence:
                         curr_time, self.durations[index], self.pitches[index]
                     )
 
-    def superpose(self, sequence):
+    def superpose(self, offset, sequence):
+        """
+        Superpose a sequence on top of another. ``offset`` should be specified
+        in seconds.
+
+        ..  container:: example
+
+            >>> instances = [0, 1, 2, 3]
+            >>> durations = [0.5, 0.5, 0.5, 0.5]
+            >>> pitches = [0, 0, 0, 0]
+            >>> sound_points_generator = pang.ManualSoundPointsGenerator(
+            ...     instances=instances,
+            ...     durations=durations,
+            ...     pitches=pitches,
+            ... )
+            >>> sequence_0 = pang.Sequence(
+            ...     sound_points_generator=sound_points_generator,
+            ...     sequence_duration=4,
+            ... )
+            >>> pitches = [1, 1, 1, 1]
+            >>> sound_points_generator = pang.ManualSoundPointsGenerator(
+            ...     instances=instances,
+            ...     durations=durations,
+            ...     pitches=pitches,
+            ... )
+            >>> sequence_1 = pang.Sequence(
+            ...     sound_points_generator=sound_points_generator,
+            ...     sequence_duration=4,
+            ... )
+            >>> sequence_0.superpose(2, sequence_1)
+            >>> print(sequence_0.instances)
+            [0, 1, 2, 2, 3, 3, 4, 5]
+
+            >>> print(sequence_0.pitches)
+            [0, 0, 0, 1, 0, 1, 1, 1]
+
+            >>> print(sequence_0.durations)
+            [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+
+        """
         assert isinstance(sequence, type(self))
         # Currently this only supports when the sequences have the same number
         # of servers.
         assert sequence.nservers == self.nservers
         durations = self.durations + sequence.durations
-        instances = self.instances + sequence.instances
+        instances_with_offset = [instance + offset for instance in sequence.instances]
+        instances = self.instances + instances_with_offset
         pitches = self.pitches + sequence.pitches
         instances_tuple, durations_tuple, pitches_tuple = zip(
             *sorted(zip(instances, durations, pitches))
