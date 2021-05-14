@@ -1,3 +1,5 @@
+import copy
+
 import abjad
 
 
@@ -95,26 +97,22 @@ class SegmentMaker:
         return max_empty_beatspan
 
     def _get_first_tempo(self):
-        voice = self._score[0][0]
-        first_leaf = abjad.get.leaf(voice, 0)
+        first_leaf = abjad.get.leaf(self._score, 0)
         prototype = abjad.MetronomeMark
         return abjad.get.effective(first_leaf, prototype)
 
     def _get_first_time_signature(self):
-        voice = self._score[0][0]
-        first_leaf = abjad.get.leaf(voice, 0)
+        first_leaf = abjad.get.leaf(self._score, 0)
         prototype = abjad.TimeSignature
         return abjad.get.effective(first_leaf, prototype)
 
     def _get_last_tempo(self):
-        voice = self._score[0][0]
-        last_leaf = abjad.get.leaf(voice, -1)
+        last_leaf = abjad.get.leaf(self._score, -1)
         prototype = abjad.MetronomeMark
         return abjad.get.effective(last_leaf, prototype)
 
     def _get_last_time_signature(self):
-        voice = self._score[0][0]
-        last_leaf = abjad.get.leaf(voice, -1)
+        last_leaf = abjad.get.leaf(self._score, -1)
         prototype = abjad.TimeSignature
         return abjad.get.effective(last_leaf, prototype)
 
@@ -123,6 +121,22 @@ class SegmentMaker:
             return ["source/_stylesheets/single-voice-staff.ily"]
         else:
             return ["../../stylesheets/stylesheet.ily"]
+
+    def _make_build_file(self, previous_metadata=None):
+        includes = self._get_lilypond_includes()
+        build_file_score = copy.deepcopy(self._score)
+        if previous_metadata is not None:
+            first_tempo = self._get_first_tempo()
+            first_time_signature = self._get_first_time_signature()
+            first_leaf = abjad.get.leaf(build_file_score, 0)
+            if first_tempo == previous_metadata["last_tempo"]:
+                abjad.detach(abjad.MetronomeMark, first_leaf)
+            if first_time_signature == previous_metadata["last_time_signature"]:
+                abjad.detach(abjad.TimeSignature, first_leaf)
+        build_file = abjad.LilyPondFile(
+            items=[build_file_score], includes=includes, use_relative_includes=True
+        )
+        self._build_file = build_file
 
     def _make_lilypond_file(self):
         includes = self._get_lilypond_includes()
@@ -142,6 +156,13 @@ class SegmentMaker:
             abjad.detach(abjad.MetronomeMark, first_leaf)
         if first_time_signature == previous_metadata["last_time_signature"]:
             abjad.detach(abjad.TimeSignature, first_leaf)
+
+    @property
+    def build_file(self):
+        r"""
+        Returns the build file for the score.
+        """
+        return self._build_file
 
     @property
     def metadata(self):
@@ -254,8 +275,9 @@ class SegmentMaker:
         Runs the segment-maker.
         """
         self._environment = environment
-        self._process_previous_metadata(previous_metadata)
+        # self._process_previous_metadata(previous_metadata)
         self._metadata = abjad.OrderedDict(metadata)
         self._make_lilypond_file()
+        self._make_build_file()
         self._collect_metadata()
         return self.lilypond_file
