@@ -4,11 +4,7 @@ import queue
 import abjad
 
 from .noteserver import NoteServer, _get_closest_server
-from .soundpointsgenerators import (
-    ManualSoundPointsGenerator,
-    SoundPoint,
-    SoundPointsGenerator,
-)
+from .soundpointsgenerators import ManualSoundPointsGenerator, SoundPointsGenerator
 
 
 class Sequence:
@@ -21,6 +17,7 @@ class Sequence:
         sound_points_generator=None,
         nservers=1,
         sequence_duration=0,
+        tag_sequence=False,
     ):
         self._servers = [NoteServer() for _ in range(nservers)]
         # if pitch_set is None:
@@ -31,14 +28,17 @@ class Sequence:
             sound_points_generator = ManualSoundPointsGenerator()
         assert isinstance(sound_points_generator, SoundPointsGenerator)
         result = sound_points_generator(sequence_duration)
-        self._sequence = result
+        self._sound_points = result
         self._sequence_duration = sequence_duration
+        if tag_sequence:
+            assert sequence_duration == 0
+        self._tag_sequence = tag_sequence
 
     def __getitem__(self, index):
-        return self._sequence[index]
+        return self._sound_points[index]
 
     def __len__(self):
-        return len(self._sequence)
+        return len(self.sound_points)
 
     def __repr__(self):
         """
@@ -78,13 +78,9 @@ class Sequence:
         # of servers.
         assert sequence.nservers == self.nservers
         offset = self.sequence_duration + time_gap
-        new_instances = [i + offset for i in sequence.instances]
-        self._sequence.extend(
-            [
-                SoundPoint(i, d, p)
-                for i, d, p in zip(new_instances, sequence.durations, sequence.pitches)
-            ]
-        )
+        for sound_point in sequence:
+            sound_point.instance += offset
+        self._sound_points.extend(sequence._sound_points)
 
     def insert(self, offset, sequence):
         """
@@ -131,13 +127,11 @@ class Sequence:
         # of servers.
         assert sequence.nservers == self.nservers
         index = bisect.bisect_left(self.instances, offset)
-        insert_instances = [i + offset for i in sequence.instances]
-        for event in self._sequence[index:]:
-            event.instance += sequence.sequence_duration
-        self._sequence[index:index] = [
-            SoundPoint(i, d, p)
-            for i, d, p in zip(insert_instances, sequence.durations, sequence.pitches)
-        ]
+        for sound_point in self._sound_points[index:]:
+            sound_point.instance += sequence.sequence_duration
+        for sound_point in sequence:
+            sound_point.instance += offset
+        self._sound_points[index:index] = sequence._sound_points
 
     def simulate_queue(self):
         """
@@ -216,7 +210,7 @@ class Sequence:
             [0, 1, 2, 2, 3, 3, 4, 5]
 
             >>> print(sequence_0.pitches)
-            [0, 0, 0, 1, 0, 1, 1, 1]
+            [0, 0, 1, 0, 1, 0, 1, 1]
 
             >>> print(sequence_0.durations)
             [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
@@ -226,29 +220,26 @@ class Sequence:
         # Currently this only supports when the sequences have the same number
         # of servers.
         assert sequence.nservers == self.nservers
-        durations = self.durations + sequence.durations
-        instances_with_offset = [instance + offset for instance in sequence.instances]
-        instances = self.instances + instances_with_offset
-        pitches = self.pitches + sequence.pitches
-        instances_tuple, durations_tuple, pitches_tuple = zip(
-            *sorted(zip(instances, durations, pitches))
-        )
-        self._sequence = [
-            SoundPoint(i, d, p)
-            for i, d, p in zip(instances_tuple, durations_tuple, pitches_tuple)
-        ]
+        for sound_point in sequence:
+            sound_point.instance += offset
+            index = bisect.bisect_left(self.instances, sound_point.instance)
+            self._sound_points.insert(index, sound_point)
 
     @property
     def instances(self):
-        return [event.instance for event in self._sequence]
+        return [event.instance for event in self._sound_points]
 
     @property
     def pitches(self):
-        return [event.pitch for event in self._sequence]
+        return [event.pitch for event in self._sound_points]
+
+    @property
+    def tags(self):
+        return [event.tag for event in self._sound_points]
 
     @property
     def durations(self):
-        return [event.duration for event in self._sequence]
+        return [event.duration for event in self._sound_points]
 
     @property
     def durations_in_millisecond(self):
@@ -256,7 +247,7 @@ class Sequence:
         Returns the duration of each note in millisecond (before queue
         simulation).
         """
-        return [event.duration * 1000 for event in self._sequence]
+        return [event.duration * 1000 for event in self._sound_points]
 
     @property
     def nservers(self):
@@ -283,3 +274,10 @@ class Sequence:
         Returns the servers that are attached to this sequence.
         """
         return self._servers
+
+    @property
+    def tag_sequence(self):
+        """
+        Returns whether the sequence has a tagging mechanism.
+        """
+        return self._tag_sequence
