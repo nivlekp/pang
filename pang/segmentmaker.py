@@ -278,6 +278,6 @@ class SegmentMaker:
         # self._process_previous_metadata(previous_metadata)
         self._metadata = abjad.OrderedDict(metadata)
         self._make_lilypond_file()
-        self._make_build_file()
+        self._make_build_file(previous_metadata=previous_metadata)
         self._collect_metadata()
         return self.lilypond_file

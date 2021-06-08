@@ -17,22 +17,18 @@ class Sequence:
         sound_points_generator=None,
         nservers=1,
         sequence_duration=0,
-        tag_sequence=False,
+        tag=None,
     ):
         self._servers = [NoteServer() for _ in range(nservers)]
-        # if pitch_set is None:
-        #     pitch_set = abjad.PitchSet()
-        # else:
-        #     assert isinstance(pitch_set, (list, abjad.PitchSet))
         if sound_points_generator is None:
             sound_points_generator = ManualSoundPointsGenerator()
         assert isinstance(sound_points_generator, SoundPointsGenerator)
         result = sound_points_generator(sequence_duration)
+        if tag:
+            for sound_point in result:
+                sound_point.tag = tag
         self._sound_points = result
         self._sequence_duration = sequence_duration
-        if tag_sequence:
-            assert sequence_duration == 0
-        self._tag_sequence = tag_sequence
 
     def __getitem__(self, index):
         return self._sound_points[index]
@@ -133,7 +129,7 @@ class Sequence:
             sound_point.instance += offset
         self._sound_points[index:index] = sequence._sound_points
 
-    def simulate_queue(self):
+    def simulate_queue(self, tag_as_pitch=False):
         """
         Simulate the queue based on the queue type.
         """
@@ -154,10 +150,14 @@ class Sequence:
                     arrival_index = arrival_index + 1
                 else:
                     curr_time = self.instances[arrival_index]
+                    if tag_as_pitch:
+                        pitch = self.tags[arrival_index]
+                    else:
+                        pitch = self.pitches[arrival_index]
                     servers[server_index].serve(
                         curr_time,
                         self.durations[arrival_index],
-                        self.pitches[arrival_index],
+                        pitch,
                     )
                     arrival_index = arrival_index + 1
             else:  # there's already a client in the queue
@@ -172,9 +172,11 @@ class Sequence:
                 else:
                     index = q.get()
                     curr_time = closest_offset_instance
-                    servers[server_index].serve(
-                        curr_time, self.durations[index], self.pitches[index]
-                    )
+                    if tag_as_pitch:
+                        pitch = self.tags[index]
+                    else:
+                        pitch = self.pitches[index]
+                    servers[server_index].serve(curr_time, self.durations[index], pitch)
 
     def superpose(self, offset, sequence):
         """
@@ -274,10 +276,3 @@ class Sequence:
         Returns the servers that are attached to this sequence.
         """
         return self._servers
-
-    @property
-    def tag_sequence(self):
-        """
-        Returns whether the sequence has a tagging mechanism.
-        """
-        return self._tag_sequence

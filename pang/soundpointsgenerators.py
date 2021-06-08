@@ -10,10 +10,11 @@ class SoundPoint:
     SoundPoint / Event.
     """
 
-    def __init__(self, instance, duration, pitch):
+    def __init__(self, instance, duration, pitch, tag=None):
         self._instance = instance
         self._duration = duration
         self._pitch = pitch
+        self._tag = tag
 
     @property
     def duration(self):
@@ -38,6 +39,14 @@ class SoundPoint:
     @pitch.setter
     def pitch(self, pitch):
         self._pitch = pitch
+
+    @property
+    def tag(self):
+        return self._tag
+
+    @tag.setter
+    def tag(self, tag):
+        self._tag = tag
 
 
 class SoundPointsGenerator:

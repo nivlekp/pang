@@ -34,6 +34,7 @@ class QuantizeSequenceCommand(Command):
         heuristic=None,
         attack_point_optimizer=None,
         attach_tempos=True,
+        tag_as_pitch=False,
     ):
         self._sequence = sequence
         self._q_schema = q_schema or nauert.MeasurewiseQSchema()
@@ -46,10 +47,11 @@ class QuantizeSequenceCommand(Command):
         )
         self._attach_tempos = attach_tempos
         self._quantizer = nauert.Quantizer()
+        self._tag_as_pitch = tag_as_pitch
 
     def __call__(self, target):
         sequence = self._sequence
-        sequence.simulate_queue()
+        sequence.simulate_queue(tag_as_pitch=self._tag_as_pitch)
         results = []
         for server in sequence.servers:
             q_event_sequence = server.q_event_sequence
