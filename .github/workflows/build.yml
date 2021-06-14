@@ -51,14 +51,16 @@ jobs:
         black --version
         flake8 --version
         isort --version
-        # mypy --version
+        mypy --version
         pip --version
         pytest --version
         # lilypond --version
     - name: Checks and Tests
       run: |
+        export MYPYPATH=$MYPYPATH:/tmp/abjad
+        export MYPYPATH=$MYPYPATH:/tmp/abjad-ext-nauert
         make black-check
         make flake8
         make isort-check
-        # make mypy
+        make mypy
         make pytest

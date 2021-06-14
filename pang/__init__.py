@@ -1,5 +1,10 @@
 from .cloud import Cloud
-from .commands import Command, DecodeCommand, QuantizeSequenceCommand
+from .commands import (
+    Command,
+    DecodeCommand,
+    ProcessQuantizedSequenceCommand,
+    QuantizeSequenceCommand,
+)
 from .indicators import Harmonics, Indicator, Red, attach, decode
 from .noteserver import NoteServer, _get_closest_server
 from .postprocessors import (
@@ -34,6 +39,7 @@ __all__ = [
     "ManualSoundPointsGenerator",
     "NoteServer",
     "OttavaHandler",
+    "ProcessQuantizedSequenceCommand",
     "QuantizeSequenceCommand",
     "RandomWalkSoundPointsGenerator",
     "Red",

@@ -64,6 +64,10 @@ isort-reformat:
 jupyter-test:
 	jupyter nbconvert --to=html --ExecutePreprocessor.enabled=True tests/test.ipynb
 
+mypy:
+	mypy pang
+	mypy tests
+
 project = pang
 
 pytest:
@@ -88,11 +92,11 @@ check:
 	make black-check
 	make flake8
 	make isort-check
-	# make mypy
+	make mypy
 
 test:
 	make black-check
 	make flake8
 	make isort-check
-	# make mypy
+	make mypy
 	make pytest

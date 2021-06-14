@@ -302,12 +302,30 @@ def test_Sequence_simulate_queue_05():
         sequence_duration=sequence_duration,
         tag=10,
     )
+    sequence.extend(
+        pang.Sequence(
+            sound_points_generator=sound_points_generator,
+            sequence_duration=sequence_duration,
+            tag=11,
+        )
+    )
 
     sequence.simulate_queue(tag_as_pitch=True)
     np.testing.assert_almost_equal(
         sequence.servers[0].durations,
         [
             1,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            5,
             0.5,
             0.5,
             0.5,
@@ -333,4 +351,15 @@ def test_Sequence_simulate_queue_05():
         10,
         10,
         10,
+        None,
+        11,
+        11,
+        11,
+        11,
+        11,
+        11,
+        11,
+        11,
+        11,
+        11,
     ]

@@ -1,4 +1,5 @@
 import random
+import typing
 
 import numpy as np
 
@@ -10,7 +11,13 @@ class SoundPoint:
     SoundPoint / Event.
     """
 
-    def __init__(self, instance, duration, pitch, tag=None):
+    def __init__(
+        self,
+        instance: float,
+        duration: float,
+        pitch: float,
+        tag: typing.Optional[int] = None,
+    ):
         self._instance = instance
         self._duration = duration
         self._pitch = pitch
