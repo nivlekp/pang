@@ -39,14 +39,18 @@ class ProcessQuantizedSequenceCommand(Command):
                     locale="us"
                 )
 
-    def _segment_target_by_tag(self, target: abjad.Voice) -> list[abjad.Selection]:
+    def _segment_target_by_tag(
+        self, target: abjad.Voice
+    ) -> typing.List[abjad.Selection]:
         selection: abjad.Selection = abjad.select(target).logical_ties()
-        all_tags: list[int] = [tag for tag in self._sequence.tags if tag is not None]
-        unique_tags: list[int] = list(set(all_tags))
-        pitch_tags: list[abjad.NumberedPitch] = [
+        all_tags: typing.List[int] = [
+            tag for tag in self._sequence.tags if tag is not None
+        ]
+        unique_tags: typing.List[int] = list(set(all_tags))
+        pitch_tags: typing.List[abjad.NumberedPitch] = [
             abjad.NumberedPitch(tag) for tag in unique_tags
         ]
-        results: list[typing.Union[abjad.Selection, abjad.Expression]] = [
+        results: typing.List[typing.Union[abjad.Selection, abjad.Expression]] = [
             selection.filter_pitches("&", pitch.get_name(locale="us"))
             for pitch in pitch_tags
         ]
