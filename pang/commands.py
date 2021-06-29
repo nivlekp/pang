@@ -31,6 +31,7 @@ class ProcessQuantizedSequenceCommand(Command):
         """
         pass
 
+
 class DecodeCommand(Command):
     """
     Command to decode indicator.

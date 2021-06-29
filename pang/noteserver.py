@@ -61,7 +61,6 @@ class NoteServer:
 
     @property
     def q_event_sequence(self):
-        import abjad
         return nauert.QEventSequence.from_millisecond_pitch_attachment_tuples(
             tuple(zip(self.durations_in_millisecond, self.pitches, self.attachments))
         )
