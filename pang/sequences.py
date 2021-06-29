@@ -25,7 +25,7 @@ class Sequence:
             sound_points_generator = ManualSoundPointsGenerator()
         assert isinstance(sound_points_generator, SoundPointsGenerator)
         result = sound_points_generator(sequence_duration)
-        if tag:
+        if tag is not None:
             for sound_point in result:
                 sound_point.tag = tag
         self._sound_points = result
@@ -133,7 +133,7 @@ class Sequence:
             sound_point.instance += offset
         self._sound_points[index:index] = sequence._sound_points
 
-    def simulate_queue(self, tag_as_pitch: bool = False):
+    def simulate_queue(self):
         """
         Simulate the queue based on the queue type.
         """
@@ -154,14 +154,11 @@ class Sequence:
                     arrival_index = arrival_index + 1
                 else:
                     curr_time = self.instances[arrival_index]
-                    if tag_as_pitch:
-                        pitch = self.tags[arrival_index]
-                    else:
-                        pitch = self.pitches[arrival_index]
                     servers[server_index].serve(
                         curr_time,
-                        self.durations[arrival_index],
-                        pitch,
+                        sound_point=self._sound_points[arrival_index]
+                        # duration=self.durations[arrival_index],
+                        # pitch=self.pitches[arrival_index]
                     )
                     arrival_index = arrival_index + 1
             else:  # there's already a client in the queue
@@ -176,11 +173,12 @@ class Sequence:
                 else:
                     index = q.get()
                     curr_time = closest_offset_instance
-                    if tag_as_pitch:
-                        pitch = self.tags[index]
-                    else:
-                        pitch = self.pitches[index]
-                    servers[server_index].serve(curr_time, self.durations[index], pitch)
+                    servers[server_index].serve(
+                        curr_time,
+                        sound_point=self._sound_points[index],
+                        # duration=self.durations[index],
+                        # pitch=self.pitches[index]
+                    )
 
     def superpose(self, offset, sequence):
         """
@@ -238,10 +236,6 @@ class Sequence:
     @property
     def pitches(self):
         return [event.pitch for event in self._sound_points]
-
-    @property
-    def tags(self):
-        return [event.tag for event in self._sound_points]
 
     @property
     def durations(self):

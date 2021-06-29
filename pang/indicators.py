@@ -1,4 +1,5 @@
 import enum
+import typing
 
 import abjad
 
@@ -39,6 +40,16 @@ class Indicator:
     def __init__(self):
         pass
 
+    def __call__(self, target: abjad.LogicalTie):
+        for leaf in target:
+            self._attach_indicator_to_leaf(leaf)
+
+    def _attach_indicator_to_leaf(self, leaf):
+        """
+        Attach indicator to leaf.
+        """
+        raise NotImplementedError
+
     def attach(self, event):
         """
         Attach the "payload" to the event
@@ -52,6 +63,7 @@ class Red(Indicator):
 
     ..  container:: example
 
+        >>> # TODO: this way of encoding and decoding should be rid of
         >>> instances = [0, 1, 2, 3]
         >>> durations = [1, 1, 0.5, 0.5]
         >>> pitches = [0, 0, (0, 12), 0]
@@ -107,14 +119,87 @@ class Red(Indicator):
                     r8
                 }
             }
+
+    ..  container:: example
+
+        >>> template = pang.make_single_staff_score_template()
+        >>> maker = pang.SegmentMaker(
+        ...     score_template=template,
+        ... )
+        >>> instances = [0, 1, 2, 3]
+        >>> durations = [1, 1, 0.5, 0.5]
+        >>> pitches = [0, 0, (0, 12), 0]
+        >>> sound_points_generator = pang.ManualSoundPointsGenerator(
+        ...     instances=instances,
+        ...     durations=durations,
+        ...     pitches=pitches,
+        ... )
+        >>> sequence = pang.Sequence(
+        ...     sound_points_generator=sound_points_generator,
+        ... )
+        >>> for event in sequence:
+        ...     event.attachments = [pang.Red()]
+        ...
+        >>> command = pang.QuantizeSequenceCommand(sequence)
+        >>> scope = pang.Scope(voice_name="Voice")
+        >>> maker(scope, command)
+        >>> lilypond_file = maker.run(environment="docs")
+        >>> abjad.show(lilypond_file) # doctest: +SKIP
+
+        ..  docs::
+
+            >>> string = abjad.lilypond(lilypond_file)
+            >>> print(string)
+            \version "2.20.0"
+            \language "english"
+            <BLANKLINE>
+            #(ly:set-option 'relative-includes #t)
+            <BLANKLINE>
+            \include "source/_stylesheets/single-voice-staff.ily"
+            <BLANKLINE>
+            \context Score = "Score"
+            <<
+                \context Staff = "Staff"
+                <<
+                    \context Voice = "Voice"
+                    {
+                        {
+                            \tempo 4=60
+                            \time 4/4
+                            \tweak color #red
+                            c'4
+                            \tweak color #red
+                            c'4
+                            <
+                                \tweak color #red
+                                c'
+                                \tweak color #red
+                                c''
+                            >8
+                            r8
+                            \tweak color #red
+                            c'8
+                            r8
+                        }
+                    }
+                >>
+            >>
     """
 
-    def __call__(self, client):
+    def __call__(self, client: typing.Union[abjad.Chord, abjad.LogicalTie]):
         """
         Call indicator to process the client while decoding.
         """
-        for note_head in client.note_heads:
-            abjad.tweak(note_head).color = "#red"
+        if isinstance(client, abjad.Chord):
+            for note_head in client.note_heads:
+                abjad.tweak(note_head).color = "#red"
+        else:
+            for leaf in client:
+                if isinstance(leaf, abjad.Chord):
+                    for note_head in leaf.note_heads:
+                        abjad.tweak(note_head).color = "#red"
+                if isinstance(leaf, abjad.Note):
+                    abjad.tweak(leaf.note_head).color = "#red"
 
     def attach(self, event):
         """

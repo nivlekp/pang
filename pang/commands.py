@@ -17,8 +17,9 @@ class Command:
 
 
 class ProcessQuantizedSequenceCommand(Command):
-    """
-    Command to process quantized sequence.
+    r"""
+    ProcessQuantizedSequenceCommand.
+    TODO: maybe we don't even need this.
     """
 
     def __init__(self, sequence: Sequence):
@@ -28,37 +29,7 @@ class ProcessQuantizedSequenceCommand(Command):
         """
         Called internally by the SegmentMaker.
         """
-        segments = self._segment_target_by_tag(target)
-        for segment in segments:
-            self._attach_pitches_to_segment(segment)
-
-    def _attach_pitches_to_segment(self, segment: abjad.Selection):
-        for logical_tie, event in zip(segment, self._sequence):
-            for leaf in logical_tie:
-                leaf.written_pitch = abjad.NumberedPitch(event.pitch).get_name(
-                    locale="us"
-                )
-
-    def _segment_target_by_tag(
-        self, target: abjad.Voice
-    ) -> typing.List[abjad.Selection]:
-        selection: abjad.Selection = abjad.select(target).logical_ties()
-        all_tags: typing.List[int] = [
-            tag for tag in self._sequence.tags if tag is not None
-        ]
-        unique_tags: typing.List[int] = list(set(all_tags))
-        pitch_tags: typing.List[abjad.NumberedPitch] = [
-            abjad.NumberedPitch(tag) for tag in unique_tags
-        ]
-        results: typing.List[typing.Union[abjad.Selection, abjad.Expression]] = [
-            selection.filter_pitches("&", pitch.get_name(locale="us"))
-            for pitch in pitch_tags
-        ]
-        for result in results:
-            if not isinstance(result, abjad.Selection):
-                raise TypeError
-        return [result for result in results if isinstance(result, abjad.Selection)]
-
+        pass
 
 class DecodeCommand(Command):
     """
@@ -134,7 +105,6 @@ class QuantizeSequenceCommand(Command):
         heuristic=None,
         attack_point_optimizer: typing.Optional[nauert.AttackPointOptimizer] = None,
         attach_tempos: bool = True,
-        tag_as_pitch: bool = False,
     ):
         self._sequence: Sequence = sequence
         self._q_schema = q_schema or nauert.MeasurewiseQSchema()
@@ -147,11 +117,10 @@ class QuantizeSequenceCommand(Command):
         )
         self._attach_tempos = attach_tempos
         self._quantizer = nauert.Quantizer()
-        self._tag_as_pitch = tag_as_pitch
 
     def __call__(self, target: abjad.Voice):
         sequence = self._sequence
-        sequence.simulate_queue(tag_as_pitch=self._tag_as_pitch)
+        sequence.simulate_queue()
         results = []
         for server in sequence.servers:
             q_event_sequence = server.q_event_sequence
@@ -163,7 +132,16 @@ class QuantizeSequenceCommand(Command):
                 attack_point_optimizer=self._attack_point_optimizer,
                 attach_tempos=self._attach_tempos,
             )
+            self._process_quantized_result(result)
             results.append(result)
         assert len(results) == 1
         result = results[0]
         target.extend(result)
+
+    def _process_quantized_result(self, result):
+        for logical_tie in abjad.iterate(result).logical_ties():
+            first_leaf = abjad.get.leaf(logical_tie, 0)
+            attachments = abjad.get.annotation(first_leaf, "q_event_attachments")
+            if attachments is not None:
+                for attachment in attachments:
+                    attachment(logical_tie)

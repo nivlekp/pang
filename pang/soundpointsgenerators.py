@@ -15,13 +15,27 @@ class SoundPoint:
         self,
         instance: float,
         duration: float,
-        pitch: float,
+        pitch: typing.Union[float, typing.Tuple[float]],
         tag: typing.Optional[int] = None,
+        attachments: typing.Optional[typing.List[typing.Any]] = None,
     ):
         self._instance = instance
         self._duration = duration
         self._pitch = pitch
-        self._tag = tag
+        self._attachments = attachments
+
+    def attach(self, attachment):
+        if self.attachments is None:
+            self._attachments = []
+        self._attachments.append(attachment)
+
+    @property
+    def attachments(self):
+        return self._attachments
+
+    @attachments.setter
+    def attachments(self, attachments):
+        self._attachments = attachments
 
     @property
     def duration(self):
@@ -46,14 +60,6 @@ class SoundPoint:
     @pitch.setter
     def pitch(self, pitch):
         self._pitch = pitch
-
-    @property
-    def tag(self):
-        return self._tag
-
-    @tag.setter
-    def tag(self, tag):
-        self._tag = tag
 
 
 class SoundPointsGenerator:
@@ -264,6 +270,56 @@ class ManualSoundPointsGenerator(SoundPointsGenerator):
                     c'8
                     r8
                     c'8
+                    r8
+                }
+            }
+
+    ..  container:: example
+
+        Initializing a sequence manually with pitches.
+
+        >>> instances = [0, 1, 2, 3]
+        >>> durations = [1, 1, 0.5, 0.5]
+        >>> pitches = [0, 1, (2, 3), 4]
+        >>> sound_points_generator = pang.ManualSoundPointsGenerator(
+        ...     instances=instances,
+        ...     durations=durations,
+        ...     pitches=pitches,
+        ... )
+        >>> sequence = pang.Sequence(
+        ...     sound_points_generator=sound_points_generator,
+        ... )
+        >>> print(sequence.instances)
+        [0, 1, 2, 3]
+        >>> print(sequence.durations)
+        [1, 1, 0.5, 0.5]
+        >>> print(sequence.pitches)
+        [0, 1, (2, 3), 4]
+        >>> print(sequence.sequence_duration)
+        3.5
+
+        >>> sequence.simulate_queue()
+        >>> server = sequence.servers[0]
+        >>> q_event_sequence = server.q_event_sequence
+        >>> quantizer = nauert.Quantizer()
+        >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
+        >>> result = quantizer(q_event_sequence, attack_point_optimizer=optimizer)
+        >>> abjad.show(result) # doctest: +SKIP
+
+        ..  docs::
+
+            >>> string = abjad.lilypond(result)
+            >>> print(string)
+            \new Voice
+            {
+                {
+                    \tempo 4=60
+                    %%% \time 4/4 %%%
+                    c'4
+                    cs'4
+                    <d' ef'>8
+                    r8
+                    e'8
                     r8
                 }
             }
