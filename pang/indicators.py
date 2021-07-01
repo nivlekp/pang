@@ -1,34 +1,4 @@
-import enum
-import typing
-
 import abjad
-
-from .soundpointsgenerators import SoundPoint
-
-
-def _attach_id_to_pitch_list(event, id_):
-    if isinstance(event.pitch, (int, float)):
-        pitch_list = [event.pitch]
-    else:
-        pitch_list = list(event.pitch)
-    pitch_list.append(id_)
-    return pitch_list
-
-
-@enum.unique
-class IndicatorID(enum.Enum):
-    HARMONICS = 1000
-    BLUE = 2000
-    RED = 3000
-
-    @classmethod
-    def has_value(class_, value):
-        return value in set(item.value for item in class_)
-
-    @classmethod
-    def get_class_name(class_, value):
-        name = class_(value).name
-        return name[0] + name[1:].lower()
 
 
 class Indicator:
@@ -37,88 +7,13 @@ class Indicator:
     quantizing using Nauert.
     """
 
-    def __init__(self):
-        pass
-
     def __call__(self, target: abjad.LogicalTie):
-        for leaf in target:
-            self._attach_indicator_to_leaf(leaf)
-
-    def _attach_indicator_to_leaf(self, leaf):
-        """
-        Attach indicator to leaf.
-        """
-        raise NotImplementedError
-
-    def attach(self, event):
-        """
-        Attach the "payload" to the event
-        """
         raise NotImplementedError
 
 
 class Red(Indicator):
     r"""
     Encoding and attaching the color red.
-
-    ..  container:: example
-
-        >>> # TODO: this way of encoding and decoding should be rid of
-        >>> instances = [0, 1, 2, 3]
-        >>> durations = [1, 1, 0.5, 0.5]
-        >>> pitches = [0, 0, (0, 12), 0]
-        >>> sound_points_generator = pang.ManualSoundPointsGenerator(
-        ...     instances=instances,
-        ...     durations=durations,
-        ...     pitches=pitches,
-        ... )
-        >>> sequence = pang.Sequence(
-        ...     sound_points_generator=sound_points_generator,
-        ... )
-        >>> for event in sequence:
-        ...     harmonics = pang.Red()
-        ...     pang.attach(harmonics, event)
-        ...
-        >>> sequence.simulate_queue()
-        >>> server = sequence.servers[0]
-        >>> q_event_sequence = server.q_event_sequence
-        >>> quantizer = nauert.Quantizer()
-        >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
-        >>> result = quantizer(q_event_sequence, attack_point_optimizer=optimizer)
-        >>> pang.decode(result)
-        >>> abjad.show(result) # doctest: +SKIP
-
-        ..  docs::
-
-            >>> string = abjad.lilypond(result)
-            >>> print(string)
-            \new Voice
-            {
-                {
-                    \tempo 4=60
-                    %%% \time 4/4 %%%
-                    <
-                        \tweak color #red
-                        c'
-                    >4
-                    <
-                        \tweak color #red
-                        c'
-                    >4
-                    <
-                        \tweak color #red
-                        c'
-                        \tweak color #red
-                        c''
-                    >8
-                    r8
-                    <
-                        \tweak color #red
-                        c'
-                    >8
-                    r8
-                }
-            }
 
     ..  container:: example
 
@@ -138,7 +33,7 @@ class Red(Indicator):
         ...     sound_points_generator=sound_points_generator,
         ... )
         >>> for event in sequence:
-        ...     event.attachments = [pang.Red()]
+        ...     event.attach(pang.Red())
         ...
         >>> command = pang.QuantizeSequenceCommand(sequence)
         >>> scope = pang.Scope(voice_name="Voice")
@@ -186,31 +81,16 @@ class Red(Indicator):
             >>
     """
 
-    def __call__(self, client: typing.Union[abjad.Chord, abjad.LogicalTie]):
+    def __call__(self, target: abjad.LogicalTie):
         """
-        Call indicator to process the client while decoding.
+        Call indicator to process the target after quantizing.
         """
-        if isinstance(client, abjad.Chord):
-            for note_head in client.note_heads:
-                abjad.tweak(note_head).color = "#red"
-        else:
-            for leaf in client:
-                if isinstance(leaf, abjad.Chord):
-                    for note_head in leaf.note_heads:
-                        abjad.tweak(note_head).color = "#red"
-                if isinstance(leaf, abjad.Note):
-                    abjad.tweak(leaf.note_head).color = "#red"
-
-    def attach(self, event):
-        """
-        Attach the "payload" to the event.
-        """
-        pitch_list = _attach_id_to_pitch_list(event, self.id)
-        event.pitch = tuple(pitch_list)
-
-    @property
-    def id(self):
-        return IndicatorID.RED.value
+        for leaf in abjad.iterate(target).leaves():
+            if isinstance(leaf, abjad.Chord):
+                for note_head in leaf.note_heads:
+                    abjad.tweak(note_head).color = "#red"
+            if isinstance(leaf, abjad.Note):
+                abjad.tweak(leaf.note_head).color = "#red"
 
 
 class Harmonics(Indicator):
@@ -219,6 +99,10 @@ class Harmonics(Indicator):
 
     ..  container:: example
 
+        >>> template = pang.make_single_staff_score_template()
+        >>> maker = pang.SegmentMaker(
+        ...     score_template=template,
+        ... )
         >>> instances = [0, 1, 2, 3]
         >>> durations = [1, 1, 0.5, 0.5]
         >>> pitches = [0, 0, (0, 12), 0]
@@ -232,125 +116,63 @@ class Harmonics(Indicator):
         ... )
         >>> for event in sequence:
         ...     harmonics = pang.Harmonics()
-        ...     pang.attach(harmonics, event)
+        ...     event.attach(harmonics)
         ...
-        >>> sequence.simulate_queue()
-        >>> server = sequence.servers[0]
-        >>> q_event_sequence = server.q_event_sequence
-        >>> quantizer = nauert.Quantizer()
-        >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
-        >>> result = quantizer(q_event_sequence, attack_point_optimizer=optimizer)
-        >>> pang.decode(result)
-        >>> abjad.show(result) # doctest: +SKIP
+        >>> command = pang.QuantizeSequenceCommand(sequence)
+        >>> scope = pang.Scope(voice_name="Voice")
+        >>> maker(scope, command)
+        >>> lilypond_file = maker.run(environment="docs")
+        >>> abjad.show(lilypond_file) # doctest: +SKIP
 
         ..  docs::
 
-            >>> string = abjad.lilypond(result)
+            >>> string = abjad.lilypond(lilypond_file)
             >>> print(string)
-            \new Voice
-            {
-                {
-                    \tempo 4=60
-                    %%% \time 4/4 %%%
-                    <
-                        \tweak NoteHead.style #'harmonic
-                        c'
-                    >4
-                    <
-                        \tweak NoteHead.style #'harmonic
-                        c'
-                    >4
-                    <
-                        \tweak NoteHead.style #'harmonic
-                        c'
-                        c''
-                    >8
-                    r8
-                    <
-                        \tweak NoteHead.style #'harmonic
-                        c'
-                    >8
-                    r8
-                }
-            }
+            \version "2.20.0"
+            \language "english"
+            #(ly:set-option 'relative-includes #t)
+            \include "source/_stylesheets/single-voice-staff.ily"
+            <BLANKLINE>
+            \context Score = "Score"
+            <<
+                \context Staff = "Staff"
+                <<
+                    \context Voice = "Voice"
+                    {
+                        {
+                            \tempo 4=60
+                            \time 4/4
+                            \tweak NoteHead.style #'harmonic
+                            c'4
+                            \tweak NoteHead.style #'harmonic
+                            c'4
+                            <
+                                \tweak NoteHead.style #'harmonic
+                                c'
+                                c''
+                            >8
+                            r8
+                            \tweak NoteHead.style #'harmonic
+                            c'8
+                            r8
+                        }
+                    }
+                >>
+            >>
     """
 
-    def __init__(self, harmonic=None):
-        self._harmonic = harmonic
+    def __init__(self):
+        # TODO: initialize with harmonics if required
+        pass
 
-    def __call__(self, client):
+    def __call__(self, target: abjad.LogicalTie):
         """
-        Call indicator to process the client while decoding.
+        Call indicator to process the target after quantizing.
         """
-        if isinstance(client, abjad.Chord):
-            target = client.note_heads[0]
-        else:
-            assert isinstance(client, abjad.Note)
-            target = client.note_head
-        abjad.tweak(target).NoteHead.style = "#'harmonic"
-
-    def attach(self, event):
-        """
-        Attach the "payload" to the event.
-        """
-        pitch_list = _attach_id_to_pitch_list(event, self.id)
-        if self._harmonic is not None:
-            fundamental = pitch_list[0]
-            pitch_list.append(fundamental + self._harmonic)
-        event.pitch = tuple(pitch_list)
-
-    @property
-    def id(self):
-        return IndicatorID.HARMONICS.value
-
-
-def attach(indicator, event):
-    r"""
-    Attaching an indicator to an event.
-
-    ..  container:: example
-
-        >>> instances = [0, 1, 2, 3]
-        >>> durations = [1, 1, 0.5, 0.5]
-        >>> sound_points_generator = pang.ManualSoundPointsGenerator(
-        ...     instances=instances,
-        ...     durations=durations,
-        ... )
-        >>> sequence = pang.Sequence(
-        ...     sound_points_generator=sound_points_generator,
-        ... )
-        >>> for event in sequence:
-        ...     harmonics = pang.Harmonics(12)
-        ...     pang.attach(harmonics, event)
-        ...
-        >>> print(sequence.pitches)
-        [(0, 1000, 12), (0, 1000, 12), (0, 1000, 12), (0, 1000, 12)]
-
-    """
-    assert isinstance(indicator, Indicator)
-    assert isinstance(event, SoundPoint)
-    indicator.attach(event)
-
-
-def decode_one_logical_tie(logical_tie):
-    assert isinstance(logical_tie, abjad.LogicalTie)
-    for leaf in logical_tie:
-        effective_pitches = []
-        indicators = []
-        for pitch in abjad.iterate(leaf).pitches():
-            if IndicatorID.has_value(pitch.number):
-                indicator = globals()[IndicatorID.get_class_name(pitch.number)]()
-                assert isinstance(indicator, Indicator)
-                indicators.append(indicator)
+        for leaf in abjad.iterate(target).leaves():
+            if isinstance(leaf, abjad.Chord):
+                note_head = leaf.note_heads[0]
             else:
-                effective_pitches.append(pitch)
-        if indicators != []:
-            # TODO: make a new Leaf (not Chord) if `len(effective_pitches) == 1`
-            leaf.written_pitches = effective_pitches
-            for indicator in indicators:
-                indicator(leaf)
-
-
-def decode(client):
-    for logical_tie in abjad.iterate(client).logical_ties():
-        decode_one_logical_tie(logical_tie)
+                assert isinstance(leaf, abjad.Note)
+                note_head = leaf.note_head
+            abjad.tweak(note_head).NoteHead.style = "#'harmonic"

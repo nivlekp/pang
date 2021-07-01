@@ -3,7 +3,6 @@ import typing
 import abjad
 from abjadext import nauert
 
-from .indicators import decode
 from .sequences import Sequence
 
 
@@ -30,15 +29,6 @@ class ProcessQuantizedSequenceCommand(Command):
         Called internally by the SegmentMaker.
         """
         pass
-
-
-class DecodeCommand(Command):
-    """
-    Command to decode indicator.
-    """
-
-    def __call__(self, target):
-        decode(target)
 
 
 class QuantizeSequenceCommand(Command):
