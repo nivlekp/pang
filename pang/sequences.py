@@ -1,6 +1,5 @@
 import bisect
 import queue
-import typing
 
 import abjad
 
