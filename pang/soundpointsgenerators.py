@@ -16,7 +16,6 @@ class SoundPoint:
         instance: float,
         duration: float,
         pitch: typing.Union[float, typing.Tuple[float]],
-        tag: typing.Optional[int] = None,
         attachments: typing.Optional[typing.List[typing.Any]] = None,
     ):
         self._instance = instance

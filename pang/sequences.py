@@ -18,16 +18,12 @@ class Sequence:
         sound_points_generator=None,
         nservers=1,
         sequence_duration=0,
-        tag: typing.Optional[int] = None,
     ):
         self._servers = [NoteServer() for _ in range(nservers)]
         if sound_points_generator is None:
             sound_points_generator = ManualSoundPointsGenerator()
         assert isinstance(sound_points_generator, SoundPointsGenerator)
         result = sound_points_generator(sequence_duration)
-        if tag is not None:
-            for sound_point in result:
-                sound_point.tag = tag
         self._sound_points = result
         self._sequence_duration = sequence_duration
 
