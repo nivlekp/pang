@@ -15,22 +15,6 @@ class Command:
         raise NotImplementedError
 
 
-class ProcessQuantizedSequenceCommand(Command):
-    r"""
-    ProcessQuantizedSequenceCommand.
-    TODO: maybe we don't even need this.
-    """
-
-    def __init__(self, sequence: Sequence):
-        self._sequence = sequence
-
-    def __call__(self, target: abjad.Voice):
-        """
-        Called internally by the SegmentMaker.
-        """
-        pass
-
-
 class QuantizeSequenceCommand(Command):
     r"""
     Quantize Sequence Command.
