@@ -85,7 +85,7 @@ class Red(Indicator):
         """
         Call indicator to process the target after quantizing.
         """
-        for leaf in abjad.iterate(target).leaves():
+        for leaf in abjad.iterate(target).leaves(pitched=True):
             if isinstance(leaf, abjad.Chord):
                 for note_head in leaf.note_heads:
                     abjad.tweak(note_head).color = "#red"
@@ -169,7 +169,7 @@ class Harmonics(Indicator):
         """
         Call indicator to process the target after quantizing.
         """
-        for leaf in abjad.iterate(target).leaves():
+        for leaf in abjad.iterate(target).leaves(pitched=True):
             if isinstance(leaf, abjad.Chord):
                 note_head = leaf.note_heads[0]
             else:

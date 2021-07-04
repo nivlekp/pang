@@ -117,6 +117,6 @@ class QuantizeSequenceCommand(Command):
         for logical_tie in abjad.iterate(result).logical_ties():
             first_leaf = abjad.get.leaf(logical_tie, 0)
             attachments = abjad.get.annotation(first_leaf, "q_event_attachments")
-            if attachments is not None:
+            if attachments is not None and len(attachments) != 0:
                 for attachment in attachments:
                     attachment(logical_tie)
