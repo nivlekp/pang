@@ -11,6 +11,86 @@ class Indicator:
         raise NotImplementedError
 
 
+class Dynamic(Indicator):
+    r"""
+    This class attaches dynamic to a SoundPoint.
+
+    ..  container:: example
+
+        >>> template = pang.make_single_staff_score_template()
+        >>> maker = pang.SegmentMaker(
+        ...     score_template=template,
+        ... )
+        >>> instances = [0, 1, 1.5, 3]
+        >>> durations = [1, 0.5, 1.5, 1]
+        >>> pitches = [0, 0, (0, 12), 0]
+        >>> sound_points_generator = pang.ManualSoundPointsGenerator(
+        ...     instances=instances,
+        ...     durations=durations,
+        ...     pitches=pitches,
+        ... )
+        >>> sequence = pang.Sequence(
+        ...     sound_points_generator=sound_points_generator,
+        ... )
+        >>> dynamic_names = ["p", "mp", "mf", "f"]
+        >>> for event, dynamic_name in zip(sequence, dynamic_names):
+        ...     dynamic = pang.Dynamic(dynamic_name)
+        ...     event.attach(dynamic)
+        ...
+        >>> command = pang.QuantizeSequenceCommand(sequence)
+        >>> scope = pang.Scope(voice_name="Voice")
+        >>> maker(scope, command)
+        >>> lilypond_file = maker.run(environment="docs")
+        >>> abjad.show(lilypond_file) # doctest: +SKIP
+
+        ..  docs::
+
+            >>> string = abjad.lilypond(lilypond_file)
+            >>> print(string)
+            \version "2.20.0"
+            \language "english"
+            #(ly:set-option 'relative-includes #t)
+            \include "source/_stylesheets/single-voice-staff.ily"
+            <BLANKLINE>
+            \context Score = "Score"
+            <<
+                \context Staff = "Staff"
+                <<
+                    \context Voice = "Voice"
+                    {
+                        {
+                            \tempo 4=60
+                            \time 4/4
+                            c'4
+                            \p
+                            c'8
+                            \mp
+                            <c' c''>8
+                            \mf
+                            ~
+                            <c' c''>4
+                            c'4
+                            \f
+                        }
+                    }
+                >>
+            >>
+    """
+
+    def __init__(self, value):
+        assert isinstance(value, str)
+        assert abjad.Dynamic.is_dynamic_name(value)
+        self._dynamic = abjad.Dynamic(value)
+
+    def __call__(self, target: abjad.LogicalTie):
+        """
+        Call indicator to process the target after quantizing.
+        """
+        for logical_tie in abjad.iterate(target).logical_ties(pitched=True):
+            leaf = abjad.get.leaf(logical_tie)
+            abjad.attach(self._dynamic, leaf)
+
+
 class Red(Indicator):
     r"""
     Encoding and attaching the color red.
