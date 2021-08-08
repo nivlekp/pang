@@ -129,8 +129,8 @@ class Cloud:
                     curr_time = self._instances[arrival_index]
                     servers[server_index].serve(
                         curr_time,
-                        self._durations[arrival_index],
-                        self._pitches[arrival_index],
+                        duration=self._durations[arrival_index],
+                        pitch=self._pitches[arrival_index],
                     )
                     arrival_index = arrival_index + 1
             else:  # there's already a client in the queue
@@ -146,7 +146,9 @@ class Cloud:
                     index = q.get()
                     curr_time = closest_offset_instance
                     servers[server_index].serve(
-                        curr_time, self._durations[index], self._pitches[index]
+                        curr_time,
+                        duration=self._durations[index],
+                        pitch=self._pitches[index],
                     )
 
         self._durations_per_server = [server.durations for server in servers]
