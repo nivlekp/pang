@@ -30,7 +30,7 @@ class Sequence:
         return self._sound_points[index]
 
     def __len__(self):
-        return len(self.sound_points)
+        return len(self._sound_points)
 
     def __repr__(self):
         """
