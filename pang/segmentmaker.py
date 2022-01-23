@@ -87,7 +87,7 @@ class SegmentMaker:
         for staff in self._score:
             for voice in staff:
                 empty_beatspan = abjad.Duration(0)
-                for leaf in abjad.iterate(voice).leaves(reverse=True):
+                for leaf in abjad.iterate.leaves(voice, reverse=True):
                     if isinstance(leaf, abjad.Rest):
                         empty_beatspan += leaf.written_duration
                     else:

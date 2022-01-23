@@ -105,7 +105,7 @@ class VerboseOttavaHandler(OttavaHandler):
         self._low_threshold = low_threshold
 
     def __call__(self, voice):
-        for logical_tie in abjad.iterate(voice).logical_ties():
+        for logical_tie in abjad.iterate.logical_ties(voice):
             leaf = logical_tie[0]
             if isinstance(leaf, abjad.Rest):
                 continue
