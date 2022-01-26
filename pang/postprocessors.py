@@ -118,7 +118,9 @@ class VerboseOttavaHandler(OttavaHandler):
     def _attach_note_name(self, leaf, direction):
         assert isinstance(leaf, abjad.Note)
         pitch_name = leaf.written_pitch.pitch_class.name[0]
-        markup = abjad.Markup(pitch_name, direction=direction)
+        string = fr"\markup {{ {pitch_name} }}"
+        markup = abjad.Markup(string, direction=direction)
+        print(markup)
         abjad.attach(markup, leaf)
 
     @property
