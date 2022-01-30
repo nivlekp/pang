@@ -75,7 +75,7 @@ class SegmentMaker:
         command(target)
 
     def _collect_metadata(self):
-        metadata = abjad.OrderedDict()
+        metadata = {}
         metadata["last_tempo"] = self._get_last_tempo()
         metadata["last_time_signature"] = self._get_last_time_signature()
         metadata["empty_beatspan"] = self._get_empty_beatspan()
@@ -87,7 +87,7 @@ class SegmentMaker:
         for staff in self._score:
             for voice in staff:
                 empty_beatspan = abjad.Duration(0)
-                for leaf in abjad.iterate(voice).leaves(reverse=True):
+                for leaf in abjad.iterate.leaves(voice, reverse=True):
                     if isinstance(leaf, abjad.Rest):
                         empty_beatspan += leaf.written_duration
                     else:
@@ -133,16 +133,17 @@ class SegmentMaker:
                 abjad.detach(abjad.MetronomeMark, first_leaf)
             if first_time_signature == previous_metadata["last_time_signature"]:
                 abjad.detach(abjad.TimeSignature, first_leaf)
-        build_file = abjad.LilyPondFile(
-            items=[build_file_score], includes=includes, use_relative_includes=True
-        )
+        items = [fr'\include "{include}"' for include in includes]
+        items += self._score
+        build_file = abjad.LilyPondFile(items=items)
         self._build_file = build_file
 
     def _make_lilypond_file(self):
         includes = self._get_lilypond_includes()
-        lilypond_file = abjad.LilyPondFile(
-            items=[self._score], includes=includes, use_relative_includes=True
-        )
+        items = ["#(ly:set-option 'relative-includes #t)"]
+        items += [fr'\include "{include}"' for include in includes]
+        items += [self._score]
+        lilypond_file = abjad.LilyPondFile(items=items)
         self._lilypond_file = lilypond_file
 
     def _process_previous_metadata(self, previous_metadata):
@@ -226,25 +227,13 @@ class SegmentMaker:
 
             >>> string = abjad.storage(maker.metadata)
             >>> print(string)
-            abjad.OrderedDict(
-                [
-                    (
-                        'last_tempo',
-                        abjad.MetronomeMark(
-                            reference_duration=abjad.Duration(1, 4),
-                            units_per_minute=60,
-                            ),
-                        ),
-                    (
-                        'last_time_signature',
-                        abjad.TimeSignature((4, 4)),
-                        ),
-                    (
-                        'empty_beatspan',
-                        abjad.Duration(1, 8),
-                        ),
-                    ('segment_name', 'test'),
-                    ]
+            dict(
+                {
+                    'empty_beatspan': abjad.Duration(1, 8),
+                    'last_tempo': MetronomeMark(reference_duration=Duration(1, 4), units_per_minute=60, textual_indication=None, custom_markup=None, decimal=None, hide=False),
+                    'last_time_signature': TimeSignature(pair=(4, 4), hide=False, partial=None),
+                    'segment_name': 'test',
+                    }
                 )
         """
         return self._metadata
@@ -276,7 +265,7 @@ class SegmentMaker:
         """
         self._environment = environment
         # self._process_previous_metadata(previous_metadata)
-        self._metadata = abjad.OrderedDict(metadata)
+        self._metadata = {} if metadata is None else dict(metadata)
         self._make_lilypond_file()
         self._make_build_file(previous_metadata=previous_metadata)
         self._collect_metadata()

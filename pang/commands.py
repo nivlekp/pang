@@ -114,7 +114,7 @@ class QuantizeSequenceCommand(Command):
         target.extend(result)
 
     def _process_quantized_result(self, result):
-        for logical_tie in abjad.iterate(result).logical_ties():
+        for logical_tie in abjad.iterate.logical_ties(result):
             first_leaf = abjad.get.leaf(logical_tie, 0)
             attachments = abjad.get.annotation(first_leaf, "q_event_attachments")
             if attachments is not None and len(attachments) != 0:

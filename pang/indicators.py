@@ -86,7 +86,7 @@ class Dynamic(Indicator):
         """
         Call indicator to process the target after quantizing.
         """
-        for logical_tie in abjad.iterate(target).logical_ties(pitched=True):
+        for logical_tie in abjad.iterate.logical_ties(target, pitched=True):
             leaf = abjad.get.leaf(logical_tie)
             abjad.attach(self._dynamic, leaf)
 
@@ -165,7 +165,7 @@ class Red(Indicator):
         """
         Call indicator to process the target after quantizing.
         """
-        for leaf in abjad.iterate(target).leaves(pitched=True):
+        for leaf in abjad.iterate.leaves(target, pitched=True):
             if isinstance(leaf, abjad.Chord):
                 for note_head in leaf.note_heads:
                     abjad.tweak(note_head).color = "#red"
@@ -249,7 +249,7 @@ class Harmonics(Indicator):
         """
         Call indicator to process the target after quantizing.
         """
-        for leaf in abjad.iterate(target).leaves(pitched=True):
+        for leaf in abjad.iterate.leaves(target, pitched=True):
             if isinstance(leaf, abjad.Chord):
                 note_head = leaf.note_heads[0]
             else:
