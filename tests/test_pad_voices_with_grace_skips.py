@@ -10,7 +10,7 @@ def test_pad_voices_with_grace_skips_01():
     pang.pad_voices_with_grace_skips([voice_0, voice_1])
 
     string = abjad.lilypond(voice_0)
-    assert string == abjad.String.normalize(
+    assert string == abjad.string.normalize(
         r"""
         \new Voice
         {
@@ -28,7 +28,7 @@ def test_pad_voices_with_grace_skips_01():
     ), print(string)
 
     string = abjad.lilypond(voice_1)
-    assert string == abjad.String.normalize(
+    assert string == abjad.string.normalize(
         r"""
         \new Voice
         {
@@ -54,7 +54,7 @@ def test_pad_voices_with_grace_skips_02():
     pang.pad_voices_with_grace_skips([voice_0, voice_1])
 
     string = abjad.lilypond(voice_0)
-    assert string == abjad.String.normalize(
+    assert string == abjad.string.normalize(
         r"""
         \new Voice
         {
@@ -76,7 +76,7 @@ def test_pad_voices_with_grace_skips_02():
     ), print(string)
 
     string = abjad.lilypond(voice_1)
-    assert string == abjad.String.normalize(
+    assert string == abjad.string.normalize(
         r"""
         \new Voice
         {
@@ -109,7 +109,7 @@ def test_pad_voices_with_grace_skips_03():
     pang.pad_voices_with_grace_skips([voice_0, voice_1])
 
     string = abjad.lilypond(voice_0)
-    assert string == abjad.String.normalize(
+    assert string == abjad.string.normalize(
         r"""
         \new Voice
         {
@@ -131,7 +131,7 @@ def test_pad_voices_with_grace_skips_03():
     ), print(string)
 
     string = abjad.lilypond(voice_1)
-    assert string == abjad.String.normalize(
+    assert string == abjad.string.normalize(
         r"""
         \new Voice
         {

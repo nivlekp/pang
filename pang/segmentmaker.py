@@ -133,7 +133,7 @@ class SegmentMaker:
                 abjad.detach(abjad.MetronomeMark, first_leaf)
             if first_time_signature == previous_metadata["last_time_signature"]:
                 abjad.detach(abjad.TimeSignature, first_leaf)
-        items = [fr'\include "{include}"' for include in includes]
+        items = [rf'\include "{include}"' for include in includes]
         items += self._score
         build_file = abjad.LilyPondFile(items=items)
         self._build_file = build_file
@@ -141,7 +141,7 @@ class SegmentMaker:
     def _make_lilypond_file(self):
         includes = self._get_lilypond_includes()
         items = ["#(ly:set-option 'relative-includes #t)"]
-        items += [fr'\include "{include}"' for include in includes]
+        items += [rf'\include "{include}"' for include in includes]
         items += [self._score]
         lilypond_file = abjad.LilyPondFile(items=items)
         self._lilypond_file = lilypond_file
@@ -225,16 +225,17 @@ class SegmentMaker:
 
         ..  container:: example
 
-            >>> string = abjad.storage(maker.metadata)
-            >>> print(string)
-            dict(
-                {
-                    'empty_beatspan': abjad.Duration(1, 8),
-                    'last_tempo': MetronomeMark(reference_duration=Duration(1, 4), units_per_minute=60, textual_indication=None, custom_markup=None, decimal=None, hide=False),
-                    'last_time_signature': TimeSignature(pair=(4, 4), hide=False, partial=None),
-                    'segment_name': 'test',
-                    }
-                )
+            >>> import pprint
+            >>> pprint.pprint(maker.metadata)
+            {'empty_beatspan': Duration(1, 8),
+             'last_tempo': MetronomeMark(reference_duration=Duration(1, 4),
+                                         units_per_minute=60,
+                                         textual_indication=None,
+                                         custom_markup=None,
+                                         decimal=False,
+                                         hide=False),
+             'last_time_signature': TimeSignature(pair=(4, 4), hide=False, partial=None),
+             'segment_name': 'test'}
         """
         return self._metadata
 

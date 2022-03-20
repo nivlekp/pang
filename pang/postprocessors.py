@@ -111,16 +111,16 @@ class VerboseOttavaHandler(OttavaHandler):
                 continue
             assert isinstance(leaf, abjad.Note)
             if leaf.written_pitch > self.high_threshold:
-                self._attach_note_name(leaf, abjad.Up)
+                self._attach_note_name(leaf, abjad.UP)
             if leaf.written_pitch < self.low_threshold:
-                self._attach_note_name(leaf, abjad.Down)
+                self._attach_note_name(leaf, abjad.DOWN)
 
     def _attach_note_name(self, leaf, direction):
         assert isinstance(leaf, abjad.Note)
         pitch_name = leaf.written_pitch.pitch_class.name[0]
-        string = fr"\markup {{ {pitch_name} }}"
-        markup = abjad.Markup(string, direction=direction)
-        abjad.attach(markup, leaf)
+        string = rf"\markup {{ {pitch_name} }}"
+        markup = abjad.Markup(string)
+        abjad.attach(markup, leaf, direction=direction)
 
     @property
     def high_threshold(self):

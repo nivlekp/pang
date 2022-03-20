@@ -7,7 +7,7 @@ def test_VerboseOttavaHandler___call___01():
     handler = pang.VerboseOttavaHandler()
     handler(voice)
     string = abjad.lilypond(voice)
-    assert string == abjad.String.normalize(
+    assert string == abjad.string.normalize(
         r"""
         \new Voice
         {
@@ -29,7 +29,7 @@ def test_VerboseOttavaHandler___call___02():
     handler = pang.VerboseOttavaHandler()
     handler(voice)
     string = abjad.lilypond(voice)
-    assert string == abjad.String.normalize(
+    assert string == abjad.string.normalize(
         r"""
         \new Voice
         {

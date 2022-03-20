@@ -7,7 +7,7 @@ def test_ManualOttavaHandler___call___01():
     handler = pang.ManualOttavaHandler(n=1)
     handler(voice)
     string = abjad.lilypond(voice)
-    assert string == abjad.String.normalize(
+    assert string == abjad.string.normalize(
         r"""
         \new Voice
         {
@@ -28,7 +28,7 @@ def test_ManualOttavaHandler___call___02():
     handler(voice_0)
     staff = abjad.Staff([voice_0, voice_1], simultaneous=True)
     string = abjad.lilypond(staff)
-    assert string == abjad.String.normalize(
+    assert string == abjad.string.normalize(
         r"""
         \new Staff
         <<

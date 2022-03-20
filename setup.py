@@ -3,7 +3,7 @@ import sys
 from setuptools import setup
 
 CURRENT_PYTHON = sys.version_info[:2]
-REQUIRED_PYTHON = (3, 6)
+REQUIRED_PYTHON = (3, 10)
 
 if CURRENT_PYTHON < REQUIRED_PYTHON:
     sys.stderr.write(
@@ -39,17 +39,6 @@ if __name__ == "__main__":
             "abjad-ext-nauert",
             "numpy",
         ],
-        extras_require={
-            "test": [
-                "black>=20.8b1",
-                "flake8>=3.8.2",
-                "isort>=4.3.21",
-                "mypy>=0.770",
-                "pytest>=5.4.3",
-                "pytest-cov>=2.6.0",
-                "pytest-helpers-namespace",
-            ]
-        },
         name="pang",
         packages=["pang"],
         version="0.1",
