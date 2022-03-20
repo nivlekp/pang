@@ -3,7 +3,7 @@ import sys
 from setuptools import setup
 
 CURRENT_PYTHON = sys.version_info[:2]
-REQUIRED_PYTHON = (3, 6)
+REQUIRED_PYTHON = (3, 10)
 
 if CURRENT_PYTHON < REQUIRED_PYTHON:
     sys.stderr.write(
