@@ -225,16 +225,17 @@ class SegmentMaker:
 
         ..  container:: example
 
-            >>> string = abjad.storage(maker.metadata)
-            >>> print(string)
-            dict(
-                {
-                    'empty_beatspan': abjad.Duration(1, 8),
-                    'last_tempo': MetronomeMark(reference_duration=Duration(1, 4), units_per_minute=60, textual_indication=None, custom_markup=None, decimal=None, hide=False),
-                    'last_time_signature': TimeSignature(pair=(4, 4), hide=False, partial=None),
-                    'segment_name': 'test',
-                    }
-                )
+            >>> import pprint
+            >>> pprint.pprint(maker.metadata)
+            {'empty_beatspan': Duration(1, 8),
+             'last_tempo': MetronomeMark(reference_duration=Duration(1, 4),
+                                         units_per_minute=60,
+                                         textual_indication=None,
+                                         custom_markup=None,
+                                         decimal=False,
+                                         hide=False),
+             'last_time_signature': TimeSignature(pair=(4, 4), hide=False, partial=None),
+             'segment_name': 'test'}
         """
         return self._metadata
 
