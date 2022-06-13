@@ -168,9 +168,9 @@ class Red(Indicator):
         for leaf in abjad.iterate.leaves(target, pitched=True):
             if isinstance(leaf, abjad.Chord):
                 for note_head in leaf.note_heads:
-                    abjad.tweak(note_head).color = "#red"
+                    abjad.tweak(note_head, r"\tweak color #red")
             if isinstance(leaf, abjad.Note):
-                abjad.tweak(leaf.note_head).color = "#red"
+                abjad.tweak(leaf.note_head, r"\tweak color #red")
 
 
 class Harmonics(Indicator):
@@ -255,4 +255,4 @@ class Harmonics(Indicator):
             else:
                 assert isinstance(leaf, abjad.Note)
                 note_head = leaf.note_head
-            abjad.tweak(note_head).NoteHead.style = "#'harmonic"
+            abjad.tweak(note_head, r"\tweak NoteHead.style #'harmonic")
