@@ -76,11 +76,21 @@ class SegmentMaker:
 
     def _collect_metadata(self):
         metadata = {}
-        metadata["last_tempo"] = self._get_last_tempo()
-        metadata["last_time_signature"] = self._get_last_time_signature()
-        metadata["empty_beatspan"] = self._get_empty_beatspan()
+        last_metronome_mark = self._get_last_metronome_mark()
+        duration = last_metronome_mark.reference_duration
+        reference_duration = f"{duration.numerator}/{duration.denominator}"
+        units_per_minute = last_metronome_mark.units_per_minute
+        metadata["last_metronome_mark"] = {
+            "reference_duration": reference_duration,
+            "units_per_minute": units_per_minute,
+        }
+        time_signature = self._get_last_time_signature()
+        time_signature = f"{time_signature.numerator}/{time_signature.denominator}"
+        metadata["last_time_signature"] = time_signature
+        duration = self._get_empty_beatspan()
+        metadata["empty_beatspan"] = f"{duration.numerator}/{duration.denominator}"
         metadata["segment_name"] = self._segment_name
-        self.metadata.update(metadata)
+        self._metadata.update(metadata)
 
     def _get_empty_beatspan(self):
         max_empty_beatspan = abjad.Duration(0)
@@ -106,7 +116,7 @@ class SegmentMaker:
         prototype = abjad.TimeSignature
         return abjad.get.effective(first_leaf, prototype)
 
-    def _get_last_tempo(self):
+    def _get_last_metronome_mark(self):
         last_leaf = abjad.get.leaf(self._score, -1)
         prototype = abjad.MetronomeMark
         return abjad.get.effective(last_leaf, prototype)
@@ -227,14 +237,9 @@ class SegmentMaker:
 
             >>> import pprint
             >>> pprint.pprint(maker.metadata)
-            {'empty_beatspan': Duration(1, 8),
-             'last_tempo': MetronomeMark(reference_duration=Duration(1, 4),
-                                         units_per_minute=60,
-                                         textual_indication=None,
-                                         custom_markup=None,
-                                         decimal=False,
-                                         hide=False),
-             'last_time_signature': TimeSignature(pair=(4, 4), hide=False, partial=None),
+            {'empty_beatspan': '1/8',
+             'last_metronome_mark': {'reference_duration': '1/4', 'units_per_minute': 60},
+             'last_time_signature': '4/4',
              'segment_name': 'test'}
         """
         return self._metadata
