@@ -1,0 +1,72 @@
+# Github workflow to test compositions
+name: build
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ "3.10" ]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install LilyPond
+      run: |
+        lilypond_url=http://lilypond.org/download/binaries/linux-64/
+        lilypond_source=lilypond-2.20.0-1.linux-64.sh
+        wget -q -O /tmp/lilypond $lilypond_url/$lilypond_source
+        sh /tmp/lilypond --batch
+        echo $HOME
+        echo "/home/runner/bin" >> $GITHUB_PATH
+    - name: Upgrade pip
+      run: |
+        python -m pip install --upgrade pip coverage
+    - name: Log environment variable(s)
+      run: |
+        echo $PATH
+    - name: Install Abjad
+      run: |
+        # install without development dependencies
+        git clone https://github.com/Abjad/abjad.git /tmp/abjad
+        pip install /tmp/abjad
+    - name: Install Nauert
+      run: |
+        git clone https://github.com/Abjad/abjad-ext-nauert.git /tmp/abjad-ext-nauert
+        pip install /tmp/abjad-ext-nauert
+    - name: Install Pang
+      run: |
+        git clone https://github.com/nivlekp/pang.git /tmp/pang
+        pip install /tmp/pang
+    - name: Install dependencies
+      run: |
+        python -m pip install -e .[test]
+        black --version
+        flake8 --version
+        isort --version
+        pip --version
+        pytest --version
+        # lilypond --version
+    - name: Checks and Tests
+      run: |
+        export MYPYPATH=$MYPYPATH:/tmp/abjad
+        export MYPYPATH=$MYPYPATH:/tmp/abjad-ext-nauert
+        export MYPYPATH=$MYPYPATH:/tmp/pang
+        make black-check
+        make flake8
+        make isort-check
+        make pytest
+    - name: Test Segments
+      run: |
+        export PANG_PATH=/tmp/pang
+        make test-sections
