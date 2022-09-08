@@ -18,3 +18,4 @@ def test_one_section(section_path):
     music_ly_path.rename(new_music_ly_path)
     music_ly_bak_path.rename(music_ly_path)
     assert filecmp.cmp(new_music_ly_path, music_ly_path, shallow=False)
+    new_music_ly_path.unlink()
