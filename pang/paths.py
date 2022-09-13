@@ -1,11 +1,18 @@
 import pathlib
 
+import tomlkit
+
 
 def get_content_directory():
     wrapper_directory = pathlib.Path()
     egg_infos = list(wrapper_directory.glob("*.egg-info"))
-    assert len(egg_infos) == 1
-    content_directory_name = egg_infos[0].stem
+    assert len(egg_infos) <= 1
+    if len(egg_infos) == 1:
+        content_directory_name = egg_infos[0].stem
+    else:
+        with open(wrapper_directory / "pyproject.toml", "r") as fp:
+            pyproject = tomlkit.load(fp)
+        content_directory_name = pyproject["project"]["name"]
     return wrapper_directory / content_directory_name
 
 
