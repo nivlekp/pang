@@ -38,6 +38,7 @@ if __name__ == "__main__":
             "abjad",
             "abjad-ext-nauert",
             "numpy",
+            "tomlkit",
         ],
         name="pang",
         packages=["pang"],
