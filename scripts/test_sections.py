@@ -12,7 +12,9 @@ def test_one_section(section_path):
     assert music_ly_path.exists()
     music_ly_bak_path = section_path / "music.ly.bak"
     music_ly_path.rename(music_ly_bak_path)
-    args = ["python", str(section_path / "definition.py")]
+    path = section_path / "definition.py"
+    path = path if path.exists() else section_path / "music.py"
+    args = ["python", path]
     subprocess.run(args)
     new_music_ly_path = section_path / "new_music.ly"
     music_ly_path.rename(new_music_ly_path)
