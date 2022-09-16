@@ -13,7 +13,7 @@ def main(sections):
     section_paths = pang.get_section_paths(sections)
     for section_path in section_paths:
         print(f"Making Section {section_path.stem}...")
-        _make_one_section(section_path)
+        pang.build.run_music_py(section_path)
 
 
 if __name__ == "__main__":
