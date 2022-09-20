@@ -1,5 +1,6 @@
 import pathlib
 
+import __main__
 import tomlkit
 
 
@@ -29,3 +30,8 @@ def get_section_paths(sections=None):
             and not path.stem.startswith(".")
             and not path.stem.startswith("_")
         ]
+
+
+def get___main___path():
+    file = __main__.__file__
+    return pathlib.Path(file)

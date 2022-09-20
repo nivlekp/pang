@@ -3,6 +3,8 @@ import subprocess
 
 import abjad
 
+from .paths import get___main___path
+
 
 def _get_lilypond_includes():
     return ["../../stylesheets/stylesheet.ily"]
@@ -53,19 +55,34 @@ def _collect_metadata(score):
     return metadata
 
 
-def make_lilypond_file(score):
+def _make_lilypond_files(score):
     includes = _get_lilypond_includes()
     items = ["#(ly:set-option 'relative-includes #t)"]
     items += [rf'\include "{include}"' for include in includes]
-    items += [score]
-    lilypond_file = abjad.LilyPondFile(items=items)
-    return lilypond_file
+    items += [r'\include "music.ily"']
+    music_ly_file = abjad.LilyPondFile(items=items)
+    music_ily_file = abjad.LilyPondFile(items=[score])
+    return music_ly_file, music_ily_file
 
 
-def persist(lilypond_file, lilypond_file_path):
-    with open(lilypond_file_path, "w") as fp:
-        string = abjad.lilypond(lilypond_file)
+def _write_metadata(metadata, file_path):
+    with open(file_path, "w") as fp:
+        json.dump(metadata, fp)
+
+
+def persist(score, metadata):
+    music_ly_file, music_ily_file = _make_lilypond_files(score)
+    path = get___main___path()
+    music_ly_path = path.parent / "music.ly"
+    with open(music_ly_path, "w") as fp:
+        string = abjad.lilypond(music_ly_file)
         fp.write(string)
+    music_ily_path = path.parent / "music.ily"
+    with open(music_ily_path, "w") as fp:
+        string = abjad.lilypond(music_ily_file)
+        fp.write(string)
+    metadata_path = path.parent / "__metadata__.json"
+    _write_metadata(metadata, metadata_path)
 
 
 def run_music_py(section_path):
@@ -80,8 +97,3 @@ def section(score, scope, command):
     command(target)
     metadata = _collect_metadata(score)
     return metadata
-
-
-def write_metadata(metadata, file_path):
-    with open(file_path, "w") as fp:
-        json.dump(metadata, fp)
