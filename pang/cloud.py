@@ -162,12 +162,11 @@ class Cloud:
             replace_rest_with_final_grace_note=True
         )
         optimizer = nauert.MeasurewiseAttackPointOptimizer()
-        quantizer = nauert.Quantizer()
         for durations_ms, pitches in zip(self.durations_msps, self.pitches_per_server):
             q_event_sequence = nauert.QEventSequence.from_millisecond_pitch_pairs(
                 tuple(zip(durations_ms, pitches))
             )
-            result = quantizer(
+            result = nauert.quantize(
                 q_event_sequence,
                 q_schema=measurewise_q_schema,
                 grace_handler=grace_handler,

@@ -91,7 +91,6 @@ class QuantizeSequenceCommand(Command):
             attack_point_optimizer or nauert.MeasurewiseAttackPointOptimizer()
         )
         self._attach_tempos = attach_tempos
-        self._quantizer = nauert.Quantizer()
 
     def __call__(self, target: abjad.Voice):
         sequence = self._sequence
@@ -99,7 +98,7 @@ class QuantizeSequenceCommand(Command):
         results = []
         for server in sequence.servers:
             q_event_sequence = server.q_event_sequence
-            result = self._quantizer(
+            result = nauert.quantize(
                 q_event_sequence,
                 q_schema=self._q_schema,
                 grace_handler=self._grace_handler,

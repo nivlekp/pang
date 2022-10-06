@@ -138,9 +138,10 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
         >>> sequence.simulate_queue()
         >>> server = sequence.servers[0]
         >>> q_event_sequence = server.q_event_sequence
-        >>> quantizer = nauert.Quantizer()
         >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
-        >>> result = quantizer(q_event_sequence, attack_point_optimizer=optimizer)
+        >>> result = nauert.quantize(
+        ...     q_event_sequence, attack_point_optimizer=optimizer
+        ... )
         >>> abjad.show(result) # doctest: +SKIP
 
         ..  docs::
@@ -250,9 +251,10 @@ class ManualSoundPointsGenerator(SoundPointsGenerator):
         >>> sequence.simulate_queue()
         >>> server = sequence.servers[0]
         >>> q_event_sequence = server.q_event_sequence
-        >>> quantizer = nauert.Quantizer()
         >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
-        >>> result = quantizer(q_event_sequence, attack_point_optimizer=optimizer)
+        >>> result = nauert.quantize(
+        ...     q_event_sequence, attack_point_optimizer=optimizer
+        ... )
         >>> abjad.show(result) # doctest: +SKIP
 
         ..  docs::
@@ -300,9 +302,10 @@ class ManualSoundPointsGenerator(SoundPointsGenerator):
         >>> sequence.simulate_queue()
         >>> server = sequence.servers[0]
         >>> q_event_sequence = server.q_event_sequence
-        >>> quantizer = nauert.Quantizer()
         >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
-        >>> result = quantizer(q_event_sequence, attack_point_optimizer=optimizer)
+        >>> result = nauert.quantize(
+        ...     q_event_sequence, attack_point_optimizer=optimizer
+        ... )
         >>> abjad.show(result) # doctest: +SKIP
 
         ..  docs::
@@ -364,9 +367,10 @@ class RandomWalkSoundPointsGenerator(SoundPointsGenerator):
         >>> sequence.simulate_queue()
         >>> server = sequence.servers[0]
         >>> q_event_sequence = server.q_event_sequence
-        >>> quantizer = nauert.Quantizer()
         >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
-        >>> result = quantizer(q_event_sequence, attack_point_optimizer=optimizer)
+        >>> result = nauert.quantize(
+        ...     q_event_sequence, attack_point_optimizer=optimizer
+        ... )
         >>> abjad.show(result) # doctest: +SKIP
 
         ..  docs::
@@ -478,9 +482,10 @@ class GRWSoundPointsGenerator(SoundPointsGenerator):
         >>> sequence.simulate_queue()
         >>> server = sequence.servers[0]
         >>> q_event_sequence = server.q_event_sequence
-        >>> quantizer = nauert.Quantizer()
         >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
-        >>> result = quantizer(q_event_sequence, attack_point_optimizer=optimizer)
+        >>> result = nauert.quantize(
+        ...     q_event_sequence, attack_point_optimizer=optimizer
+        ... )
         >>> abjad.show(result) # doctest: +SKIP
 
         ..  docs::
