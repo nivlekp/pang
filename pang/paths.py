@@ -17,6 +17,13 @@ def get_content_directory():
     return wrapper_directory / content_directory_name
 
 
+def get_score_directory():
+    content_directory = get_content_directory()
+    score_directory = content_directory / "builds" / "score"
+    assert score_directory.is_dir()
+    return score_directory
+
+
 def get_section_paths(sections=None):
     content_directory = get_content_directory()
     if sections is not None:
