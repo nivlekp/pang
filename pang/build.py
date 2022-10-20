@@ -65,6 +65,19 @@ def _make_lilypond_files(score):
     return music_ly_file, music_ily_file
 
 
+def _read_previous_metadata():
+    path = get___main___path()
+    segment_name = path.parent.name
+    if segment_name == "a":
+        return None
+    previous_segment = ord(segment_name) - 1
+    previous_segment_name = chr(previous_segment)
+    previous_metadata_path = path.parent.parent / previous_segment_name / "__metadata__.json"
+    with open(previous_metadata_path, "r") as fp:
+        metadata = json.load(fp)
+    return metadata
+
+
 def _write_metadata(metadata, file_path):
     with open(file_path, "w") as fp:
         json.dump(metadata, fp)
@@ -95,5 +108,6 @@ def run_music_py(section_path):
 def section(score, scope, command):
     target = score[scope.voice_name]
     command(target)
+    _read_previous_metadata()
     metadata = _collect_metadata(score)
     return metadata
