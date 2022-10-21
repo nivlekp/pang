@@ -72,7 +72,9 @@ def _read_previous_metadata():
         return None
     previous_segment = ord(segment_name) - 1
     previous_segment_name = chr(previous_segment)
-    previous_metadata_path = path.parent.parent / previous_segment_name / "__metadata__.json"
+    previous_metadata_path = (
+        path.parent.parent / previous_segment_name / "__metadata__.json"
+    )
     with open(previous_metadata_path, "r") as fp:
         metadata = json.load(fp)
     return metadata
