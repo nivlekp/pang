@@ -24,12 +24,14 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install LilyPond
       run: |
-        lilypond_url=http://lilypond.org/download/binaries/linux-64/
-        lilypond_source=lilypond-2.20.0-1.linux-64.sh
-        wget -q -O /tmp/lilypond $lilypond_url/$lilypond_source
-        sh /tmp/lilypond --batch
-        echo $HOME
-        echo "/home/runner/bin" >> $GITHUB_PATH
+        lilypond_version=2.24.2
+        lilypond_archive=lilypond-${lilypond_version}-linux-x86_64.tar.gz
+        lilypond_url=https://gitlab.com/lilypond/lilypond/-/releases/
+        lilypond_url=${lilypond_url}/v${lilypond_version}/downloads/${lilypond_archive}
+        echo ${lilypond_url}
+        cd /tmp
+        wget -q ${lilypond_url}
+        tar -xf ${lilypond_archive}
     - name: Upgrade pip
       run: |
         python -m pip install --upgrade pip coverage
