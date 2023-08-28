@@ -1,3 +1,5 @@
+import fractions
+
 import abjad
 
 
@@ -7,8 +9,8 @@ def _get_tuplet_multiplier(container):
         component for component in parentage if isinstance(component, abjad.Tuplet)
     ]
     if tuplets == []:
-        return abjad.NonreducedFraction((1, 1))
-    multiplier = tuplets[0].multiplier
+        return fractions.Fraction(1, 1)
+    multiplier = fractions.Fraction(*tuplets[0].multiplier)
     for tuplet in tuplets[1:]:
         multiplier = multiplier.multiply_with_cross_cancelation(tuplet.multiplier)
     return multiplier
@@ -53,17 +55,17 @@ def pad_voices_with_grace_skips(voices):
                     container.insert(0, abjad.Skip(stored_duration - duration))
                 if multiplier != stored_multiplier:
                     multiplier = stored_multiplier / multiplier
-                    multiplier = multiplier.reduce()
                     if multiplier != 1:
                         for leaf in container:
-                            leaf.multiplier = multiplier
+                            leaf.multiplier = multiplier.as_integer_ratio()
             else:
                 multiplier = stored_multiplier / multiplier
-                multiplier = multiplier.reduce()
                 if multiplier == 1:
                     skip = abjad.Skip(stored_duration)
                 else:
-                    skip = abjad.Skip(stored_duration, multiplier=multiplier)
+                    skip = abjad.Skip(
+                        stored_duration, multiplier=multiplier.as_integer_ratio()
+                    )
                 container = abjad.BeforeGraceContainer([skip])
                 abjad.attach(container, first_leaf)
 
