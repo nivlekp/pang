@@ -28,5 +28,5 @@ test = [
     "flake8",
     "isort",
     "pytest",
-    "mypy",
+    "mypy>=1.4.1, <1.5.0",
 ]
