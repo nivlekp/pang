@@ -10,7 +10,7 @@ authors = [
 ]
 description = "Tsz Kiu Pang's Abjad library"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "abjad",
     "abjad-ext-nauert",
@@ -28,4 +28,5 @@ test = [
     "flake8",
     "isort",
     "pytest",
+    "mypy",
 ]
