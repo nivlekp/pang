@@ -47,11 +47,10 @@ class Dynamic(Indicator):
 
             >>> string = abjad.lilypond(lilypond_file)
             >>> print(string)
-            \version "2.20.0"
+            \version "2.24.2"
             \language "english"
             #(ly:set-option 'relative-includes #t)
             \include "source/_stylesheets/single-voice-staff.ily"
-            <BLANKLINE>
             \context Score = "Score"
             <<
                 \context Staff = "Staff"
@@ -125,13 +124,10 @@ class Red(Indicator):
 
             >>> string = abjad.lilypond(lilypond_file)
             >>> print(string)
-            \version "2.20.0"
+            \version "2.24.2"
             \language "english"
-            <BLANKLINE>
             #(ly:set-option 'relative-includes #t)
-            <BLANKLINE>
             \include "source/_stylesheets/single-voice-staff.ily"
-            <BLANKLINE>
             \context Score = "Score"
             <<
                 \context Staff = "Staff"
@@ -208,11 +204,10 @@ class Harmonics(Indicator):
 
             >>> string = abjad.lilypond(lilypond_file)
             >>> print(string)
-            \version "2.20.0"
+            \version "2.24.2"
             \language "english"
             #(ly:set-option 'relative-includes #t)
             \include "source/_stylesheets/single-voice-staff.ily"
-            <BLANKLINE>
             \context Score = "Score"
             <<
                 \context Staff = "Staff"
