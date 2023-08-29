@@ -62,6 +62,7 @@ jobs:
       run: |
         export MYPYPATH=$MYPYPATH:/tmp/abjad
         export MYPYPATH=$MYPYPATH:/tmp/abjad-ext-nauert
+        export PATH=/tmp/lilypond-2.24.2/bin:/home/runner/bin:$PATH
         make black-check
         make flake8
         make isort-check
