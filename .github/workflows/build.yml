@@ -32,7 +32,6 @@ jobs:
         cd /tmp
         wget -q ${lilypond_url}
         tar -xf ${lilypond_archive}
-        export PATH=/tmp/lilypond-2.24.2/bin:/home/runner/bin:$PATH
     - name: Upgrade pip
       run: |
         python -m pip install --upgrade pip coverage
@@ -50,6 +49,7 @@ jobs:
         pip install /tmp/abjad-ext-nauert
     - name: Install dependencies
       run: |
+        export PATH=/tmp/lilypond-2.24.2/bin:/home/runner/bin:$PATH
         python -m pip install -e .[test]
         black --version
         flake8 --version
