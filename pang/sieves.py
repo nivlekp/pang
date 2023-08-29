@@ -12,8 +12,7 @@ def gen_pitches_from_sieve(
         >>> print(pitches)
         [-11, -6, -5, 1, 6, 7]
 
-        >>> maker = abjad.NoteMaker()
-        >>> notes = maker(pitches, [(1, 4)] * len(pitches))
+        >>> notes = abjad.makers.make_notes(pitches, [(1, 4)] * len(pitches))
         >>> staff = abjad.Staff(notes)
         >>> abjad.attach(abjad.Clef("bass"), staff[0])
         >>> abjad.show(staff) # doctest: +SKIP
@@ -42,8 +41,7 @@ def gen_pitches_from_sieve(
         >>> print(pitches)
         [0.0, 1.5, 5.0, 6.5, 10.0]
 
-        >>> maker = abjad.NoteMaker()
-        >>> notes = maker(pitches, [(1, 4)] * len(pitches))
+        >>> notes = abjad.makers.make_notes(pitches, [(1, 4)] * len(pitches))
         >>> staff = abjad.Staff(notes)
         >>> abjad.show(staff) # doctest: +SKIP
 

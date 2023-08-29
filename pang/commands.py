@@ -44,13 +44,10 @@ class QuantizeSequenceCommand(Command):
 
             >>> string = abjad.lilypond(lilypond_file)
             >>> print(string)
-            \version "2.20.0"
+            \version "2.24.2"
             \language "english"
-            <BLANKLINE>
             #(ly:set-option 'relative-includes #t)
-            <BLANKLINE>
             \include "source/_stylesheets/single-voice-staff.ily"
-            <BLANKLINE>
             \context Score = "Score"
             <<
                 \context Staff = "Staff"
