@@ -79,12 +79,6 @@ class SoundPointsGenerator:
                 pitches = self._gen_pitches()
         return [SoundPoint(i, d, p) for i, d, p in zip(instances, durations, pitches)]
 
-    def __repr__(self):
-        """
-        Gets interpreter representation.
-        """
-        return abjad.StorageFormatManager(self).get_repr_format()
-
     def _gen_durations(self):
         """
         Generates durations.
