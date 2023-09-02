@@ -1,8 +1,6 @@
 import bisect
 import queue
 
-import abjad
-
 from .noteserver import NoteServer, _get_closest_server
 from .soundpointsgenerators import ManualSoundPointsGenerator, SoundPointsGenerator
 
