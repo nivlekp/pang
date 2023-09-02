@@ -36,7 +36,7 @@ class Sequence:
         """
         Gets interpreter representation.
         """
-        return abjad.StorageFormatManager(self).get_repr_format()
+        return f"{type(self).__name__}(servers={self._servers!r}, sound_points={self._sound_points!r}, sequence_duration={self._sequence_duration!r})"
 
     def __iter__(self):
         yield from self._sound_points
