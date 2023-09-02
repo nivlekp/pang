@@ -12,6 +12,7 @@ class SoundPoint:
     """
     SoundPoint / Event.
     """
+
     instance: float
     duration: float
     pitch: float | tuple[float]
