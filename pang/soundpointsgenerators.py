@@ -1,3 +1,4 @@
+import dataclasses
 import random
 import typing
 
@@ -6,59 +7,21 @@ import numpy as np
 import abjad
 
 
+@dataclasses.dataclass
 class SoundPoint:
     """
     SoundPoint / Event.
     """
 
-    def __init__(
-        self,
-        instance: float,
-        duration: float,
-        pitch: typing.Union[float, typing.Tuple[float]],
-        attachments: typing.Optional[typing.List[typing.Any]] = None,
-    ):
-        self._instance = instance
-        self._duration = duration
-        self._pitch = pitch
-        self._attachments = attachments
+    instance: float
+    duration: float
+    pitch: float | tuple[float]
+    attachments: typing.Optional[list[typing.Any]] = None
 
     def attach(self, attachment):
         if self.attachments is None:
-            self._attachments = []
-        self._attachments.append(attachment)
-
-    @property
-    def attachments(self):
-        return self._attachments
-
-    @attachments.setter
-    def attachments(self, attachments):
-        self._attachments = attachments
-
-    @property
-    def duration(self):
-        return self._duration
-
-    @duration.setter
-    def duration(self, duration):
-        self._duration = duration
-
-    @property
-    def instance(self):
-        return self._instance
-
-    @instance.setter
-    def instance(self, instance):
-        self._instance = instance
-
-    @property
-    def pitch(self):
-        return self._pitch
-
-    @pitch.setter
-    def pitch(self, pitch):
-        self._pitch = pitch
+            self.attachments = []
+        self.attachments.append(attachment)
 
 
 class SoundPointsGenerator:
