@@ -1,4 +1,5 @@
 import dataclasses
+import enum
 import random
 import typing
 
@@ -22,6 +23,11 @@ class SoundPoint:
         if self.attachments is None:
             self.attachments = []
         self.attachments.append(attachment)
+
+
+class QueuingProcess(enum.Enum):
+    MARKOV = 1
+    DETERMINISTIC = 2
 
 
 class SoundPointsGenerator:
@@ -50,12 +56,13 @@ class SoundPointsGenerator:
         # method, it is currently located in the base class.
         assert hasattr(self, "_service_model")
         assert hasattr(self, "_number_of_notes")
-        if self._service_model == "markov":
-            return np.random.exponential(1 / self._service_rate, self._number_of_notes)
-        elif self._service_model == "deterministic":
-            return np.array([1 / self._service_rate] * self._number_of_notes)
-        else:
-            raise Exception
+        match self._service_model:
+            case QueuingProcess.MARKOV:
+                return np.random.exponential(
+                    1 / self._service_rate, self._number_of_notes
+                )
+            case QueuingProcess.DETERMINISTIC:
+                return np.array([1 / self._service_rate] * self._number_of_notes)
 
     def _gen_instances(self, sequence_duration):
         """
@@ -65,15 +72,16 @@ class SoundPointsGenerator:
         # method, it is currently located in the base class.
         assert hasattr(self, "_arrival_model")
         assert hasattr(self, "_number_of_notes")
-        if self._arrival_model == "markov":
-            instances = np.random.uniform(0.0, sequence_duration, self._number_of_notes)
-            return sorted(instances)
-        elif self._arrival_model == "deterministic":
-            each_duration = sequence_duration / self._number_of_notes
-            instances = [i * each_duration for i in range(self._number_of_notes)]
-            return np.array(instances)
-        else:
-            raise Exception
+        match self._arrival_model:
+            case QueuingProcess.MARKOV:
+                instances = np.random.uniform(
+                    0.0, sequence_duration, self._number_of_notes
+                )
+                return sorted(instances)
+            case QueuingProcess.DETERMINISTIC:
+                each_duration = sequence_duration / self._number_of_notes
+                instances = [i * each_duration for i in range(self._number_of_notes)]
+                return np.array(instances)
 
 
 class AtaxicSoundPointsGenerator(SoundPointsGenerator):
@@ -155,8 +163,8 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
         arrival_rate=1,
         service_rate=1,
         pitch_set=[0],
-        arrival_model="markov",
-        service_model="markov",
+        arrival_model=QueuingProcess.MARKOV,
+        service_model=QueuingProcess.MARKOV,
         seed=123456,
         order="idp",
     ):
@@ -384,8 +392,8 @@ class RandomWalkSoundPointsGenerator(SoundPointsGenerator):
         self,
         arrival_rate=1,
         service_rate=1,
-        arrival_model="markov",
-        service_model="markov",
+        arrival_model=QueuingProcess.MARKOV,
+        service_model=QueuingProcess.MARKOV,
         pitch_set=[0],
         origin=None,
         seed=123456,
@@ -500,8 +508,8 @@ class GRWSoundPointsGenerator(SoundPointsGenerator):
         self,
         arrival_rate=1,
         service_rate=1,
-        arrival_model="markov",
-        service_model="markov",
+        arrival_model=QueuingProcess.MARKOV,
+        service_model=QueuingProcess.MARKOV,
         pitch_set=[0],
         origin=None,
         mean=0,
