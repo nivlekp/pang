@@ -234,6 +234,14 @@ class Sequence:
     def durations(self):
         return [event.duration for event in self._sound_points]
 
+    @durations.setter
+    def durations(self, durations):
+        # TODO: maybe instead of allowing durations to be set, the durations
+        # can be generated more flexibly to start with
+        assert len(durations) == len(self._sound_points)
+        for sound_point, duration in zip(self._sound_points, durations):
+            sound_point.duration = duration
+
     @property
     def durations_in_millisecond(self):
         """
