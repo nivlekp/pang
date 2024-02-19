@@ -34,6 +34,42 @@ def gen_pitches_from_sieve(
 
     ..  container:: example
 
+        A sieve constructed with the all-interval tetrachord:
+
+        >>> sieve = abjad.Pattern(indices=[0, 1, 4, 6], period=12)
+        >>> pitches = pang.gen_pitches_from_sieve(sieve=sieve, origin=0, low=-12, high=23)
+        >>> print(pitches)
+        [-12, -11, -8, -6, 0, 1, 4, 6, 12, 13, 16, 18]
+
+        >>> notes = abjad.makers.make_notes(pitches, [(1, 4)] * len(pitches))
+        >>> staff = abjad.Staff(notes)
+        >>> abjad.attach(abjad.Clef("bass"), staff[0])
+        >>> abjad.show(staff) # doctest: +SKIP
+
+        ..  docs::
+
+            >>> string = abjad.lilypond(staff)
+            >>> print(string)
+            \new Staff
+            {
+                \clef "bass"
+                c4
+                cs4
+                e4
+                fs4
+                c'4
+                cs'4
+                e'4
+                fs'4
+                c''4
+                cs''4
+                e''4
+                fs''4
+            }
+
+
+    ..  container:: example
+
         Microtone sieves can also be created:
 
         >>> sieve = abjad.Pattern(indices=[0, 3], period=10)
@@ -68,5 +104,5 @@ def gen_pitches_from_sieve(
     return [
         p * multiplier
         for p in range(low, high)
-        if sieve.matches_index(p, high - low + 1, -origin)
+        if sieve.matches_index(p, sieve.period, -origin)
     ]

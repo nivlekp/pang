@@ -149,9 +149,7 @@ class Sequence:
                     curr_time = self.instances[arrival_index]
                     servers[server_index].serve(
                         curr_time,
-                        sound_point=self._sound_points[arrival_index]
-                        # duration=self.durations[arrival_index],
-                        # pitch=self.pitches[arrival_index]
+                        sound_point=self._sound_points[arrival_index],
                     )
                     arrival_index = arrival_index + 1
             else:  # there's already a client in the queue
