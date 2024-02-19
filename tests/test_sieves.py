@@ -18,3 +18,12 @@ def test_sieves_01():
     high = 11
     pitches = pang.gen_pitches_from_sieve(sieve, origin, low, high)
     assert pitches == [-11, -6, -5, 1, 6, 7]
+
+
+def test_sieves_02():
+    sieve = abjad.Pattern(indices=[0, 1, 4, 6], period=12)
+    origin = 0
+    low = -12
+    high = 11
+    pitches = pang.gen_pitches_from_sieve(sieve, origin, low, high)
+    assert pitches == [-12, -11, -8, -6, 0, 1, 4, 6]
