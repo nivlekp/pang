@@ -100,6 +100,13 @@ def persist(score, metadata):
     _write_metadata(metadata, metadata_path)
 
 
+def run_lilypond_in_segment_directory(section_path):
+    path = section_path / "music.ly"
+    assert path.exists()
+    args = ["lilypond", path]
+    subprocess.run(args, check=True)
+
+
 def run_music_py(section_path):
     path = section_path / "definition.py"
     path = path if path.exists() else section_path / "music.py"
