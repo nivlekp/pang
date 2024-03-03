@@ -1,5 +1,4 @@
 import argparse
-import subprocess
 
 import pang
 
