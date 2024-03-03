@@ -1,12 +1,6 @@
 import argparse
-import subprocess
 
 import pang
-
-
-def _make_one_section(section_path):
-    args = ["python", str(section_path / "definition.py")]
-    subprocess.run(args)
 
 
 def main(sections):
@@ -14,6 +8,7 @@ def main(sections):
     for section_path in section_paths:
         print(f"Making Section {section_path.stem}...")
         pang.build.run_music_py(section_path)
+        pang.build.run_lilypond_in_segment_directory(section_path)
 
 
 if __name__ == "__main__":
