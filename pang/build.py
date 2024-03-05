@@ -2,6 +2,7 @@ import json
 import subprocess
 
 import abjad
+from abjadext import nauert
 
 from .paths import get___main___path
 
@@ -37,7 +38,7 @@ def _get_last_time_signature(score):
     return abjad.get.effective(last_leaf, prototype)
 
 
-def _collect_metadata(score):
+def _collect_metadata(score, discarded_q_events):
     metadata = {}
     last_metronome_mark = _get_last_metronome_mark(score)
     duration = last_metronome_mark.reference_duration
@@ -52,6 +53,17 @@ def _collect_metadata(score):
     metadata["last_time_signature"] = time_signature
     duration = _get_empty_beatspan(score)
     metadata["empty_beatspan"] = f"{duration.numerator}/{duration.denominator}"
+    metadata["discarded_q_events_count"] = len(
+        [event for events in discarded_q_events for event in events]
+    )
+    metadata["discarded_pitched_q_events_count"] = len(
+        [
+            event
+            for events in discarded_q_events
+            for event in events
+            if isinstance(event, nauert.PitchedQEvent)
+        ]
+    )
     return metadata
 
 
@@ -117,6 +129,5 @@ def run_music_py(section_path):
 def section(score, scope, command):
     target = score[scope.voice_name]
     command(target)
-    _read_previous_metadata()
-    metadata = _collect_metadata(score)
+    metadata = _collect_metadata(score, command.discarded_q_events)
     return metadata

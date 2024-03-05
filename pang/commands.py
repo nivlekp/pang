@@ -116,3 +116,9 @@ class QuantizeSequenceCommand(Command):
             if attachments is not None and len(attachments) != 0:
                 for attachment in attachments:
                     attachment(logical_tie)
+
+    @property
+    def discarded_q_events(self):
+        if hasattr(self._grace_handler, "discarded_q_events"):
+            return self._grace_handler.discarded_q_events
+        return []
