@@ -113,10 +113,9 @@ def persist(score, metadata):
 
 
 def run_lilypond_in_segment_directory(section_path):
-    path = section_path / "music.ly"
-    assert path.exists()
-    args = ["lilypond", path]
-    subprocess.run(args, check=True)
+    assert section_path.exists()
+    args = ["lilypond", "music.ly"]
+    subprocess.run(args, cwd=section_path, check=True)
 
 
 def run_music_py(section_path):
