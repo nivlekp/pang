@@ -7,7 +7,7 @@ class Indicator:
     quantizing using Nauert.
     """
 
-    def __call__(self, target: abjad.LogicalTie):
+    def attach(self, target: abjad.LogicalTie):
         raise NotImplementedError
 
 
@@ -81,7 +81,7 @@ class Dynamic(Indicator):
         assert abjad.Dynamic.is_dynamic_name(value)
         self._dynamic = abjad.Dynamic(value)
 
-    def __call__(self, target: abjad.LogicalTie):
+    def attach(self, target: abjad.LogicalTie):
         """
         Call indicator to process the target after quantizing.
         """
@@ -157,7 +157,7 @@ class Red(Indicator):
             >>
     """
 
-    def __call__(self, target: abjad.LogicalTie):
+    def attach(self, target: abjad.LogicalTie):
         """
         Call indicator to process the target after quantizing.
         """
@@ -240,7 +240,7 @@ class Harmonics(Indicator):
         # TODO: initialize with harmonics if required
         pass
 
-    def __call__(self, target: abjad.LogicalTie):
+    def attach(self, target: abjad.LogicalTie):
         """
         Call indicator to process the target after quantizing.
         """

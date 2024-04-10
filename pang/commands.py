@@ -113,9 +113,10 @@ class QuantizeSequenceCommand(Command):
         for logical_tie in abjad.iterate.logical_ties(result):
             first_leaf = abjad.get.leaf(logical_tie, 0)
             attachments = abjad.get.annotation(first_leaf, "q_event_attachments")
-            if attachments is not None and len(attachments) != 0:
+            if attachments:
                 for attachment in attachments:
-                    attachment(logical_tie)
+                    if hasattr(attachment, "attach"):
+                        attachment.attach(logical_tie)
 
     @property
     def discarded_q_events(self):
