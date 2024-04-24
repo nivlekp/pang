@@ -1,3 +1,4 @@
+import fractions
 import json
 import subprocess
 
@@ -44,6 +45,8 @@ def _collect_metadata(score, discarded_q_events):
     duration = last_metronome_mark.reference_duration
     reference_duration = f"{duration.numerator}/{duration.denominator}"
     units_per_minute = last_metronome_mark.units_per_minute
+    if isinstance(units_per_minute, fractions.Fraction):
+        units_per_minute = float(units_per_minute)
     metadata["last_metronome_mark"] = {
         "reference_duration": reference_duration,
         "units_per_minute": units_per_minute,
