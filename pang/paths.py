@@ -24,6 +24,13 @@ def get_score_directory():
     return score_directory
 
 
+def get_stylesheets_directory():
+    content_directory = get_content_directory()
+    stylesheets_directory = content_directory / "stylesheets"
+    assert stylesheets_directory.is_dir()
+    return stylesheets_directory
+
+
 def get_section_paths(sections=None):
     content_directory = get_content_directory()
     if sections is not None:

@@ -3,7 +3,12 @@ from .cloud import Cloud
 from .commands import Command, QuantizeSequenceCommand
 from .indicators import Dynamic, Harmonics, Indicator, Red
 from .noteserver import NoteServer, _get_closest_server
-from .paths import get_content_directory, get_score_directory, get_section_paths
+from .paths import (
+    get_content_directory,
+    get_score_directory,
+    get_section_paths,
+    get_stylesheets_directory,
+)
 from .postprocessors import (
     ManualOttavaHandler,
     OttavaHandler,
@@ -51,6 +56,7 @@ __all__ = [
     "get_content_directory",
     "get_score_directory",
     "get_section_paths",
+    "get_stylesheets_directory",
     "make_single_staff_score_template",
     "pad_voices_with_grace_skips",
 ]
