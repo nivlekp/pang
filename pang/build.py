@@ -41,6 +41,7 @@ def _get_last_time_signature(score):
 
 def _collect_metadata(score, discarded_q_events):
     metadata = {}
+    metadata["duration"] = float(abjad.get.duration(score, in_seconds=True))
     last_metronome_mark = _get_last_metronome_mark(score)
     duration = last_metronome_mark.reference_duration
     reference_duration = f"{duration.numerator}/{duration.denominator}"
