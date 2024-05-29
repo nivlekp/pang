@@ -98,7 +98,8 @@ def _read_previous_metadata():
 
 def _write_metadata(metadata, file_path):
     with open(file_path, "w") as fp:
-        json.dump(metadata, fp)
+        json.dump(metadata, fp, indent=4)
+        fp.write("\n")
 
 
 def persist(score, metadata):
