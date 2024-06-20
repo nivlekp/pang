@@ -2,9 +2,12 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 [project]
 name = "pang"
-version = "0.1.0"
+version = "24.6.0"
 authors = [
   { name="Tsz Kiu Pang", email="osamupang@gmail.com" },
 ]
@@ -12,8 +15,8 @@ description = "Tsz Kiu Pang's Abjad library"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "abjad",
-    "abjad-ext-nauert",
+    "abjad @ git+https://github.com/Abjad/abjad.git@7bca4dc7ab9b55441c3196e6e6d5b9e9184cc36f",
+    "abjad-ext-nauert @ git+https://github.com/Abjad/abjad-ext-nauert.git@8dec05b66f537fba9ec153742658c05694c3aaec",
     "numpy",
     "tomlkit",
 ]

@@ -47,8 +47,8 @@ def test_pad_voices_with_grace_skips_01():
 
 
 def test_pad_voices_with_grace_skips_02():
-    voice_0 = abjad.Voice(r"{ \times 4/5 { c'4 c'4 c'4 c'4 c'4 } }")
-    voice_1 = abjad.Voice(r"{ \times 4/6 { c'4 c'4 c'4 c'4 c'4 c'4 } }")
+    voice_0 = abjad.Voice(r"{ \tuplet 5/4 { c'4 c'4 c'4 c'4 c'4 } }")
+    voice_1 = abjad.Voice(r"{ \tuplet 6/4 { c'4 c'4 c'4 c'4 c'4 c'4 } }")
     container = abjad.BeforeGraceContainer("cs'16")
     abjad.attach(container, abjad.get.leaf(voice_0, 0))
     pang.pad_voices_with_grace_skips([voice_0, voice_1])
@@ -59,7 +59,7 @@ def test_pad_voices_with_grace_skips_02():
         \new Voice
         {
             {
-                \times 4/5
+                \tuplet 5/4
                 {
                     \grace {
                         cs'16
@@ -81,7 +81,7 @@ def test_pad_voices_with_grace_skips_02():
         \new Voice
         {
             {
-                \times 4/6
+                \tuplet 6/4
                 {
                     \grace {
                         s16 * 6/5
@@ -100,8 +100,8 @@ def test_pad_voices_with_grace_skips_02():
 
 
 def test_pad_voices_with_grace_skips_03():
-    voice_0 = abjad.Voice(r"{ \times 4/5 { c'4 c'4 c'4 c'4 c'4 } }")
-    voice_1 = abjad.Voice(r"{ \times 4/6 { c'4 c'4 c'4 c'4 c'4 c'4 } }")
+    voice_0 = abjad.Voice(r"{ \tuplet 5/4 { c'4 c'4 c'4 c'4 c'4 } }")
+    voice_1 = abjad.Voice(r"{ \tuplet 6/4 { c'4 c'4 c'4 c'4 c'4 c'4 } }")
     container = abjad.BeforeGraceContainer("cs'16")
     abjad.attach(container, abjad.get.leaf(voice_0, 0))
     container = abjad.BeforeGraceContainer("ds'16")
@@ -114,7 +114,7 @@ def test_pad_voices_with_grace_skips_03():
         \new Voice
         {
             {
-                \times 4/5
+                \tuplet 5/4
                 {
                     \grace {
                         cs'16
@@ -136,7 +136,7 @@ def test_pad_voices_with_grace_skips_03():
         \new Voice
         {
             {
-                \times 4/6
+                \tuplet 6/4
                 {
                     \grace {
                         ds'16 * 6/5

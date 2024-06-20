@@ -8,6 +8,9 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  LILYPOND_VERSION: 2.25.16
+
 jobs:
   build:
 
@@ -24,10 +27,9 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install LilyPond
       run: |
-        lilypond_version=2.24.3
-        lilypond_archive=lilypond-${lilypond_version}-linux-x86_64.tar.gz
+        lilypond_archive=lilypond-${LILYPOND_VERSION}-linux-x86_64.tar.gz
         lilypond_url=https://gitlab.com/lilypond/lilypond/-/releases/
-        lilypond_url=${lilypond_url}/v${lilypond_version}/downloads/${lilypond_archive}
+        lilypond_url=${lilypond_url}/v${LILYPOND_VERSION}/downloads/${lilypond_archive}
         echo ${lilypond_url}
         cd /tmp
         wget -q ${lilypond_url}
@@ -38,18 +40,9 @@ jobs:
     - name: Log environment variable(s)
       run: |
         echo $PATH
-    - name: Install Abjad
-      run: |
-        # install without development dependencies
-        git clone https://github.com/Abjad/abjad.git /tmp/abjad
-        pip install /tmp/abjad
-    - name: Install Nauert
-      run: |
-        git clone https://github.com/Abjad/abjad-ext-nauert.git /tmp/abjad-ext-nauert
-        pip install /tmp/abjad-ext-nauert
     - name: Install dependencies
       run: |
-        export PATH=/tmp/lilypond-2.24.3/bin:/home/runner/bin:$PATH
+        export PATH=/tmp/lilypond-${LILYPOND_VERSION}/bin:/home/runner/bin:$PATH
         python -m pip install -e .[test]
         black --version
         flake8 --version
@@ -60,9 +53,9 @@ jobs:
         lilypond --version
     - name: Checks and Tests
       run: |
-        export MYPYPATH=$MYPYPATH:/tmp/abjad
-        export MYPYPATH=$MYPYPATH:/tmp/abjad-ext-nauert
-        export PATH=/tmp/lilypond-2.24.3/bin:/home/runner/bin:$PATH
+        export MYPYPATH=$MYPYPATH:$(python scripts/print_abjad_path.py)
+        export MYPYPATH=$MYPYPATH:$(python scripts/print_nauert_path.py)
+        export PATH=/tmp/lilypond-${LILYPOND_VERSION}/bin:/home/runner/bin:$PATH
         make black-check
         make flake8
         make isort-check
