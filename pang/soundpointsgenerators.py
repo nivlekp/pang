@@ -120,9 +120,9 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
                     \tempo 4=60
                     r8
                     a'8
-                    \times 2/3
+                    \tuplet 3/2
                     {
-                        \times 4/5
+                        \tuplet 5/4
                         {
                             r32
                             c'16
@@ -130,7 +130,7 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
                             c'16
                             ~
                         }
-                        \times 2/3
+                        \tuplet 3/2
                         {
                             c'16
                             r8
@@ -138,7 +138,7 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
                         r8
                     }
                     r4
-                    \times 2/3
+                    \tuplet 3/2
                     {
                         r8
                         r16.
@@ -353,9 +353,9 @@ class RandomWalkSoundPointsGenerator(SoundPointsGenerator):
                     \tempo 4=60
                     r8
                     bf'8
-                    \times 2/3
+                    \tuplet 3/2
                     {
-                        \times 4/5
+                        \tuplet 5/4
                         {
                             r32
                             a'16
@@ -363,7 +363,7 @@ class RandomWalkSoundPointsGenerator(SoundPointsGenerator):
                             a'16
                             ~
                         }
-                        \times 2/3
+                        \tuplet 3/2
                         {
                             a'16
                             r8
@@ -371,7 +371,7 @@ class RandomWalkSoundPointsGenerator(SoundPointsGenerator):
                         r8
                     }
                     r4
-                    \times 2/3
+                    \tuplet 3/2
                     {
                         r8
                         r16.
@@ -472,9 +472,9 @@ class GRWSoundPointsGenerator(SoundPointsGenerator):
                     \tempo 4=60
                     r8
                     bf'8
-                    \times 2/3
+                    \tuplet 3/2
                     {
-                        \times 4/5
+                        \tuplet 5/4
                         {
                             r32
                             bf'16
@@ -482,7 +482,7 @@ class GRWSoundPointsGenerator(SoundPointsGenerator):
                             bf'16
                             ~
                         }
-                        \times 2/3
+                        \tuplet 3/2
                         {
                             bf'16
                             r8
@@ -490,7 +490,7 @@ class GRWSoundPointsGenerator(SoundPointsGenerator):
                         r8
                     }
                     r4
-                    \times 2/3
+                    \tuplet 3/2
                     {
                         r8
                         r16.

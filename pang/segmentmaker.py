@@ -32,7 +32,7 @@ class SegmentMaker:
 
             >>> string = abjad.lilypond(lilypond_file)
             >>> print(string)
-            \version "2.24.3"
+            \version "2.25.16"
             \language "english"
             #(ly:set-option 'relative-includes #t)
             \include "source/_stylesheets/single-voice-staff.ily"
@@ -203,7 +203,7 @@ class SegmentMaker:
 
                 >>> string = abjad.lilypond(lilypond_file)
                 >>> print(string)
-                \version "2.24.3"
+                \version "2.25.16"
                 \language "english"
                 #(ly:set-option 'relative-includes #t)
                 \include "source/_stylesheets/single-voice-staff.ily"
