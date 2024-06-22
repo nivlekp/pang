@@ -53,8 +53,6 @@ jobs:
         lilypond --version
     - name: Checks and Tests
       run: |
-        export MYPYPATH=$MYPYPATH:$(python scripts/print_abjad_path.py)
-        export MYPYPATH=$MYPYPATH:$(python scripts/print_nauert_path.py)
         export PATH=/tmp/lilypond-${LILYPOND_VERSION}/bin:/home/runner/bin:$PATH
         make black-check
         make flake8
