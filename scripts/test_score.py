@@ -1,7 +1,4 @@
-import subprocess
 import tempfile
-
-import pytest
 
 import pang
 
