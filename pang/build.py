@@ -1,5 +1,6 @@
 import fractions
 import json
+import pathlib
 import subprocess
 
 import abjad
@@ -139,7 +140,7 @@ def section(score, scope, command):
 
 def score(output_directory=None):
     score_directory = get_score_directory()
-    output_directory = output_directory or score_directory
+    output_directory = pathlib.Path(output_directory or score_directory)
     args = ["lilypond", "-o", output_directory, score_directory / "music.ly"]
     subprocess.run(args, check=True)
     return output_directory / "music.pdf"
