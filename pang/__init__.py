@@ -1,5 +1,4 @@
 from . import build
-from .cloud import Cloud
 from .commands import Command, QuantizeSequenceCommand
 from .indicators import Dynamic, Harmonics, Indicator, Red
 from .noteserver import NoteServer, _get_closest_server
@@ -32,7 +31,6 @@ from .templates import make_single_staff_score_template
 __all__ = [
     "build",
     "AtaxicSoundPointsGenerator",
-    "Cloud",
     "Command",
     "Dynamic",
     "GRWSoundPointsGenerator",
