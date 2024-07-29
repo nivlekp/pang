@@ -45,3 +45,4 @@ def simulate_queue(sequence: Sequence, servers: tuple[NoteServer, ...]):
                     curr_time,
                     sound_point=sequence._sound_points[index],
                 )
+    return servers

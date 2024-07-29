@@ -14,6 +14,7 @@ from .postprocessors import (
     VerboseOttavaHandler,
     pad_voices_with_grace_skips,
 )
+from .queuesimulation import simulate_queue
 from .scoping import Scope
 from .segmentmaker import SegmentMaker
 from .sequences import Sequence
@@ -57,4 +58,5 @@ __all__ = [
     "get_stylesheets_directory",
     "make_single_staff_score_template",
     "pad_voices_with_grace_skips",
+    "simulate_queue",
 ]
