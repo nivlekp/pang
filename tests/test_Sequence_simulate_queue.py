@@ -259,7 +259,7 @@ def test_Sequence_simulate_queue_04():
 
     server, = pang.simulate_queue(sequence, (pang.NoteServer(), ))
     np.testing.assert_almost_equal(
-        servers.durations,
+        server.durations,
         [
             1,
             0.5,
