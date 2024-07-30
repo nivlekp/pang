@@ -30,7 +30,7 @@ class Sequence:
         """
         Gets interpreter representation.
         """
-        return f"{type(self).__name__}(servers={self._servers!r}, sound_points={self._sound_points!r}, sequence_duration={self._sequence_duration!r})"
+        return f"{type(self).__name__}(sound_points={self._sound_points!r}, sequence_duration={self._sequence_duration!r})"
 
     def __iter__(self):
         yield from self._sound_points
@@ -63,9 +63,6 @@ class Sequence:
 
         """
         assert isinstance(sequence, type(self))
-        # Currently this only supports when the sequences have the same number
-        # of servers.
-        assert sequence.nservers == self.nservers
         offset = self.sequence_duration + time_gap
         for sound_point in sequence:
             sound_point.instance += offset
@@ -112,9 +109,6 @@ class Sequence:
 
         """
         assert isinstance(sequence, type(self))
-        # Currently this only supports when the sequences have the same number
-        # of servers.
-        assert sequence.nservers == self.nservers
         index = bisect.bisect_left(self.instances, offset)
         for sound_point in self._sound_points[index:]:
             sound_point.instance += sequence.sequence_duration
@@ -163,9 +157,6 @@ class Sequence:
 
         """
         assert isinstance(sequence, type(self))
-        # Currently this only supports when the sequences have the same number
-        # of servers.
-        assert sequence.nservers == self.nservers
         for sound_point in sequence:
             sound_point.instance += offset
             index = bisect.bisect_left(self.instances, sound_point.instance)
@@ -200,13 +191,6 @@ class Sequence:
         return [event.duration * 1000 for event in self._sound_points]
 
     @property
-    def nservers(self):
-        """
-        Returns the number of servers.
-        """
-        return len(self._servers)
-
-    @property
     def sequence_duration(self):
         """
         Returns the sequence duration in seconds.
@@ -217,10 +201,3 @@ class Sequence:
         else:
             last_offset = 0
         return max(self._sequence_duration, last_offset)
-
-    @property
-    def servers(self):
-        """
-        Returns the servers that are attached to this sequence.
-        """
-        return self._servers

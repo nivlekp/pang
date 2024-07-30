@@ -16,7 +16,7 @@ def test_Sequence_simulate_queue_00():
         sequence_duration=sequence_duration,
     )
 
-    server, = pang.simulate_queue(sequence, (pang.NoteServer(), ))
+    (server,) = pang.simulate_queue(sequence, (pang.NoteServer(),))
     np.testing.assert_almost_equal(
         server.durations,
         [
@@ -78,7 +78,7 @@ def test_Sequence_simulate_queue_01():
         sequence_duration=sequence_duration,
     )
 
-    server, = pang.simulate_queue(sequence, (pang.NoteServer(), ))
+    (server,) = pang.simulate_queue(sequence, (pang.NoteServer(),))
     np.testing.assert_almost_equal(
         server.durations,
         [
@@ -134,7 +134,7 @@ def test_Sequence_simulate_queue_02():
         sequence_duration=sequence_duration,
     )
 
-    server, = pang.simulate_queue(sequence, (pang.NoteServer(), ))
+    (server,) = pang.simulate_queue(sequence, (pang.NoteServer(),))
 
     np.testing.assert_almost_equal(
         server.durations,
@@ -199,7 +199,7 @@ def test_Sequence_simulate_queue_03():
         sequence_duration=sequence_duration,
     )
 
-    server, = pang.simulate_queue(sequence, (pang.NoteServer(), ))
+    (server,) = pang.simulate_queue(sequence, (pang.NoteServer(),))
     np.testing.assert_almost_equal(
         server.durations,
         [
@@ -257,7 +257,7 @@ def test_Sequence_simulate_queue_04():
         sequence_duration=sequence_duration,
     )
 
-    server, = pang.simulate_queue(sequence, (pang.NoteServer(), ))
+    (server,) = pang.simulate_queue(sequence, (pang.NoteServer(),))
     np.testing.assert_almost_equal(
         server.durations,
         [

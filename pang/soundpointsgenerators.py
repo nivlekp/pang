@@ -100,8 +100,7 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
         ...     sound_points_generator=sound_points_generator,
         ...     sequence_duration=4,
         ... )
-        >>> sequence.simulate_queue()
-        >>> server = sequence.servers[0]
+        >>> server, = pang.simulate_queue(sequence, (pang.NoteServer(), ))
         >>> q_event_sequence = server.q_event_sequence
         >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
         >>> result = nauert.quantize(
@@ -217,8 +216,7 @@ class ManualSoundPointsGenerator(SoundPointsGenerator):
         >>> print(sequence.sequence_duration)
         3.5
 
-        >>> sequence.simulate_queue()
-        >>> server = sequence.servers[0]
+        >>> server, = pang.simulate_queue(sequence, (pang.NoteServer(), ))
         >>> q_event_sequence = server.q_event_sequence
         >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
         >>> result = nauert.quantize(
@@ -268,8 +266,7 @@ class ManualSoundPointsGenerator(SoundPointsGenerator):
         >>> print(sequence.sequence_duration)
         3.5
 
-        >>> sequence.simulate_queue()
-        >>> server = sequence.servers[0]
+        >>> server, = pang.simulate_queue(sequence, (pang.NoteServer(), ))
         >>> q_event_sequence = server.q_event_sequence
         >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
         >>> result = nauert.quantize(
@@ -315,248 +312,3 @@ class ManualSoundPointsGenerator(SoundPointsGenerator):
             SoundPoint(i, d, p)
             for i, d, p in zip(self._instances, self._durations, self._pitches)
         ]
-
-
-class RandomWalkSoundPointsGenerator(SoundPointsGenerator):
-    r"""
-    Sound points generator, with pitches chosen with a random walk process.
-
-    ..  container:: example
-
-        Initializing an ataxic cloud.
-
-        >>> pitch_set = list(range(20))
-        >>> sound_points_generator = pang.RandomWalkSoundPointsGenerator(
-        ...     pitch_set=pitch_set,
-        ... )
-        >>> sequence = pang.Sequence(
-        ...     sound_points_generator=sound_points_generator,
-        ...     sequence_duration=4,
-        ... )
-        >>> sequence.simulate_queue()
-        >>> server = sequence.servers[0]
-        >>> q_event_sequence = server.q_event_sequence
-        >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
-        >>> result = nauert.quantize(
-        ...     q_event_sequence, attack_point_optimizer=optimizer
-        ... )
-        >>> abjad.show(result) # doctest: +SKIP
-
-        ..  docs::
-
-            >>> string = abjad.lilypond(result)
-            >>> print(string)
-            \new Voice
-            {
-                {
-                    %%% \time 4/4 %%%
-                    \tempo 4=60
-                    r8
-                    bf'8
-                    \tuplet 3/2
-                    {
-                        \tuplet 5/4
-                        {
-                            r32
-                            a'16
-                            ~
-                            a'16
-                            ~
-                        }
-                        \tuplet 3/2
-                        {
-                            a'16
-                            r8
-                        }
-                        r8
-                    }
-                    r4
-                    \tuplet 3/2
-                    {
-                        r8
-                        r16.
-                        bf'32
-                        ~
-                        bf'8
-                        ~
-                    }
-                }
-                {
-                    bf'32.
-                    b'64
-                    ~
-                    b'16
-                    ~
-                    b'8
-                    ~
-                    b'4
-                    r2
-                }
-            }
-
-    """
-
-    def __init__(
-        self,
-        arrival_rate=1,
-        service_rate=1,
-        arrival_model=QueuingProcess.MARKOV,
-        service_model=QueuingProcess.MARKOV,
-        pitch_set=[0],
-        origin=None,
-        seed=123456,
-        order="idp",
-    ):
-        self._arrival_rate = arrival_rate
-        self._service_rate = service_rate
-        self._arrival_model = arrival_model
-        self._service_model = service_model
-        self._pitch_set = pitch_set
-        if origin is None:
-            origin = round(len(pitch_set) / 2)
-        assert origin < len(pitch_set) and origin >= 0
-        self._origin = origin
-        self._seed = seed
-        self._order = order
-
-    def _gen_pitches(self):
-        """
-        Generates pitches using a simple random walk algorithm.
-        """
-        pitch_set = self._pitch_set
-        pitches = []
-        index = self._origin
-        if self._number_of_notes == 0:
-            return pitches
-        for i in range(self._number_of_notes):
-            pitches.append(pitch_set[index])
-            index += random.choice([1, -1])
-            if index >= len(pitch_set):
-                index = len(pitch_set) - 1
-            elif index < 0:
-                index = 0
-        return pitches
-
-
-class GRWSoundPointsGenerator(SoundPointsGenerator):
-    r"""
-    Gaussian (sampled) random walk sound points generator.
-
-    ..  container:: example
-
-        >>> pitch_set = list(range(20))
-        >>> sound_points_generator = pang.GRWSoundPointsGenerator(
-        ...     pitch_set=pitch_set,
-        ... )
-        >>> sequence = pang.Sequence(
-        ...     sound_points_generator=sound_points_generator,
-        ...     sequence_duration=4,
-        ... )
-        >>> sequence.simulate_queue()
-        >>> server = sequence.servers[0]
-        >>> q_event_sequence = server.q_event_sequence
-        >>> optimizer = nauert.MeasurewiseAttackPointOptimizer()
-        >>> result = nauert.quantize(
-        ...     q_event_sequence, attack_point_optimizer=optimizer
-        ... )
-        >>> abjad.show(result) # doctest: +SKIP
-
-        ..  docs::
-
-            >>> string = abjad.lilypond(result)
-            >>> print(string)
-            \new Voice
-            {
-                {
-                    %%% \time 4/4 %%%
-                    \tempo 4=60
-                    r8
-                    bf'8
-                    \tuplet 3/2
-                    {
-                        \tuplet 5/4
-                        {
-                            r32
-                            bf'16
-                            ~
-                            bf'16
-                            ~
-                        }
-                        \tuplet 3/2
-                        {
-                            bf'16
-                            r8
-                        }
-                        r8
-                    }
-                    r4
-                    \tuplet 3/2
-                    {
-                        r8
-                        r16.
-                        a'32
-                        ~
-                        a'8
-                        ~
-                    }
-                }
-                {
-                    a'32.
-                    af'64
-                    ~
-                    af'16
-                    ~
-                    af'8
-                    ~
-                    af'4
-                    r2
-                }
-            }
-
-
-    """
-
-    def __init__(
-        self,
-        arrival_rate=1,
-        service_rate=1,
-        arrival_model=QueuingProcess.MARKOV,
-        service_model=QueuingProcess.MARKOV,
-        pitch_set=[0],
-        origin=None,
-        mean=0,
-        standard_deviation=1,
-        seed=123456,
-        order="idp",
-    ):
-        self._arrival_rate = arrival_rate
-        self._service_rate = service_rate
-        self._arrival_model = arrival_model
-        self._service_model = service_model
-        self._pitch_set = pitch_set
-        if origin is None:
-            origin = round(len(pitch_set) / 2)
-        assert origin < len(pitch_set) and origin >= 0
-        self._origin = origin
-        self._mean = mean
-        self._standard_deviation = standard_deviation
-        self._seed = seed
-        self._order = order
-
-    def _gen_pitches(self):
-        """
-        Generates pitches using a round-off normal distribution.
-        """
-        pitch_set = self._pitch_set
-        pitches = []
-        index = self._origin
-        if self._number_of_notes == 0:
-            return pitches
-        for i in range(self._number_of_notes):
-            pitches.append(pitch_set[index])
-            index += round(np.random.normal(self._mean, self._standard_deviation))
-            if index >= len(pitch_set):
-                index = len(pitch_set) - 1
-            elif index < 0:
-                index = 0
-        return pitches
