@@ -4,7 +4,7 @@ import pang
 def test_ManualSoundPointGenerator():
     instances = [0, 1, 2, 3]
     durations = [0.5, 0.5, 0.5, 0.5]
-    pitches = [0, 0, 0, 0]
+    pitches = [0, 1, 0, 1]
     sound_points_generator = pang.ManualSoundPointsGenerator(
         instances=instances,
         durations=durations,
