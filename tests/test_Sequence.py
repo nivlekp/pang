@@ -16,4 +16,4 @@ def test_Sequence_from_sound_point_generator():
     assert sequence.instances == instances
     assert sequence.durations == durations
     assert sequence.pitches == pitches
-    assert sequence.sequence_duration == 3.5
+    assert sequence.sequence_duration == instances[-1] + durations[-1]

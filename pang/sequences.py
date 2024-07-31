@@ -1,4 +1,5 @@
 import bisect
+import itertools
 from collections.abc import Iterable
 
 from .soundpointsgenerators import (
@@ -20,6 +21,9 @@ class Sequence:
     ):
         if sound_points is None:
             self._sound_points = []
+        assert all(
+            s0.instance <= s1.instance for s0, s1 in itertools.pairwise(sound_points)
+        )
         self._sound_points = sound_points
         self._sequence_duration = sequence_duration
 
