@@ -1,6 +1,11 @@
 import bisect
+from collections.abc import Iterable
 
-from .soundpointsgenerators import ManualSoundPointsGenerator, SoundPointsGenerator
+from .soundpointsgenerators import (
+    ManualSoundPointsGenerator,
+    SoundPoint,
+    SoundPointsGenerator,
+)
 
 
 class Sequence:
@@ -10,14 +15,12 @@ class Sequence:
 
     def __init__(
         self,
-        sound_points_generator=None,
+        sound_points: Iterable[SoundPoint] | None = None,
         sequence_duration=0,
     ):
-        if sound_points_generator is None:
-            sound_points_generator = ManualSoundPointsGenerator()
-        assert isinstance(sound_points_generator, SoundPointsGenerator)
-        result = sound_points_generator(sequence_duration)
-        self._sound_points = result
+        if sound_points is None:
+            self._sound_points = []
+        self._sound_points = sound_points
         self._sequence_duration = sequence_duration
 
     def __getitem__(self, index):
@@ -35,7 +38,7 @@ class Sequence:
     def __iter__(self):
         yield from self._sound_points
 
-    def extend(self, sequence, time_gap=0):
+    def extend(self, sequence: "Sequence", time_gap=0):
         """
         Extends a sequence with another.
 
@@ -63,10 +66,11 @@ class Sequence:
 
         """
         assert isinstance(sequence, type(self))
-        offset = self.sequence_duration + time_gap
+        offset = self._sequence_duration + time_gap
         for sound_point in sequence:
             sound_point.instance += offset
         self._sound_points.extend(sequence._sound_points)
+        self._sequence_duration += sequence._sequence_duration + time_gap
 
     def insert(self, offset, sequence):
         """
@@ -115,6 +119,7 @@ class Sequence:
         for sound_point in sequence:
             sound_point.instance += offset
         self._sound_points[index:index] = sequence._sound_points
+        self._sequence_duration += sequence._sequence_duration
 
     def superpose(self, offset, sequence):
         """
@@ -195,9 +200,21 @@ class Sequence:
         """
         Returns the sequence duration in seconds.
         """
-        offsets = [i + d for i, d in zip(self.instances, self.durations)]
-        if offsets != []:
-            last_offset = max(offsets)
-        else:
-            last_offset = 0
+        if not self._sound_points:
+            return self._sequence_duration
+        last_sound_point = self._sound_points[-1]
+        last_offset = last_sound_point.instance + last_sound_point.duration
         return max(self._sequence_duration, last_offset)
+
+    @classmethod
+    def from_sequences(cls, sequences: Iterable["Sequence"]):
+        raise NotImplementedError
+
+    @classmethod
+    def from_sound_point_generator(
+        cls,
+        sound_points_generator: SoundPointsGenerator,
+        sequence_duration: int | float,
+    ):
+        assert isinstance(sound_points_generator, SoundPointsGenerator)
+        return cls(sound_points_generator(sequence_duration), sequence_duration)
