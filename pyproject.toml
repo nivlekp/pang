@@ -7,9 +7,9 @@ allow-direct-references = true
 
 [project]
 name = "pang"
-version = "24.6b1"
+version = "24.7b0"
 authors = [
-  { name="Tsz Kiu Pang", email="osamupang@gmail.com" },
+  { name="Tsz Kiu Pang" },
 ]
 description = "Tsz Kiu Pang's Abjad library"
 readme = "README.md"

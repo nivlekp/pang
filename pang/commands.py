@@ -3,6 +3,8 @@ import typing
 import abjad
 from abjadext import nauert
 
+from .noteserver import NoteServer
+from .queuesimulation import simulate_queue
 from .sequences import Sequence
 
 
@@ -91,20 +93,19 @@ class QuantizeSequenceCommand(Command):
 
     def __call__(self, target: abjad.Voice):
         sequence = self._sequence
-        sequence.simulate_queue()
+        (server,) = simulate_queue(sequence, (NoteServer(),))
         results = []
-        for server in sequence.servers:
-            q_event_sequence = server.q_event_sequence
-            result = nauert.quantize(
-                q_event_sequence,
-                q_schema=self._q_schema,
-                grace_handler=self._grace_handler,
-                heuristic=self._heuristic,
-                attack_point_optimizer=self._attack_point_optimizer,
-                attach_tempos=self._attach_tempos,
-            )
-            self._process_quantized_result(result)
-            results.append(result)
+        q_event_sequence = server.q_event_sequence
+        result = nauert.quantize(
+            q_event_sequence,
+            q_schema=self._q_schema,
+            grace_handler=self._grace_handler,
+            heuristic=self._heuristic,
+            attack_point_optimizer=self._attack_point_optimizer,
+            attach_tempos=self._attach_tempos,
+        )
+        self._process_quantized_result(result)
+        results.append(result)
         assert len(results) == 1
         result = results[0]
         target.extend(result)

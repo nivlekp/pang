@@ -14,15 +14,14 @@ from .postprocessors import (
     VerboseOttavaHandler,
     pad_voices_with_grace_skips,
 )
+from .queuesimulation import simulate_queue
 from .scoping import Scope
 from .segmentmaker import SegmentMaker
 from .sequences import Sequence
 from .sieves import gen_pitches_from_sieve
 from .soundpointsgenerators import (
     AtaxicSoundPointsGenerator,
-    GRWSoundPointsGenerator,
     ManualSoundPointsGenerator,
-    RandomWalkSoundPointsGenerator,
     SoundPoint,
     SoundPointsGenerator,
 )
@@ -33,7 +32,6 @@ __all__ = [
     "AtaxicSoundPointsGenerator",
     "Command",
     "Dynamic",
-    "GRWSoundPointsGenerator",
     "Harmonics",
     "Indicator",
     "ManualOttavaHandler",
@@ -41,7 +39,6 @@ __all__ = [
     "NoteServer",
     "OttavaHandler",
     "QuantizeSequenceCommand",
-    "RandomWalkSoundPointsGenerator",
     "Red",
     "Scope",
     "SegmentMaker",
@@ -57,4 +54,5 @@ __all__ = [
     "get_stylesheets_directory",
     "make_single_staff_score_template",
     "pad_voices_with_grace_skips",
+    "simulate_queue",
 ]
