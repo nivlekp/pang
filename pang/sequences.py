@@ -2,11 +2,7 @@ import bisect
 import itertools
 from collections.abc import Iterable
 
-from .soundpointsgenerators import (
-    ManualSoundPointsGenerator,
-    SoundPoint,
-    SoundPointsGenerator,
-)
+from .soundpointsgenerators import SoundPoint, SoundPointsGenerator
 
 
 class Sequence:
@@ -16,15 +12,14 @@ class Sequence:
 
     def __init__(
         self,
-        sound_points: Iterable[SoundPoint] | None = None,
+        sound_points: list[SoundPoint] | None = None,
         sequence_duration=0,
     ):
-        if sound_points is None:
-            self._sound_points = []
+        self._sound_points = sound_points or []
         assert all(
-            s0.instance <= s1.instance for s0, s1 in itertools.pairwise(sound_points)
+            s0.instance <= s1.instance
+            for s0, s1 in itertools.pairwise(self._sound_points)
         )
-        self._sound_points = sound_points
         self._sequence_duration = sequence_duration
 
     def __getitem__(self, index):
@@ -71,9 +66,13 @@ class Sequence:
         """
         assert isinstance(sequence, type(self))
         offset = self._sequence_duration + time_gap
-        for sound_point in sequence:
-            sound_point.instance += offset
-        self._sound_points.extend(sequence._sound_points)
+        sound_points = [
+            SoundPoint.from_sound_point(
+                sound_point, instance=sound_point.instance + offset
+            )
+            for sound_point in sequence
+        ]
+        self._sound_points.extend(sound_points)
         self._sequence_duration += sequence._sequence_duration + time_gap
 
     def insert(self, offset, sequence):
@@ -167,9 +166,11 @@ class Sequence:
         """
         assert isinstance(sequence, type(self))
         for sound_point in sequence:
-            sound_point.instance += offset
-            index = bisect.bisect_left(self.instances, sound_point.instance)
-            self._sound_points.insert(index, sound_point)
+            new_instance = sound_point.instance + offset
+            index = bisect.bisect_left(self.instances, new_instance)
+            self._sound_points.insert(
+                index, SoundPoint.from_sound_point(sound_point, instance=new_instance)
+            )
 
     @property
     def instances(self):
@@ -182,14 +183,6 @@ class Sequence:
     @property
     def durations(self):
         return [event.duration for event in self._sound_points]
-
-    @durations.setter
-    def durations(self, durations):
-        # TODO: maybe instead of allowing durations to be set, the durations
-        # can be generated more flexibly to start with
-        assert len(durations) == len(self._sound_points)
-        for sound_point, duration in zip(self._sound_points, durations):
-            sound_point.duration = duration
 
     @property
     def durations_in_millisecond(self):

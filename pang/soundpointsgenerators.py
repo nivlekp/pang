@@ -8,7 +8,7 @@ import numpy as np
 import abjad
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class SoundPoint:
     """
     SoundPoint / Event.
@@ -19,10 +19,9 @@ class SoundPoint:
     pitch: float | tuple[float]
     attachments: typing.Optional[list[typing.Any]] = None
 
-    def attach(self, attachment):
-        if self.attachments is None:
-            self.attachments = []
-        self.attachments.append(attachment)
+    @classmethod
+    def from_sound_point(cls, sound_point, /, **changes):
+        return dataclasses.replace(sound_point, **changes)
 
 
 class QueuingProcess(enum.Enum):
