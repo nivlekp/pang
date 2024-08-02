@@ -1,3 +1,5 @@
+from .utils import to_sound_points
+
 import pang
 
 
@@ -39,12 +41,3 @@ def test_Sequence_from_sound_point_generator():
     assert sequence.durations == durations
     assert sequence.pitches == pitches
     assert sequence.sequence_duration == instances[-1] + durations[-1]
-
-
-def to_sound_points(instances, durations, pitches=None):
-    if pitches is None:
-        pitches = tuple(() for _ in range(len(instances)))
-    return [
-        pang.SoundPoint(instance, duration, pitch)
-        for instance, duration, pitch in zip(instances, durations, pitches)
-    ]
