@@ -1,6 +1,19 @@
+import pang
+
 from .utils import to_sound_points
 
-import pang
+
+def test_Sequence_insert():
+    sequence_0 = pang.Sequence(
+        to_sound_points([0, 1, 2, 3], [0.5, 0.5, 0.5, 0.5], [0, 0, 0, 0]), 4
+    )
+    sequence_1 = pang.Sequence(
+        to_sound_points([0, 1, 2, 3], [0.5, 0.5, 0.5, 0.5], [1, 1, 1, 1]), 4
+    )
+    sequence_0.insert(2, sequence_1)
+    assert sequence_0.instances == [0, 1, 2, 3, 4, 5, 6, 7]
+    assert sequence_0.pitches == [0, 0, 1, 1, 1, 1, 0, 0]
+    assert sequence_0.durations == [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
 
 
 def test_Sequence_extend():
@@ -25,7 +38,7 @@ def test_Sequence_superpose():
     assert sequence_0.pitches == [0, 1, 0, 1, 0, 1, 0, 1]
 
 
-def test_Sequence_from_sound_point_generator():
+def test_Sequence_from_sound_points_generator():
     instances = [0, 1, 2, 3]
     durations = [0.5, 0.5, 0.5, 0.5]
     pitches = [0, 0, 0, 0]
@@ -34,7 +47,7 @@ def test_Sequence_from_sound_point_generator():
         durations=durations,
         pitches=pitches,
     )
-    sequence = pang.Sequence.from_sound_point_generator(
+    sequence = pang.Sequence.from_sound_points_generator(
         sound_points_generator=sound_points_generator, sequence_duration=0
     )
     assert sequence.instances == instances

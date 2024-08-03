@@ -49,12 +49,11 @@ class Sequence:
             ...     instances=instances,
             ...     durations=durations,
             ... )
-            >>> sequence_0 = pang.Sequence(
-            ...     sound_points_generator=sound_points_generator,
-            ...     sequence_duration=4,
+            >>> sequence_0 = pang.Sequence.from_sound_points_generator(
+            ...     sound_points_generator, 4
             ... )
-            >>> sequence_1 = pang.Sequence(
-            ...     sound_points_generator=sound_points_generator,
+            >>> sequence_1 = pang.Sequence.from_sound_points_generator(
+            ...     sound_points_generator, 4
             ... )
             >>> sequence_0.extend(sequence_1)
             >>> print(sequence_0.instances)
@@ -90,9 +89,8 @@ class Sequence:
             ...     durations=durations,
             ...     pitches=pitches,
             ... )
-            >>> sequence_0 = pang.Sequence(
-            ...     sound_points_generator=sound_points_generator,
-            ...     sequence_duration=4,
+            >>> sequence_0 = pang.Sequence.from_sound_points_generator(
+            ...     sound_points_generator, 4
             ... )
             >>> pitches = [1, 1, 1, 1]
             >>> sound_points_generator = pang.ManualSoundPointsGenerator(
@@ -100,9 +98,8 @@ class Sequence:
             ...     durations=durations,
             ...     pitches=pitches,
             ... )
-            >>> sequence_1 = pang.Sequence(
-            ...     sound_points_generator=sound_points_generator,
-            ...     sequence_duration=4,
+            >>> sequence_1 = pang.Sequence.from_sound_points_generator(
+            ...     sound_points_generator, 4
             ... )
             >>> sequence_0.insert(2, sequence_1)
             >>> print(sequence_0.instances)
@@ -117,11 +114,18 @@ class Sequence:
         """
         assert isinstance(sequence, type(self))
         index = bisect.bisect_left(self.instances, offset)
-        for sound_point in self._sound_points[index:]:
-            sound_point.instance += sequence.sequence_duration
-        for sound_point in sequence:
-            sound_point.instance += offset
-        self._sound_points[index:index] = sequence._sound_points
+        self._sound_points[index:] = [
+            SoundPoint.from_sound_point(
+                sound_point, instance=sound_point.instance + sequence.sequence_duration
+            )
+            for sound_point in self._sound_points[index:]
+        ]
+        self._sound_points[index:index] = [
+            SoundPoint.from_sound_point(
+                sound_point, instance=sound_point.instance + offset
+            )
+            for sound_point in sequence
+        ]
         self._sequence_duration += sequence._sequence_duration
 
     def superpose(self, offset, sequence):
@@ -139,9 +143,8 @@ class Sequence:
             ...     durations=durations,
             ...     pitches=pitches,
             ... )
-            >>> sequence_0 = pang.Sequence(
-            ...     sound_points_generator=sound_points_generator,
-            ...     sequence_duration=4,
+            >>> sequence_0 = pang.Sequence.from_sound_points_generator(
+            ...     sound_points_generator, 4
             ... )
             >>> pitches = [1, 1, 1, 1]
             >>> sound_points_generator = pang.ManualSoundPointsGenerator(
@@ -149,9 +152,8 @@ class Sequence:
             ...     durations=durations,
             ...     pitches=pitches,
             ... )
-            >>> sequence_1 = pang.Sequence(
-            ...     sound_points_generator=sound_points_generator,
-            ...     sequence_duration=4,
+            >>> sequence_1 = pang.Sequence.from_sound_points_generator(
+            ...     sound_points_generator, 4
             ... )
             >>> sequence_0.superpose(2, sequence_1)
             >>> print(sequence_0.instances)
@@ -208,7 +210,7 @@ class Sequence:
         raise NotImplementedError
 
     @classmethod
-    def from_sound_point_generator(
+    def from_sound_points_generator(
         cls,
         sound_points_generator: SoundPointsGenerator,
         sequence_duration: int | float,

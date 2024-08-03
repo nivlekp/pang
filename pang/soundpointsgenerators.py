@@ -95,7 +95,7 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
         >>> sound_points_generator = pang.AtaxicSoundPointsGenerator(
         ...     pitch_set=pitch_set,
         ... )
-        >>> sequence = pang.Sequence(
+        >>> sequence = pang.Sequence.from_sound_points_generator(
         ...     sound_points_generator=sound_points_generator,
         ...     sequence_duration=4,
         ... )
@@ -205,8 +205,8 @@ class ManualSoundPointsGenerator(SoundPointsGenerator):
         ...     instances=instances,
         ...     durations=durations,
         ... )
-        >>> sequence = pang.Sequence(
-        ...     sound_points_generator=sound_points_generator,
+        >>> sequence = pang.Sequence.from_sound_points_generator(
+        ...     sound_points_generator, 3.5
         ... )
         >>> print(sequence.instances)
         [0, 1, 2, 3]
@@ -253,8 +253,8 @@ class ManualSoundPointsGenerator(SoundPointsGenerator):
         ...     durations=durations,
         ...     pitches=pitches,
         ... )
-        >>> sequence = pang.Sequence(
-        ...     sound_points_generator=sound_points_generator,
+        >>> sequence = pang.Sequence.from_sound_points_generator(
+        ...     sound_points_generator, 3.5
         ... )
         >>> print(sequence.instances)
         [0, 1, 2, 3]

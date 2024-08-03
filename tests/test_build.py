@@ -34,7 +34,5 @@ def make_command():
         instances=instances,
         durations=durations,
     )
-    sequence = pang.Sequence(
-        sound_points_generator=sound_points_generator,
-    )
+    sequence = pang.Sequence.from_sound_points_generator(sound_points_generator, 4)
     return pang.QuantizeSequenceCommand(sequence)
