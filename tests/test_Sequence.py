@@ -54,3 +54,33 @@ def test_Sequence_from_sound_points_generator():
     assert sequence.durations == durations
     assert sequence.pitches == pitches
     assert sequence.sequence_duration == instances[-1] + durations[-1]
+
+
+def test_Sequence_from_sequences():
+    sequence_0 = pang.Sequence(
+        to_sound_points([0, 1, 2, 3], [0.5, 0.5, 0.5, 0.5], [0, 0, 0, 0]), 4
+    )
+    sequence_1 = pang.Sequence(
+        to_sound_points([0, 1, 2, 3], [0.6, 0.6, 0.6, 0.6], [1, 1, 1, 1]), 4
+    )
+    sequence_2 = pang.Sequence(
+        to_sound_points([0, 1, 2, 3], [0.7, 0.7, 0.7, 0.7], [2, 2, 2, 2]), 4
+    )
+    sequence = pang.Sequence.from_sequences([sequence_0, sequence_1, sequence_2])
+    assert sequence.instances == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    assert sequence.pitches == [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2]
+    assert sequence.durations == [
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.6,
+        0.6,
+        0.6,
+        0.6,
+        0.7,
+        0.7,
+        0.7,
+        0.7,
+    ]
+    assert sequence.sequence_duration == 12

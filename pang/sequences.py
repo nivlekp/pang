@@ -207,7 +207,19 @@ class Sequence:
 
     @classmethod
     def from_sequences(cls, sequences: Iterable["Sequence"]):
-        raise NotImplementedError
+        current_duration = 0
+        sound_points: list[SoundPoint] = []
+        for sequence in sequences:
+            sound_points.extend(
+                [
+                    SoundPoint.from_sound_point(
+                        sound_point, instance=sound_point.instance + current_duration
+                    )
+                    for sound_point in sequence
+                ]
+            )
+            current_duration += sequence.sequence_duration
+        return cls(sound_points, current_duration)
 
     @classmethod
     def from_sound_points_generator(
