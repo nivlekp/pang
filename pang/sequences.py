@@ -217,7 +217,7 @@ class Sequence:
                     for sound_point in sequence
                 ]
             )
-            current_duration += sequence.sequence_duration
+            current_duration += sequence._sequence_duration
         return cls(sound_points, current_duration)
 
     @classmethod
