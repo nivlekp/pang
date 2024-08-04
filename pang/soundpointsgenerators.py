@@ -20,7 +20,7 @@ class SoundPoint:
     attachments: typing.Optional[list[typing.Any]] = None
 
     @classmethod
-    def from_sound_point(cls, sound_point, /, **changes):
+    def from_sound_point(cls, sound_point, /, **changes) -> "SoundPoint":
         return dataclasses.replace(sound_point, **changes)
 
 

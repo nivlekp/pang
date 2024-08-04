@@ -12,10 +12,10 @@ class Sequence:
 
     def __init__(
         self,
-        sound_points: list[SoundPoint] | None = None,
-        sequence_duration=0,
+        sound_points: list[SoundPoint],
+        sequence_duration: float,
     ):
-        self._sound_points = sound_points or []
+        self._sound_points = sound_points
         if any(
             s0.instance > s1.instance
             for s0, s1 in itertools.pairwise(self._sound_points)
@@ -68,13 +68,14 @@ class Sequence:
         """
         assert isinstance(sequence, type(self))
         offset = self._sequence_duration + time_gap
-        sound_points = [
-            SoundPoint.from_sound_point(
-                sound_point, instance=sound_point.instance + offset
-            )
-            for sound_point in sequence
-        ]
-        self._sound_points.extend(sound_points)
+        self._sound_points.extend(
+            [
+                SoundPoint.from_sound_point(
+                    sound_point, instance=sound_point.instance + offset
+                )
+                for sound_point in sequence
+            ]
+        )
         self._sequence_duration += sequence._sequence_duration + time_gap
 
     def insert(self, offset, sequence):
@@ -205,8 +206,8 @@ class Sequence:
         return self._sequence_duration
 
     @classmethod
-    def from_sequences(cls, sequences: Iterable["Sequence"]):
-        current_duration = 0
+    def from_sequences(cls, sequences: Iterable["Sequence"]) -> "Sequence":
+        current_duration = 0.0
         sound_points: list[SoundPoint] = []
         for sequence in sequences:
             sound_points.extend(
