@@ -16,10 +16,13 @@ class Sequence:
         sequence_duration=0,
     ):
         self._sound_points = sound_points or []
-        assert all(
-            s0.instance <= s1.instance
+        if any(
+            s0.instance > s1.instance
             for s0, s1 in itertools.pairwise(self._sound_points)
-        )
+        ):
+            raise ValueError("Sound points are out of order")
+        if sound_points and sound_points[-1].instance > sequence_duration:
+            raise ValueError("The last sound point starts after the sequence ended")
         self._sequence_duration = sequence_duration
 
     def __getitem__(self, index):
@@ -116,7 +119,7 @@ class Sequence:
         index = bisect.bisect_left(self.instances, offset)
         self._sound_points[index:] = [
             SoundPoint.from_sound_point(
-                sound_point, instance=sound_point.instance + sequence.sequence_duration
+                sound_point, instance=sound_point.instance + sequence._sequence_duration
             )
             for sound_point in self._sound_points[index:]
         ]
@@ -199,11 +202,7 @@ class Sequence:
         """
         Returns the sequence duration in seconds.
         """
-        if not self._sound_points:
-            return self._sequence_duration
-        last_sound_point = self._sound_points[-1]
-        last_offset = last_sound_point.instance + last_sound_point.duration
-        return max(self._sequence_duration, last_offset)
+        return self._sequence_duration
 
     @classmethod
     def from_sequences(cls, sequences: Iterable["Sequence"]):
@@ -218,7 +217,7 @@ class Sequence:
                     for sound_point in sequence
                 ]
             )
-            current_duration += sequence.sequence_duration
+            current_duration += sequence._sequence_duration
         return cls(sound_points, current_duration)
 
     @classmethod

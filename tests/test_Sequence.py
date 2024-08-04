@@ -1,6 +1,22 @@
+import pytest
+
 import pang
 
 from .utils import to_sound_points
+
+
+def test_Sequence_with_out_of_order_sound_points_raises_exception():
+    with pytest.raises(ValueError) as exception_info:
+        pang.Sequence(to_sound_points([1, 0], [1, 1]), 2)
+    assert "out of order" in str(exception_info.value)
+
+
+def test_Sequence_with_strictly_overtime_sound_point_raises_exception():
+    with pytest.raises(ValueError) as exception_info:
+        pang.Sequence(to_sound_points([0, 3], [1, 1]), 2)
+    assert "The last sound point starts after the sequence ended" in str(
+        exception_info.value
+    )
 
 
 def test_Sequence_insert():
@@ -16,12 +32,38 @@ def test_Sequence_insert():
     assert sequence_0.durations == [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
 
 
-def test_Sequence_extend():
+def test_Sequence_insert_overtime_sequence():
+    sequence_0 = pang.Sequence(
+        to_sound_points([0, 1, 2, 3], [0.5, 0.5, 0.5, 0.5], [0, 0, 0, 0]), 4
+    )
+    sequence_1 = pang.Sequence(
+        to_sound_points([0, 1, 2, 3], [0.5, 0.5, 0.5, 1.5], [1, 1, 1, 1]), 4
+    )
+    sequence_0.insert(2, sequence_1)
+    assert sequence_0.instances == [0, 1, 2, 3, 4, 5, 6, 7]
+    assert sequence_0.pitches == [0, 0, 1, 1, 1, 1, 0, 0]
+    assert sequence_0.durations == [0.5, 0.5, 0.5, 0.5, 0.5, 1.5, 0.5, 0.5]
+
+
+def test_Sequence_extend_by_itself():
     sequence = pang.Sequence(to_sound_points([0, 1, 2, 3], [0.5, 0.5, 0.5, 0.5]), 4)
     sequence.extend(sequence)
     assert sequence.instances == [0, 1, 2, 3, 4, 5, 6, 7]
     assert all(duration == 0.5 for duration in sequence.durations)
     assert all(pitch == () for pitch in sequence.pitches)
+
+
+def test_Sequence_extend_with_overtime_sequence():
+    sequence_0 = pang.Sequence(
+        to_sound_points([0, 1, 2, 3], [0.5, 0.5, 0.5, 1.5], [0, 0, 0, 0]), 4
+    )
+    sequence_1 = pang.Sequence(
+        to_sound_points([0, 1, 2, 3], [0.5, 0.5, 0.5, 0.5], [1, 1, 1, 1]), 4
+    )
+    sequence_0.extend(sequence_1)
+    assert sequence_0.instances == [0, 1, 2, 3, 4, 5, 6, 7]
+    assert sequence_0.pitches == [0, 0, 0, 0, 1, 1, 1, 1]
+    assert sequence_0.durations == [0.5, 0.5, 0.5, 1.5, 0.5, 0.5, 0.5, 0.5]
 
 
 def test_Sequence_superpose():
@@ -48,12 +90,12 @@ def test_Sequence_from_sound_points_generator():
         pitches=pitches,
     )
     sequence = pang.Sequence.from_sound_points_generator(
-        sound_points_generator=sound_points_generator, sequence_duration=0
+        sound_points_generator=sound_points_generator, sequence_duration=4
     )
     assert sequence.instances == instances
     assert sequence.durations == durations
     assert sequence.pitches == pitches
-    assert sequence.sequence_duration == instances[-1] + durations[-1]
+    assert sequence.sequence_duration == 4
 
 
 def test_Sequence_from_sequences():
