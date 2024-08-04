@@ -25,7 +25,7 @@ class Sequence:
             raise ValueError("The last sound point starts after the sequence ended")
         self._sequence_duration = sequence_duration
 
-    def __getitem__(self, index):
+    def __getitem__(self, index) -> SoundPoint:
         return self._sound_points[index]
 
     def __len__(self):
@@ -40,7 +40,7 @@ class Sequence:
     def __iter__(self):
         yield from self._sound_points
 
-    def extend(self, sequence: "Sequence", time_gap=0):
+    def extend(self, sequence: "Sequence", time_gap=0) -> None:
         """
         Extends a sequence with another.
 
@@ -78,7 +78,7 @@ class Sequence:
         )
         self._sequence_duration += sequence._sequence_duration + time_gap
 
-    def insert(self, offset, sequence):
+    def insert(self, offset: float, sequence: "Sequence") -> None:
         """
         Inserts a sequence into another. ``offset`` should be specified in
         seconds.
@@ -132,7 +132,7 @@ class Sequence:
         ]
         self._sequence_duration += sequence._sequence_duration
 
-    def superpose(self, offset, sequence):
+    def superpose(self, offset: float, sequence: "Sequence"):
         """
         Superpose a sequence on top of another. ``offset`` should be specified
         in seconds.
@@ -223,9 +223,7 @@ class Sequence:
 
     @classmethod
     def from_sound_points_generator(
-        cls,
-        sound_points_generator: SoundPointsGenerator,
-        sequence_duration: int | float,
-    ):
+        cls, sound_points_generator: SoundPointsGenerator, sequence_duration: float
+    ) -> "Sequence":
         assert isinstance(sound_points_generator, SoundPointsGenerator)
         return cls(sound_points_generator(sequence_duration), sequence_duration)
