@@ -19,8 +19,8 @@ class SoundPoint:
     pitch: float | tuple[float]
     attachments: typing.Optional[list[typing.Any]] = None
 
-    @classmethod
-    def from_sound_point(cls, sound_point, /, **changes) -> "SoundPoint":
+    @staticmethod
+    def from_sound_point(sound_point, /, **changes) -> "SoundPoint":
         return dataclasses.replace(sound_point, **changes)
 
 
