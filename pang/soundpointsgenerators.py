@@ -8,7 +8,7 @@ import numpy as np
 import abjad
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class SoundPoint:
     """
     SoundPoint / Event.
@@ -19,10 +19,9 @@ class SoundPoint:
     pitch: float | tuple[float]
     attachments: typing.Optional[list[typing.Any]] = None
 
-    def attach(self, attachment):
-        if self.attachments is None:
-            self.attachments = []
-        self.attachments.append(attachment)
+    @staticmethod
+    def from_sound_point(sound_point, /, **changes) -> "SoundPoint":
+        return dataclasses.replace(sound_point, **changes)
 
 
 class QueuingProcess(enum.Enum):
@@ -96,7 +95,7 @@ class AtaxicSoundPointsGenerator(SoundPointsGenerator):
         >>> sound_points_generator = pang.AtaxicSoundPointsGenerator(
         ...     pitch_set=pitch_set,
         ... )
-        >>> sequence = pang.Sequence(
+        >>> sequence = pang.Sequence.from_sound_points_generator(
         ...     sound_points_generator=sound_points_generator,
         ...     sequence_duration=4,
         ... )
@@ -206,8 +205,8 @@ class ManualSoundPointsGenerator(SoundPointsGenerator):
         ...     instances=instances,
         ...     durations=durations,
         ... )
-        >>> sequence = pang.Sequence(
-        ...     sound_points_generator=sound_points_generator,
+        >>> sequence = pang.Sequence.from_sound_points_generator(
+        ...     sound_points_generator, 3.5
         ... )
         >>> print(sequence.instances)
         [0, 1, 2, 3]
@@ -254,8 +253,8 @@ class ManualSoundPointsGenerator(SoundPointsGenerator):
         ...     durations=durations,
         ...     pitches=pitches,
         ... )
-        >>> sequence = pang.Sequence(
-        ...     sound_points_generator=sound_points_generator,
+        >>> sequence = pang.Sequence.from_sound_points_generator(
+        ...     sound_points_generator, 3.5
         ... )
         >>> print(sequence.instances)
         [0, 1, 2, 3]

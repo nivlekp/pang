@@ -1,6 +1,6 @@
 from . import build
 from .commands import Command, QuantizeSequenceCommand
-from .indicators import Dynamic, Harmonics, Indicator, Red
+from .indicators import Indicator
 from .noteserver import NoteServer, _get_closest_server
 from .paths import (
     get_content_directory,
@@ -31,15 +31,12 @@ __all__ = [
     "build",
     "AtaxicSoundPointsGenerator",
     "Command",
-    "Dynamic",
-    "Harmonics",
     "Indicator",
     "ManualOttavaHandler",
     "ManualSoundPointsGenerator",
     "NoteServer",
     "OttavaHandler",
     "QuantizeSequenceCommand",
-    "Red",
     "Scope",
     "SegmentMaker",
     "Sequence",

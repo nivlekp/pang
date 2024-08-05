@@ -1,6 +1,8 @@
 import bisect
+import itertools
+from collections.abc import Iterable
 
-from .soundpointsgenerators import ManualSoundPointsGenerator, SoundPointsGenerator
+from .soundpointsgenerators import SoundPoint, SoundPointsGenerator
 
 
 class Sequence:
@@ -10,17 +12,20 @@ class Sequence:
 
     def __init__(
         self,
-        sound_points_generator=None,
-        sequence_duration=0,
+        sound_points: list[SoundPoint],
+        sequence_duration: float,
     ):
-        if sound_points_generator is None:
-            sound_points_generator = ManualSoundPointsGenerator()
-        assert isinstance(sound_points_generator, SoundPointsGenerator)
-        result = sound_points_generator(sequence_duration)
-        self._sound_points = result
+        self._sound_points = sound_points
+        if any(
+            s0.instance > s1.instance
+            for s0, s1 in itertools.pairwise(self._sound_points)
+        ):
+            raise ValueError("Sound points are out of order")
+        if sound_points and sound_points[-1].instance > sequence_duration:
+            raise ValueError("The last sound point starts after the sequence ended")
         self._sequence_duration = sequence_duration
 
-    def __getitem__(self, index):
+    def __getitem__(self, index) -> SoundPoint:
         return self._sound_points[index]
 
     def __len__(self):
@@ -35,7 +40,7 @@ class Sequence:
     def __iter__(self):
         yield from self._sound_points
 
-    def extend(self, sequence, time_gap=0):
+    def extend(self, sequence: "Sequence", time_gap=0) -> None:
         """
         Extends a sequence with another.
 
@@ -47,12 +52,11 @@ class Sequence:
             ...     instances=instances,
             ...     durations=durations,
             ... )
-            >>> sequence_0 = pang.Sequence(
-            ...     sound_points_generator=sound_points_generator,
-            ...     sequence_duration=4,
+            >>> sequence_0 = pang.Sequence.from_sound_points_generator(
+            ...     sound_points_generator, 4
             ... )
-            >>> sequence_1 = pang.Sequence(
-            ...     sound_points_generator=sound_points_generator,
+            >>> sequence_1 = pang.Sequence.from_sound_points_generator(
+            ...     sound_points_generator, 4
             ... )
             >>> sequence_0.extend(sequence_1)
             >>> print(sequence_0.instances)
@@ -63,12 +67,18 @@ class Sequence:
 
         """
         assert isinstance(sequence, type(self))
-        offset = self.sequence_duration + time_gap
-        for sound_point in sequence:
-            sound_point.instance += offset
-        self._sound_points.extend(sequence._sound_points)
+        offset = self._sequence_duration + time_gap
+        self._sound_points.extend(
+            [
+                SoundPoint.from_sound_point(
+                    sound_point, instance=sound_point.instance + offset
+                )
+                for sound_point in sequence
+            ]
+        )
+        self._sequence_duration += sequence._sequence_duration + time_gap
 
-    def insert(self, offset, sequence):
+    def insert(self, offset: float, sequence: "Sequence") -> None:
         """
         Inserts a sequence into another. ``offset`` should be specified in
         seconds.
@@ -83,9 +93,8 @@ class Sequence:
             ...     durations=durations,
             ...     pitches=pitches,
             ... )
-            >>> sequence_0 = pang.Sequence(
-            ...     sound_points_generator=sound_points_generator,
-            ...     sequence_duration=4,
+            >>> sequence_0 = pang.Sequence.from_sound_points_generator(
+            ...     sound_points_generator, 4
             ... )
             >>> pitches = [1, 1, 1, 1]
             >>> sound_points_generator = pang.ManualSoundPointsGenerator(
@@ -93,9 +102,8 @@ class Sequence:
             ...     durations=durations,
             ...     pitches=pitches,
             ... )
-            >>> sequence_1 = pang.Sequence(
-            ...     sound_points_generator=sound_points_generator,
-            ...     sequence_duration=4,
+            >>> sequence_1 = pang.Sequence.from_sound_points_generator(
+            ...     sound_points_generator, 4
             ... )
             >>> sequence_0.insert(2, sequence_1)
             >>> print(sequence_0.instances)
@@ -110,13 +118,21 @@ class Sequence:
         """
         assert isinstance(sequence, type(self))
         index = bisect.bisect_left(self.instances, offset)
-        for sound_point in self._sound_points[index:]:
-            sound_point.instance += sequence.sequence_duration
-        for sound_point in sequence:
-            sound_point.instance += offset
-        self._sound_points[index:index] = sequence._sound_points
+        self._sound_points[index:] = [
+            SoundPoint.from_sound_point(
+                sound_point, instance=sound_point.instance + sequence._sequence_duration
+            )
+            for sound_point in self._sound_points[index:]
+        ]
+        self._sound_points[index:index] = [
+            SoundPoint.from_sound_point(
+                sound_point, instance=sound_point.instance + offset
+            )
+            for sound_point in sequence
+        ]
+        self._sequence_duration += sequence._sequence_duration
 
-    def superpose(self, offset, sequence):
+    def superpose(self, offset: float, sequence: "Sequence"):
         """
         Superpose a sequence on top of another. ``offset`` should be specified
         in seconds.
@@ -131,9 +147,8 @@ class Sequence:
             ...     durations=durations,
             ...     pitches=pitches,
             ... )
-            >>> sequence_0 = pang.Sequence(
-            ...     sound_points_generator=sound_points_generator,
-            ...     sequence_duration=4,
+            >>> sequence_0 = pang.Sequence.from_sound_points_generator(
+            ...     sound_points_generator, 4
             ... )
             >>> pitches = [1, 1, 1, 1]
             >>> sound_points_generator = pang.ManualSoundPointsGenerator(
@@ -141,9 +156,8 @@ class Sequence:
             ...     durations=durations,
             ...     pitches=pitches,
             ... )
-            >>> sequence_1 = pang.Sequence(
-            ...     sound_points_generator=sound_points_generator,
-            ...     sequence_duration=4,
+            >>> sequence_1 = pang.Sequence.from_sound_points_generator(
+            ...     sound_points_generator, 4
             ... )
             >>> sequence_0.superpose(2, sequence_1)
             >>> print(sequence_0.instances)
@@ -158,9 +172,11 @@ class Sequence:
         """
         assert isinstance(sequence, type(self))
         for sound_point in sequence:
-            sound_point.instance += offset
-            index = bisect.bisect_left(self.instances, sound_point.instance)
-            self._sound_points.insert(index, sound_point)
+            new_instance = sound_point.instance + offset
+            index = bisect.bisect_left(self.instances, new_instance)
+            self._sound_points.insert(
+                index, SoundPoint.from_sound_point(sound_point, instance=new_instance)
+            )
 
     @property
     def instances(self):
@@ -173,14 +189,6 @@ class Sequence:
     @property
     def durations(self):
         return [event.duration for event in self._sound_points]
-
-    @durations.setter
-    def durations(self, durations):
-        # TODO: maybe instead of allowing durations to be set, the durations
-        # can be generated more flexibly to start with
-        assert len(durations) == len(self._sound_points)
-        for sound_point, duration in zip(self._sound_points, durations):
-            sound_point.duration = duration
 
     @property
     def durations_in_millisecond(self):
@@ -195,9 +203,27 @@ class Sequence:
         """
         Returns the sequence duration in seconds.
         """
-        offsets = [i + d for i, d in zip(self.instances, self.durations)]
-        if offsets != []:
-            last_offset = max(offsets)
-        else:
-            last_offset = 0
-        return max(self._sequence_duration, last_offset)
+        return self._sequence_duration
+
+    @classmethod
+    def from_sequences(cls, sequences: Iterable["Sequence"]) -> "Sequence":
+        current_duration = 0.0
+        sound_points: list[SoundPoint] = []
+        for sequence in sequences:
+            sound_points.extend(
+                [
+                    SoundPoint.from_sound_point(
+                        sound_point, instance=sound_point.instance + current_duration
+                    )
+                    for sound_point in sequence
+                ]
+            )
+            current_duration += sequence._sequence_duration
+        return cls(sound_points, current_duration)
+
+    @classmethod
+    def from_sound_points_generator(
+        cls, sound_points_generator: SoundPointsGenerator, sequence_duration: float
+    ) -> "Sequence":
+        assert isinstance(sound_points_generator, SoundPointsGenerator)
+        return cls(sound_points_generator(sequence_duration), sequence_duration)

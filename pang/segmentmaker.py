@@ -19,8 +19,8 @@ class SegmentMaker:
         ...     instances=instances,
         ...     durations=durations,
         ... )
-        >>> sequence = pang.Sequence(
-        ...     sound_points_generator=sound_points_generator,
+        >>> sequence = pang.Sequence.from_sound_points_generator(
+        ...     sound_points_generator, 4
         ... )
         >>> command = pang.QuantizeSequenceCommand(sequence)
         >>> scope = pang.Scope(voice_name="Voice")
@@ -190,8 +190,8 @@ class SegmentMaker:
             ...     instances=instances,
             ...     durations=durations,
             ... )
-            >>> sequence = pang.Sequence(
-            ...     sound_points_generator=sound_points_generator,
+            >>> sequence = pang.Sequence.from_sound_points_generator(
+            ...     sound_points_generator, 4
             ... )
             >>> command = pang.QuantizeSequenceCommand(sequence)
             >>> scope = pang.Scope(voice_name="Voice")
