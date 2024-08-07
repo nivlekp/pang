@@ -7,7 +7,7 @@ allow-direct-references = true
 
 [project]
 name = "pang"
-version = "24.8b0"
+version = "24.8b1"
 authors = [
   { name="Tsz Kiu Pang" },
 ]
@@ -33,3 +33,8 @@ test = [
     "pytest",
     "mypy>=1.4.1, <1.5.0",
 ]
+
+[project.scripts]
+make_sections = "scripts.make_sections:main"
+make_score = "scripts.make_score:main"
+import_abjad_ily = "scripts.import_abjad_ily:main"
