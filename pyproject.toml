@@ -35,6 +35,6 @@ test = [
 ]
 
 [project.scripts]
-make_sections = "scripts.make_sections:main"
-make_score = "scripts.make_score:main"
-import_abjad_ily = "scripts.import_abjad_ily:main"
+make_sections = "pang.scripts.make_sections:main"
+make_score = "pang.scripts.make_score:main"
+import_abjad_ily = "pang.scripts.import_abjad_ily:main"
