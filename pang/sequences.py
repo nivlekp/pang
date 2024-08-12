@@ -28,6 +28,12 @@ class Sequence:
     def __getitem__(self, index) -> SoundPoint:
         return self._sound_points[index]
 
+    def __eq__(self, sequence):
+        return (
+            self._sound_points == sequence._sound_points
+            and self._sequence_duration == sequence._sequence_duration
+        )
+
     def __len__(self):
         return len(self._sound_points)
 
@@ -227,3 +233,7 @@ class Sequence:
     ) -> "Sequence":
         assert isinstance(sound_points_generator, SoundPointsGenerator)
         return cls(sound_points_generator(sequence_duration), sequence_duration)
+
+    @classmethod
+    def empty_sequence(cls) -> "Sequence":
+        return cls([], 0)
