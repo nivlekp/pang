@@ -135,4 +135,4 @@ def test_Sequence_empty_sequence():
 def test_Sequence___eq__():
     assert pang.Sequence([], 0) == pang.Sequence([], 0)
     assert pang.Sequence([], 0) != pang.Sequence([], 1)
-    assert pang.Sequence([0.1], 0) != pang.Sequence([], 0)
+    assert pang.Sequence(to_sound_points([0, 1], [1, 1]), 2) != pang.Sequence([], 2)
