@@ -126,3 +126,13 @@ def test_Sequence_from_sequences():
         0.7,
     ]
     assert sequence.sequence_duration == 12
+
+
+def test_Sequence_empty_sequence():
+    assert pang.Sequence.empty_sequence() == pang.Sequence([], 0)
+
+
+def test_Sequence___eq__():
+    assert pang.Sequence([], 0) == pang.Sequence([], 0)
+    assert pang.Sequence([], 0) != pang.Sequence([], 1)
+    assert pang.Sequence([0.1], 0) != pang.Sequence([], 0)
