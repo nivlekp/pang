@@ -20,7 +20,7 @@ def test_noteserver_01():
 
 def test_noteserver_02():
     server = pang.NoteServer()
-    server.serve(curr_time=1.0, duration=0.5, pitch=0)
+    server.serve(1.0, pang.SoundPoint(instance=10000, duration=0.5, pitch=0))
     assert server.durations == [1.0, 0.5]
     assert server.pitches == [None, 0]
     assert server.offset_instance == 1.5
