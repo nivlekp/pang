@@ -5,13 +5,6 @@ from abjadext import nauert
 from .soundpointsgenerators import SoundPoint
 
 
-def _get_closest_server(servers):
-    offset_instance, idx = min(
-        (server.offset_instance, idx) for (idx, server) in enumerate(servers)
-    )
-    return idx, offset_instance
-
-
 class AbstractNoteServer(abc.ABC):
     """
     Note Server.

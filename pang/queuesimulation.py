@@ -1,7 +1,14 @@
 import queue
 
-from .noteserver import NoteServer, _get_closest_server
+from .noteserver import NoteServer
 from .sequences import Sequence
+
+
+def _get_next_available_server(servers):
+    offset_instance, idx = min(
+        (server.offset_instance, idx) for (idx, server) in enumerate(servers)
+    )
+    return idx, offset_instance
 
 
 def simulate_queue(sequence: Sequence, servers: tuple[NoteServer, ...]):
@@ -14,7 +21,7 @@ def simulate_queue(sequence: Sequence, servers: tuple[NoteServer, ...]):
     q: queue.Queue = queue.Queue()
     arrival_index = 0
     while arrival_index < len(sequence.instances) or not q.empty():
-        server_index, closest_offset_instance = _get_closest_server(servers)
+        server_index, closest_offset_instance = _get_next_available_server(servers)
         if q.empty():
             if closest_offset_instance > sequence.instances[arrival_index]:
                 # previous note has not finished yet, so we should queue

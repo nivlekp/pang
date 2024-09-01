@@ -1,7 +1,7 @@
 from . import build
 from .commands import Command, QuantizeSequenceCommand
 from .indicators import Indicator
-from .noteserver import NoteServer, _get_closest_server
+from .noteserver import NoteServer
 from .paths import (
     get_content_directory,
     get_score_directory,
@@ -14,7 +14,7 @@ from .postprocessors import (
     VerboseOttavaHandler,
     pad_voices_with_grace_skips,
 )
-from .queuesimulation import simulate_queue
+from .queuesimulation import _get_next_available_server, simulate_queue
 from .scoping import Scope
 from .segmentmaker import SegmentMaker
 from .sequences import Sequence
@@ -43,7 +43,7 @@ __all__ = [
     "SoundPoint",
     "SoundPointsGenerator",
     "VerboseOttavaHandler",
-    "_get_closest_server",
+    "_get_next_available_server",
     "gen_pitches_from_sieve",
     "get_content_directory",
     "get_score_directory",
