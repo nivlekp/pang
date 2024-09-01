@@ -38,8 +38,8 @@ class AbstractNoteServer(abc.ABC):
         self._offset_instance = curr_time + sound_point.duration
 
     @abc.abstractmethod
-    def can_serve(self) -> bool:
-        ...
+    def can_serve(self, sound_point: SoundPoint) -> bool:
+        raise NotImplementedError
 
     @property
     def attachments(self):
@@ -69,5 +69,5 @@ class AbstractNoteServer(abc.ABC):
 
 
 class NoteServer(AbstractNoteServer):
-    def can_serve(self) -> bool:
+    def can_serve(self, sound_point: SoundPoint) -> bool:
         return True
