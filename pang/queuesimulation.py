@@ -1,5 +1,3 @@
-import queue
-
 from .noteserver import NoteServer
 from .sequences import Sequence
 
@@ -18,15 +16,15 @@ def simulate_queue(sequence: Sequence, servers: tuple[NoteServer, ...]):
     # TODO: model rest_threshold
     assert sequence.instances is not None and len(sequence.instances) > 0
     curr_time = 0.0
-    q: queue.Queue = queue.Queue()
+    q: list[int] = []
     arrival_index = 0
-    while arrival_index < len(sequence.instances) or not q.empty():
+    while arrival_index < len(sequence.instances) or q:
         server_index, closest_offset_instance = _get_next_available_server(servers)
-        if q.empty():
+        if not q:
             if closest_offset_instance > sequence.instances[arrival_index]:
                 # previous note has not finished yet, so we should queue
                 # the newly arrived note
-                q.put(arrival_index)
+                q.append(arrival_index)
                 curr_time = sequence.instances[arrival_index]
                 arrival_index = arrival_index + 1
             else:
@@ -42,11 +40,11 @@ def simulate_queue(sequence: Sequence, servers: tuple[NoteServer, ...]):
                 arrival_index < len(sequence.instances)
                 and closest_offset_instance > sequence.instances[arrival_index]
             ):
-                q.put(arrival_index)
+                q.append(arrival_index)
                 curr_time = sequence.instances[arrival_index]
                 arrival_index = arrival_index + 1
             else:
-                index = q.get()
+                index = q.pop(0)
                 curr_time = closest_offset_instance
                 servers[server_index].serve(
                     curr_time,
