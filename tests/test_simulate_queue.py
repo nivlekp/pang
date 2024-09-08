@@ -90,7 +90,7 @@ def test_simulate_queue_04():
     assert server.pitches == [None, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 
-def test_simulate_queue_with_two_servers():
+def test_simulate_queue_with_two_servers_but_allocated_to_one_only():
     instances = [0, 1, 2, 3, 4]
     durations = [0.5, 0.5, 0.5, 0.5, 0.5]
     pitches = [0, 0, 0, 0, 0]
@@ -100,3 +100,19 @@ def test_simulate_queue_with_two_servers():
     )
     np.testing.assert_almost_equal(server0.durations, [0.5] * (len(durations) * 2 - 1))
     assert server0.pitches == [0, None, 0, None, 0, None, 0, None, 0]
+    assert server1.durations == []
+    assert server1.pitches == []
+
+
+def test_simulate_queue_with_two_servers_alternating():
+    instances = [0, 1, 2, 3, 4]
+    durations = [1.5, 1.5, 1.5, 1.5, 1.5]
+    pitches = [0, 1, 0, 1, 0]
+    sequence = pang.Sequence(to_sound_points(instances, durations, pitches), 10)
+    server0, server1 = pang.simulate_queue(
+        sequence, (pang.NoteServer(), pang.NoteServer())
+    )
+    np.testing.assert_almost_equal(server0.durations, [1.5, 0.5, 1.5, 0.5, 1.5])
+    assert server0.pitches == [0, None, 0, None, 0]
+    np.testing.assert_almost_equal(server1.durations, [1.0, 1.5, 0.5, 1.5])
+    assert server1.pitches == [None, 1, None, 1]
