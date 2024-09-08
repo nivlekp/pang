@@ -15,7 +15,6 @@ def simulate_queue(sequence: Sequence, servers: tuple[NoteServer, ...]):
     """
     # TODO: model rest_threshold
     assert sequence.instances is not None and len(sequence.instances) > 0
-    curr_time = 0.0
     queue: list[int] = []
     arrival_index = 0
     while arrival_index < len(sequence.instances) or queue:
