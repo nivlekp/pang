@@ -2,9 +2,14 @@ from .noteserver import NoteServer
 from .sequences import Sequence
 
 
-def _get_next_available_server(servers):
-    offset_instance, idx = min(
-        (server.offset_instance, idx) for (idx, server) in enumerate(servers)
+def _get_next_available_server(servers, next_arrival_time: float | None):
+    _, idx, offset_instance = min(
+        (
+            max(server.offset_instance, next_arrival_time or 0.0),
+            idx,
+            server.offset_instance,
+        )
+        for (idx, server) in enumerate(servers)
     )
     return idx, offset_instance
 
@@ -18,7 +23,14 @@ def simulate_queue(sequence: Sequence, servers: tuple[NoteServer, ...]):
     queue: list[int] = []
     arrival_index = 0
     while arrival_index < len(sequence.instances) or queue:
-        server_index, closest_offset_instance = _get_next_available_server(servers)
+        server_index, closest_offset_instance = _get_next_available_server(
+            servers,
+            (
+                None
+                if arrival_index == len(sequence.instances)
+                else sequence.instances[arrival_index]
+            ),
+        )
         if (
             arrival_index < len(sequence.instances)
             and closest_offset_instance > sequence.instances[arrival_index]
