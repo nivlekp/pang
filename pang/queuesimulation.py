@@ -29,17 +29,14 @@ def simulate_queue(sequence: Sequence, servers: tuple[NoteServer, ...]):
             queue.append(arrival_index)
             arrival_index = arrival_index + 1
         elif not queue:
-            curr_time = sequence.instances[arrival_index]
             servers[server_index].serve(
-                curr_time,
+                sequence.instances[arrival_index],
                 sound_point=sequence._sound_points[arrival_index],
             )
             arrival_index = arrival_index + 1
         else:  # there's already a client in the queue
-            index = queue.pop(0)
-            curr_time = closest_offset_instance
             servers[server_index].serve(
-                curr_time,
-                sound_point=sequence._sound_points[index],
+                closest_offset_instance,
+                sound_point=sequence._sound_points[queue.pop(0)],
             )
     return servers
