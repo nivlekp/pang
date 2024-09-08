@@ -1,8 +1,19 @@
 import numpy as np
+import pytest
 
 import pang
 
 from .utils import to_sound_points
+
+
+class SingleNoteServer0(pang.NoteServer):
+    def can_serve(self, sound_point: pang.SoundPoint) -> bool:
+        return sound_point.pitch == 0
+
+
+class SingleNoteServer1(pang.NoteServer):
+    def can_serve(self, sound_point: pang.SoundPoint) -> bool:
+        return sound_point.pitch == 1
 
 
 def test_get_next_available_server_index_with_one_server():
@@ -115,4 +126,19 @@ def test_simulate_queue_with_two_servers_alternating():
     np.testing.assert_almost_equal(server0.durations, [1.5, 0.5, 1.5, 0.5, 1.5])
     assert server0.pitches == [0, None, 0, None, 0]
     np.testing.assert_almost_equal(server1.durations, [1.0, 1.5, 0.5, 1.5])
+    assert server1.pitches == [None, 1, None, 1]
+
+
+@pytest.mark.xfail
+def test_simulate_queue_with_two_servers_serving_non_overlapping_pitches():
+    instances = [0, 1, 2, 3, 4]
+    durations = [0.5, 0.5, 0.5, 0.5, 0.5]
+    pitches = [0, 1, 0, 1, 0]
+    sequence = pang.Sequence(to_sound_points(instances, durations, pitches), 10)
+    server0, server1 = pang.simulate_queue(
+        sequence, (SingleNoteServer0(), SingleNoteServer1())
+    )
+    np.testing.assert_almost_equal(server0.durations, [0.5, 1.5, 0.5, 1.5, 0.5])
+    assert server0.pitches == [0, None, 0, None, 0]
+    np.testing.assert_almost_equal(server1.durations, [1.0, 0.5, 1.5, 0.5])
     assert server1.pitches == [None, 1, None, 1]
