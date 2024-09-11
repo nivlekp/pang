@@ -125,3 +125,17 @@ def test_simulate_queue_with_two_servers_serving_non_overlapping_pitches():
     assert server0.pitches == [0, None, 0, None, 0]
     np.testing.assert_almost_equal(server1.durations, [1.0, 0.5, 1.5, 0.5])
     assert server1.pitches == [None, 1, None, 1]
+
+
+def test_simulate_queue_with_two_servers_out_of_order_serving():
+    instances = [0, 1, 2, 3]
+    durations = [2.5, 0.5, 0.5, 0.5]
+    pitches = [0, 0, 1, 1]
+    sequence = pang.Sequence(to_sound_points(instances, durations, pitches), 10)
+    server0, server1 = pang.simulate_queue(
+        sequence, (SingleNoteServer0(), SingleNoteServer1())
+    )
+    np.testing.assert_almost_equal(server0.durations, [2.5, 0.5])
+    assert server0.pitches == [0, 0]
+    np.testing.assert_almost_equal(server1.durations, [2.0, 0.5, 0.5, 0.5])
+    assert server1.pitches == [None, 1, None, 1]
