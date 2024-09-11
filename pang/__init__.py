@@ -14,7 +14,7 @@ from .postprocessors import (
     VerboseOttavaHandler,
     pad_voices_with_grace_skips,
 )
-from .queuesimulation import _get_next_available_server_index, simulate_queue
+from .queuesimulation import simulate_queue
 from .scoping import Scope
 from .segmentmaker import SegmentMaker
 from .sequences import Sequence

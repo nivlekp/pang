@@ -15,21 +15,6 @@ class SingleNoteServer1(pang.NoteServer):
         return sound_point.pitch == 1
 
 
-def test_get_next_available_server_index_with_one_server():
-    server = pang.NoteServer()
-    index = pang._get_next_available_server_index([server], 0.0)
-    assert index == 0
-
-
-def test_get_next_available_server_index_with_two_servers():
-    server0 = pang.NoteServer()
-    server1 = pang.NoteServer()
-    server0._offset_instance = 2.0
-    server1._offset_instance = 1.0
-    index = pang._get_next_available_server_index([server0, server1], 0.0)
-    assert index == 1
-
-
 def test_simulate_queue_00():
     instances = [0, 1, 2, 3, 4]
     durations = [0.5, 0.5, 0.5, 0.5, 0.5]
