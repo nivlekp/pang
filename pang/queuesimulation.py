@@ -3,7 +3,9 @@ from .sequences import Sequence
 from .soundpointsgenerators import SoundPoint
 
 
-def simulate_queue(sequence: Sequence, servers: tuple[NoteServer, ...]):
+def simulate_queue(
+    sequence: Sequence, servers: tuple[NoteServer, ...]
+) -> tuple[NoteServer, ...]:
     queue: list[SoundPoint] = []
     for index, sound_point in enumerate(sequence._sound_points):
         queue.append(sound_point)
@@ -30,7 +32,9 @@ def _try_serving(servers, queue, current_time) -> bool:
     return False
 
 
-def _get_all_available_servers(servers: tuple[NoteServer, ...], current_time: float):
+def _get_all_available_servers(
+    servers: tuple[NoteServer, ...], current_time: float
+) -> tuple[NoteServer, ...]:
     return tuple(
         [server for server in servers if server.offset_instance <= current_time]
     )
@@ -38,13 +42,13 @@ def _get_all_available_servers(servers: tuple[NoteServer, ...], current_time: fl
 
 def _get_all_servable_servers(
     available_servers: tuple[NoteServer, ...], sound_point: SoundPoint
-):
+) -> tuple[NoteServer, ...]:
     return tuple(
         [server for server in available_servers if server.can_serve(sound_point)]
     )
 
 
-def _when_another_server_is_done(servers, current_time):
+def _when_another_server_is_done(servers, current_time) -> float:
     not_yet_available_servers = tuple(
         [server for server in servers if server.offset_instance > current_time]
     )
