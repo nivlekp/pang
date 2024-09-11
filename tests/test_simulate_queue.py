@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 
 import pang
 
@@ -129,7 +128,6 @@ def test_simulate_queue_with_two_servers_alternating():
     assert server1.pitches == [None, 1, None, 1]
 
 
-@pytest.mark.xfail
 def test_simulate_queue_with_two_servers_serving_non_overlapping_pitches():
     instances = [0, 1, 2, 3, 4]
     durations = [0.5, 0.5, 0.5, 0.5, 0.5]
