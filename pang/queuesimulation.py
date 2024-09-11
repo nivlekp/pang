@@ -50,10 +50,11 @@ def simulate_queue(sequence: Sequence, servers: tuple[NoteServer, ...]):
         queue.append(sound_point)
         current_time = sound_point.instance
         _try_serving(servers, queue, current_time)
-        if index < len(sequence._sound_points) - 1:
-            while queue and current_time < sequence._sound_points[index + 1].instance:
-                if not _try_serving(servers, queue, current_time):
-                    current_time = when_another_server_is_done(servers, current_time)
+        if index == len(sequence._sound_points) - 1:
+            break
+        while queue and current_time < sequence._sound_points[index + 1].instance:
+            if not _try_serving(servers, queue, current_time):
+                current_time = when_another_server_is_done(servers, current_time)
     while queue:
         if not _try_serving(servers, queue, current_time):
             current_time = when_another_server_is_done(servers, current_time)
