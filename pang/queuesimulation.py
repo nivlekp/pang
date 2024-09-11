@@ -16,7 +16,7 @@ def simulate_queue(sequence: Sequence, servers: tuple[NoteServer, ...]):
                 current_time = _when_another_server_is_done(servers, current_time)
     while queue:
         if not _try_serving(servers, queue, current_time):
-            current_time = when_another_server_is_done(servers, current_time)
+            current_time = _when_another_server_is_done(servers, current_time)
     return servers
 
 
