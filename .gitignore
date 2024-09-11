@@ -1,6 +1,7 @@
 *.swp
 *.py[cod]
 *.DS_Store
+.envrc
 
 eggs/
 .eggs/
