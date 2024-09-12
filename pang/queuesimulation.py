@@ -1,3 +1,5 @@
+import itertools
+
 from .noteserver import NoteServer
 from .sequences import Sequence
 from .soundpointsgenerators import SoundPoint
@@ -6,16 +8,21 @@ from .soundpointsgenerators import SoundPoint
 def simulate_queue(
     sequence: Sequence, servers: tuple[NoteServer, ...]
 ) -> tuple[NoteServer, ...]:
+    if not sequence._sound_points:
+        return servers
     queue: list[SoundPoint] = []
-    for index, sound_point in enumerate(sequence._sound_points):
-        queue.append(sound_point)
-        current_time = sound_point.instance
+    for this_sound_point, next_sound_point in itertools.pairwise(
+        sequence._sound_points
+    ):
+        queue.append(this_sound_point)
+        current_time = this_sound_point.instance
         _try_serving(servers, queue, current_time)
-        if index == len(sequence._sound_points) - 1:
-            break
-        while queue and current_time < sequence._sound_points[index + 1].instance:
+        while queue and current_time < next_sound_point.instance:
             if not _try_serving(servers, queue, current_time):
                 current_time = _when_another_server_is_done(servers, current_time)
+    last_sound_point = sequence._sound_points[-1]
+    queue.append(last_sound_point)
+    current_time = last_sound_point.instance
     while queue:
         if not _try_serving(servers, queue, current_time):
             current_time = _when_another_server_is_done(servers, current_time)
