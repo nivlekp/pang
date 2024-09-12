@@ -48,7 +48,9 @@ def _get_all_servable_servers(
     )
 
 
-def _when_another_server_is_done(servers, current_time) -> float:
+def _when_another_server_is_done(
+    servers: tuple[NoteServer, ...], current_time: float
+) -> float:
     not_yet_available_servers = tuple(
         [server for server in servers if server.offset_instance > current_time]
     )
