@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 import pang
 
@@ -139,3 +140,12 @@ def test_simulate_queue_with_two_servers_out_of_order_serving():
     assert server0.pitches == [0, 0]
     np.testing.assert_almost_equal(server1.durations, [2.0, 0.5, 0.5, 0.5])
     assert server1.pitches == [None, 1, None, 1]
+
+
+def test_simulate_queue_raises_exception_if_non_servable_sound_point_exists():
+    instances = [0, 1]
+    durations = [1, 1]
+    pitches = [0, 1]
+    sequence = pang.Sequence(to_sound_points(instances, durations, pitches), 10)
+    with pytest.raises(pang.NotServableException):
+        pang.simulate_queue(sequence, (SingleNoteServer0(),))

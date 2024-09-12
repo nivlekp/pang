@@ -5,11 +5,16 @@ from .sequences import Sequence
 from .soundpointsgenerators import SoundPoint
 
 
+class NotServableException(Exception):
+    pass
+
+
 def simulate_queue(
     sequence: Sequence, servers: tuple[NoteServer, ...]
 ) -> tuple[NoteServer, ...]:
     if not sequence._sound_points:
         return servers
+    _validate_all_sound_points_are_servable(sequence, servers)
     queue: list[SoundPoint] = []
     for this_sound_point, next_sound_point in itertools.pairwise(
         sequence._sound_points
@@ -29,7 +34,21 @@ def simulate_queue(
     return servers
 
 
-def _try_serving(servers, queue, current_time) -> bool:
+def _validate_all_sound_points_are_servable(
+    sequence: Sequence, servers: tuple[NoteServer, ...]
+) -> None:
+    unservable_sound_points = [
+        sound_point
+        for sound_point in sequence
+        if not any(server.can_serve(sound_point) for server in servers)
+    ]
+    if unservable_sound_points:
+        raise NotServableException(f"{unservable_sound_points} are not servable")
+
+
+def _try_serving(
+    servers: tuple[NoteServer, ...], queue: list[SoundPoint], current_time: float
+) -> bool:
     for index, sound_point in enumerate(queue):
         available_servers = _get_all_available_servers(servers, current_time)
         servable_servers = _get_all_servable_servers(available_servers, sound_point)
