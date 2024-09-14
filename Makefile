@@ -65,8 +65,7 @@ jupyter-test:
 	jupyter nbconvert --to=html --ExecutePreprocessor.enabled=True tests/test.ipynb
 
 mypy:
-	mypy pang
-	mypy tests
+	mypy .
 
 project = pang
 
