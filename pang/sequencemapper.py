@@ -4,6 +4,7 @@ import abjad
 from abjadext import nauert
 
 from .noteserver import NoteServer
+from .queuesimulation import simulate_queue
 from .sequences import Sequence
 
 
@@ -16,7 +17,9 @@ class QuantizingMetadata:
 class VoiceSpecification:
     voice: abjad.Voice
     note_server: NoteServer = dataclasses.field(default_factory=NoteServer)
-    q_schema: nauert.QSchema = dataclasses.field(default_factory=nauert.BeatwiseQSchema)
+    q_schema: nauert.QSchema = dataclasses.field(
+        default_factory=nauert.MeasurewiseQSchema
+    )
     grace_handler: nauert.GraceHandler = dataclasses.field(
         default_factory=nauert.ConcatenatingGraceHandler
     )
@@ -32,4 +35,23 @@ class VoiceSpecification:
 def populate_voices_from_sequence(
     sequence: Sequence, voice_specifications: tuple[VoiceSpecification, ...]
 ) -> QuantizingMetadata:
+    simulate_queue(
+        sequence,
+        tuple(
+            voice_specification.note_server
+            for voice_specification in voice_specifications
+        ),
+    )
+    for voice_specification in voice_specifications:
+        voice_specification.voice.extend(
+            nauert.quantize(
+                voice_specification.note_server.q_event_sequence,
+                voice_specification.q_schema,
+                voice_specification.grace_handler,
+                voice_specification.heuristic,
+                nauert.SerialJobHandler(),
+                voice_specification.attack_point_optimizer,
+                voice_specification.attach_tempos,
+            )
+        )
     return QuantizingMetadata()
