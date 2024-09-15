@@ -6,6 +6,15 @@ import pang
 from .utils import to_sound_points
 
 
+def test_populate_voices_from_sequence_noop() -> None:
+    voice = abjad.Voice()
+    pang.populate_voices_from_sequence(
+        pang.Sequence.empty_sequence(),
+        (pang.VoiceSpecification(voice),),
+    )
+    assert len(voice) == 0
+
+
 def test_populate_voices_from_sequence() -> None:
     voice = abjad.Voice()
     pang.populate_voices_from_sequence(

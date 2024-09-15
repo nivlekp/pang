@@ -56,9 +56,14 @@ class AbstractNoteServer(abc.ABC):
 
     @property
     def q_event_sequence(self):
+        assert len(self._durations) > 0
         return nauert.QEventSequence.from_millisecond_pitch_attachment_tuples(
             tuple(zip(self.durations_in_millisecond, self.pitches, self.attachments))
         )
+
+    @property
+    def is_empty(self):
+        return len(self._durations) == 0
 
 
 class NoteServer(AbstractNoteServer):

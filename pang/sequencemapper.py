@@ -43,6 +43,8 @@ def populate_voices_from_sequence(
         ),
     )
     for voice_specification in voice_specifications:
+        if voice_specification.note_server.is_empty:
+            continue
         voice_specification.voice.extend(
             nauert.quantize(
                 voice_specification.note_server.q_event_sequence,
