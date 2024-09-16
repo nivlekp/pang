@@ -4,9 +4,9 @@ import pathlib
 import subprocess
 
 import abjad
-from abjadext import nauert
 
 from .paths import get___main___path, get_score_directory
+from .sequencemapper import QuantizingMetadata
 
 
 def _get_lilypond_includes():
@@ -40,7 +40,18 @@ def _get_last_time_signature(score):
     return abjad.get.effective(last_leaf, prototype)
 
 
-def _collect_metadata(score, discarded_q_events):
+def collect_metadata(
+    score: abjad.Score, quantizing_metadata_dict: dict[str, QuantizingMetadata]
+) -> dict:
+    metadata = collect_scorewise_metadata(score)
+    metadata["per_voice_metadata"] = {
+        voice_name: quantizing_metadata.asdict()
+        for voice_name, quantizing_metadata in quantizing_metadata_dict.items()
+    }
+    return metadata
+
+
+def collect_scorewise_metadata(score):
     metadata = {}
     metadata["duration"] = float(abjad.get.duration(score, in_seconds=True))
     last_metronome_mark = _get_last_metronome_mark(score)
@@ -58,17 +69,6 @@ def _collect_metadata(score, discarded_q_events):
     metadata["last_time_signature"] = time_signature
     duration = _get_empty_beatspan(score)
     metadata["empty_beatspan"] = f"{duration.numerator}/{duration.denominator}"
-    metadata["discarded_q_events_count"] = len(
-        [event for events in discarded_q_events for event in events]
-    )
-    metadata["discarded_pitched_q_events_count"] = len(
-        [
-            event
-            for events in discarded_q_events
-            for event in events
-            if isinstance(event, nauert.PitchedQEvent)
-        ]
-    )
     return metadata
 
 
@@ -129,13 +129,6 @@ def run_music_py(section_path):
     path = path if path.exists() else section_path / "music.py"
     args = ["python", path]
     subprocess.run(args, check=True)
-
-
-def section(score, scope, command):
-    target = score[scope.voice_name]
-    command(target)
-    metadata = _collect_metadata(score, command.discarded_q_events)
-    return metadata
 
 
 def score(output_directory=None):

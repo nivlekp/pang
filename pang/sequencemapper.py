@@ -13,6 +13,9 @@ class QuantizingMetadata:
     number_of_all_discarded_q_events: int
     number_of_discarded_pitched_q_events: int
 
+    def asdict(self) -> dict:
+        return dataclasses.asdict(self)
+
 
 @dataclasses.dataclass(frozen=True)
 class VoiceSpecification:
