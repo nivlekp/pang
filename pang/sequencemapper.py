@@ -31,11 +31,17 @@ class VoiceSpecification:
         default_factory=nauert.MeasurewiseAttackPointOptimizer
     )
     attach_tempos: bool = True
+    voice_name: str = dataclasses.field(init=False)
+
+    def __post_init__(self):
+        if self.voice.name is None:
+            raise ValueError("Voice's name has to be specified")
+        object.__setattr__(self, "voice_name", self.voice.name)
 
 
 def populate_voices_from_sequence(
     sequence: Sequence, voice_specifications: tuple[VoiceSpecification, ...]
-) -> QuantizingMetadata:
+) -> dict[str, QuantizingMetadata]:
     simulate_queue(
         sequence,
         tuple(
@@ -57,10 +63,21 @@ def populate_voices_from_sequence(
                 voice_specification.attach_tempos,
             )
         )
-    return _retrieve_quantizing_metadata(voice_specification)
+    return _assemble_quantizing_metadata(voice_specifications)
 
 
-def _retrieve_quantizing_metadata(
+def _assemble_quantizing_metadata(
+    voice_specifications,
+) -> dict[str, QuantizingMetadata]:
+    return {
+        voice_specification.voice_name: _retrieve_quantizing_metadata_for_one_voice(
+            voice_specification
+        )
+        for voice_specification in voice_specifications
+    }
+
+
+def _retrieve_quantizing_metadata_for_one_voice(
     voice_specification: VoiceSpecification,
 ) -> QuantizingMetadata:
     grace_handler = voice_specification.grace_handler

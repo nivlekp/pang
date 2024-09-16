@@ -5,18 +5,18 @@ from .utils import to_sound_points
 
 
 def test_populate_voices_from_sequence_noop() -> None:
-    voice = abjad.Voice()
+    voice = abjad.Voice(name="voice_name")
     metadata = pang.populate_voices_from_sequence(
         pang.Sequence.empty_sequence(),
         (pang.VoiceSpecification(voice),),
     )
     assert len(voice) == 0
-    assert metadata.number_of_all_discarded_q_events == 0
-    assert metadata.number_of_discarded_pitched_q_events == 0
+    assert metadata["voice_name"].number_of_all_discarded_q_events == 0
+    assert metadata["voice_name"].number_of_discarded_pitched_q_events == 0
 
 
 def test_populate_voices_from_sequence() -> None:
-    voice = abjad.Voice()
+    voice = abjad.Voice(name="voice_name")
     metadata = pang.populate_voices_from_sequence(
         pang.Sequence(to_sound_points([0, 1], [1, 1], [0, 0]), 2),
         (pang.VoiceSpecification(voice),),
@@ -24,7 +24,7 @@ def test_populate_voices_from_sequence() -> None:
     string = abjad.lilypond(voice)
     assert string == abjad.string.normalize(
         r"""
-        \new Voice
+        \context Voice = "voice_name"
         {
             {
                 %%% \time 4/4 %%%
@@ -36,5 +36,5 @@ def test_populate_voices_from_sequence() -> None:
         }
         """
     ), print(string)
-    assert metadata.number_of_all_discarded_q_events == 0
-    assert metadata.number_of_discarded_pitched_q_events == 0
+    assert metadata["voice_name"].number_of_all_discarded_q_events == 0
+    assert metadata["voice_name"].number_of_discarded_pitched_q_events == 0
