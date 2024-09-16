@@ -10,7 +10,8 @@ from .sequences import Sequence
 
 @dataclasses.dataclass(frozen=True)
 class QuantizingMetadata:
-    pass
+    number_of_all_discarded_q_events: int
+    number_of_discarded_pitched_q_events: int
 
 
 @dataclasses.dataclass(frozen=True)
@@ -56,4 +57,26 @@ def populate_voices_from_sequence(
                 voice_specification.attach_tempos,
             )
         )
-    return QuantizingMetadata()
+    return _retrieve_quantizing_metadata(voice_specification)
+
+
+def _retrieve_quantizing_metadata(
+    voice_specification: VoiceSpecification,
+) -> QuantizingMetadata:
+    grace_handler = voice_specification.grace_handler
+    match grace_handler:
+        case nauert.DiscardingGraceHandler():
+            discarded_q_events = grace_handler.discarded_q_events
+            return QuantizingMetadata(
+                len([event for events in discarded_q_events for event in events]),
+                len(
+                    [
+                        event
+                        for events in discarded_q_events
+                        for event in events
+                        if isinstance(event, nauert.PitchedQEvent)
+                    ]
+                ),
+            )
+        case _:
+            return QuantizingMetadata(0, 0)
