@@ -1,7 +1,7 @@
 import pang
 
 
-def test_noteserver_serve():
+def test_noteserver_serve() -> None:
     server = pang.NoteServer()
     server.serve(1.0, pang.SoundPoint(99999, 0.5, 0))
     assert server.durations == [1.0, 0.5]
