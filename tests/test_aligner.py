@@ -82,19 +82,21 @@ def test_align_voices_length_varying_time_signature() -> None:
         abjad.Voice(r"\time 3/8 c'8 c'8 c'8 \time 2/4 c'4 c'4 \time 3/8 c'8 c'8 c'8"),
         abjad.Voice(r"\time 3/8 c'8 c'8 r8"),
     )
+    # put this in a staff group within a score to make time signatures visible
+    abjad.Score([abjad.StaffGroup(list(voices))])
     aligner.align_voices_length(voices)
     assert abjad.lilypond(voices[0]) == abjad.string.normalize(
         r"""
         \new Voice
         {
-            %%% \time 3/8 %%%
+            \time 3/8
             c'8
             c'8
             c'8
-            %%% \time 2/4 %%%
+            \time 2/4
             c'4
             c'4
-            %%% \time 3/8 %%%
+            \time 3/8
             c'8
             c'8
             c'8
@@ -105,13 +107,13 @@ def test_align_voices_length_varying_time_signature() -> None:
         r"""
         \new Voice
         {
-            %%% \time 3/8 %%%
+            \time 3/8
             c'8
             c'8
             r8
-            %%% \time 2/4 %%%
+            \time 2/4
             R2
-            %%% \time 3/8 %%%
+            \time 3/8
             R4.
         }
         """
