@@ -3,6 +3,7 @@ import dataclasses
 import abjad
 from abjadext import nauert
 
+from .aligner import align_voices_length
 from .noteserver import NoteServer
 from .queuesimulation import simulate_queue
 from .sequences import Sequence
@@ -66,6 +67,9 @@ def populate_voices_from_sequence(
                 voice_specification.attach_tempos,
             )
         )
+    align_voices_length(
+        tuple(voice_specification.voice for voice_specification in voice_specifications)
+    )
     return _assemble_quantizing_metadata(voice_specifications)
 
 
