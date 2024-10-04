@@ -17,7 +17,7 @@ class SoundPoint:
     instance: float
     duration: float
     pitch: float | tuple[float]
-    attachments: typing.Optional[list[typing.Any]] = None
+    attachments: list[typing.Any] = dataclasses.field(default_factory=list)
 
     @staticmethod
     def from_sound_point(sound_point, /, **changes) -> "SoundPoint":
