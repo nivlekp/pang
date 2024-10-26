@@ -137,13 +137,14 @@ def run_music_py(section_path):
 
 
 def score(output_directory=None):
+    output_directory_path = pathlib.Path(output_directory or get_score_directory())
     subprocess.run(
         [
             LILYPOND,
             "-o",
-            pathlib.Path(output_directory or get_score_directory()),
+            output_directory_path,
             get_score_directory() / MUSIC_LY_FILE_NAME,
         ],
         check=True,
     )
-    return output_directory / MUSIC_PDF_FILE_NAME
+    return output_directory_path / MUSIC_PDF_FILE_NAME
