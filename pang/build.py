@@ -81,14 +81,14 @@ def collect_scorewise_metadata(score):
     return metadata
 
 
-def _make_lilypond_files(score):
-    includes = _get_lilypond_includes()
-    items = ["#(ly:set-option 'relative-includes #t)"]
-    items += [rf'\include "{include}"' for include in includes]
-    items += [rf'\include "{MUSIC_ILY_FILE_NAME}"']
-    music_ly_file = abjad.LilyPondFile(items=items)
-    music_ily_file = abjad.LilyPondFile(items=[score])
-    return music_ly_file, music_ily_file
+def _make_ly_file():
+    return abjad.LilyPondFile(
+        items=[
+            "#(ly:set-option 'relative-includes #t)",
+            *(rf'\include "{include}"' for include in _get_lilypond_includes()),
+            rf'\include "{MUSIC_ILY_FILE_NAME}"',
+        ]
+    )
 
 
 def _read_previous_metadata():
@@ -113,15 +113,14 @@ def _write_metadata(metadata, file_path):
 
 
 def persist(score, metadata):
-    music_ly_file, music_ily_file = _make_lilypond_files(score)
     path = get___main___path()
     music_ly_path = path.parent / MUSIC_LY_FILE_NAME
     with open(music_ly_path, "w") as fp:
-        string = abjad.lilypond(music_ly_file)
+        string = abjad.lilypond(_make_ly_file())
         fp.write(string)
     music_ily_path = path.parent / MUSIC_ILY_FILE_NAME
     with open(music_ily_path, "w") as fp:
-        string = abjad.lilypond(music_ily_file)
+        string = abjad.lilypond(abjad.LilyPondFile(items=[score]))
         fp.write(string)
     metadata_path = path.parent / METADATA_FILE_NAME
     _write_metadata(metadata, metadata_path)
