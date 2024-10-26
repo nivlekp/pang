@@ -8,6 +8,15 @@ import abjad
 from .paths import get___main___path, get_score_directory
 from .sequencemapper import QuantizingMetadata
 
+PYTHON = "python"
+LILYPOND = "lilypond"
+
+MUSIC_LY_FILE_NAME = "music.ly"
+MUSIC_ILY_FILE_NAME = "music.ily"
+MUSIC_PDF_FILE_NAME = "music.pdf"
+MUSIC_PY_FILE_NAME = "music.py"
+METADATA_FILE_NAME = "__metadata__.json"
+
 
 def _get_lilypond_includes():
     return ["../../stylesheets/stylesheet.ily"]
@@ -76,7 +85,7 @@ def _make_lilypond_files(score):
     includes = _get_lilypond_includes()
     items = ["#(ly:set-option 'relative-includes #t)"]
     items += [rf'\include "{include}"' for include in includes]
-    items += [r'\include "music.ily"']
+    items += [rf'\include "{MUSIC_ILY_FILE_NAME}"']
     music_ly_file = abjad.LilyPondFile(items=items)
     music_ily_file = abjad.LilyPondFile(items=[score])
     return music_ly_file, music_ily_file
@@ -90,7 +99,7 @@ def _read_previous_metadata():
     previous_segment = ord(segment_name) - 1
     previous_segment_name = chr(previous_segment)
     previous_metadata_path = (
-        path.parent.parent / previous_segment_name / "__metadata__.json"
+        path.parent.parent / previous_segment_name / METADATA_FILE_NAME
     )
     with open(previous_metadata_path, "r") as fp:
         metadata = json.load(fp)
@@ -106,34 +115,35 @@ def _write_metadata(metadata, file_path):
 def persist(score, metadata):
     music_ly_file, music_ily_file = _make_lilypond_files(score)
     path = get___main___path()
-    music_ly_path = path.parent / "music.ly"
+    music_ly_path = path.parent / MUSIC_LY_FILE_NAME
     with open(music_ly_path, "w") as fp:
         string = abjad.lilypond(music_ly_file)
         fp.write(string)
-    music_ily_path = path.parent / "music.ily"
+    music_ily_path = path.parent / MUSIC_ILY_FILE_NAME
     with open(music_ily_path, "w") as fp:
         string = abjad.lilypond(music_ily_file)
         fp.write(string)
-    metadata_path = path.parent / "__metadata__.json"
+    metadata_path = path.parent / METADATA_FILE_NAME
     _write_metadata(metadata, metadata_path)
 
 
 def run_lilypond_in_segment_directory(section_path):
     assert section_path.exists()
-    args = ["lilypond", "music.ly"]
-    subprocess.run(args, cwd=section_path, check=True)
+    subprocess.run([LILYPOND, MUSIC_LY_FILE_NAME], cwd=section_path, check=True)
 
 
 def run_music_py(section_path):
-    path = section_path / "definition.py"
-    path = path if path.exists() else section_path / "music.py"
-    args = ["python", path]
-    subprocess.run(args, check=True)
+    subprocess.run([PYTHON, section_path / MUSIC_PY_FILE_NAME], check=True)
 
 
 def score(output_directory=None):
-    score_directory = get_score_directory()
-    output_directory = pathlib.Path(output_directory or score_directory)
-    args = ["lilypond", "-o", output_directory, score_directory / "music.ly"]
-    subprocess.run(args, check=True)
-    return output_directory / "music.pdf"
+    subprocess.run(
+        [
+            LILYPOND,
+            "-o",
+            pathlib.Path(output_directory or get_score_directory()),
+            get_score_directory() / MUSIC_LY_FILE_NAME,
+        ],
+        check=True,
+    )
+    return output_directory / MUSIC_PDF_FILE_NAME
