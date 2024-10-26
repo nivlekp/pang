@@ -1,5 +1,4 @@
 from . import build
-from .commands import Command, QuantizeSequenceCommand
 from .indicators import Indicator
 from .noteserver import NoteServer
 from .paths import (
@@ -16,7 +15,6 @@ from .postprocessors import (
 )
 from .queuesimulation import NotServableException, simulate_queue
 from .scoping import Scope
-from .segmentmaker import SegmentMaker
 from .sequencemapper import VoiceSpecification, populate_voices_from_sequence
 from .sequences import Sequence
 from .sieves import gen_pitches_from_sieve
@@ -31,16 +29,13 @@ from .templates import make_single_staff_score_template
 __all__ = [
     "build",
     "AtaxicSoundPointsGenerator",
-    "Command",
     "Indicator",
     "ManualOttavaHandler",
     "ManualSoundPointsGenerator",
     "NoteServer",
     "NotServableException",
     "OttavaHandler",
-    "QuantizeSequenceCommand",
     "Scope",
-    "SegmentMaker",
     "Sequence",
     "SoundPoint",
     "SoundPointsGenerator",
