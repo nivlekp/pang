@@ -6,19 +6,19 @@ build-backend = "hatchling.build"
 allow-direct-references = true
 
 [project]
-name = "pang"
-version = "24.11b0"
+name = "{{project_name}}"
+version = "24.12b3"
 authors = [
-  { name="Tsz Kiu Pang" },
+    { name="Tsz Kiu Pang" },
 ]
-description = "Tsz Kiu Pang's Abjad library"
+description = "{{project_description}}"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "abjad @ git+https://github.com/Abjad/abjad.git@8f66aa297c15a6f87d329c962b0d960fa6c6310c",
     "abjad-ext-nauert @ git+https://github.com/Abjad/abjad-ext-nauert.git@f636f81f10db16583bd75c6397bd93881a80ce2f",
-    "numpy",
-    "tomlkit",
+    "pang",
+    "numpy >= 2.0"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -30,12 +30,9 @@ test = [
     "black",
     "flake8",
     "isort",
+    "mypy",
     "pytest",
-    "mypy>=1.4.1, <1.5.0",
 ]
 
-[project.scripts]
-make_repository = "pang.scripts.make_repository:main"
-make_sections = "pang.scripts.make_sections:main"
-make_score = "pang.scripts.make_score:main"
-import_abjad_ily = "pang.scripts.import_abjad_ily:main"
+[tool.hatch.build.targets.wheel]
+packages = ["{{project_name}}"]

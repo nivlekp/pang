@@ -1,4 +1,5 @@
 from . import build
+from . import templates
 from .indicators import Indicator
 from .noteserver import NoteServer
 from .paths import (
@@ -48,4 +49,5 @@ __all__ = [
     "pad_voices_with_grace_skips",
     "populate_voices_from_sequence",
     "simulate_queue",
+    "templates",
 ]
