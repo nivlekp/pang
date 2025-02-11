@@ -24,7 +24,6 @@ from .soundpointsgenerators import (
     SoundPoint,
     SoundPointsGenerator,
 )
-from .templates import make_single_staff_score_template
 
 __all__ = [
     "build",
@@ -46,7 +45,6 @@ __all__ = [
     "get_score_directory",
     "get_section_paths",
     "get_stylesheets_directory",
-    "make_single_staff_score_template",
     "pad_voices_with_grace_skips",
     "populate_voices_from_sequence",
     "simulate_queue",
