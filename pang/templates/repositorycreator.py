@@ -1,7 +1,15 @@
+import dataclasses
 import pathlib
 import shutil
 
 TEMPLATE_REPOSITORY = pathlib.Path(__file__).parent / "repository"
+
+
+@dataclasses.dataclass
+class Placeholders:
+    project_name: str
+    composition_title: str
+    project_description: str
 
 
 def make_new_repository(
@@ -16,7 +24,8 @@ def make_new_repository(
 def _replace_placeholders(
     directory_path: pathlib.Path, project_name: str, project_description: str
 ) -> None:
-    for file_path in directory_path.rglob("*"):
+    for file_path in (path for path in directory_path.rglob("*") if path.is_file()):
+        print(f"reading {file_path}")
         content = open(file_path, "r").read()
         with open(file_path, "w") as file:
             file.write(
@@ -24,3 +33,6 @@ def _replace_placeholders(
                     "{{project_description}}", project_description
                 )
             )
+        if file_path.suffix == "template":
+            file_path.rename(file_path.stem)
+    (directory_path / "{{project_name}}").rename(directory_path / project_name)

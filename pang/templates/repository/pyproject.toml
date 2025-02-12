@@ -7,7 +7,7 @@ allow-direct-references = true
 
 [project]
 name = "{{project_name}}"
-version = "24.12b3"
+version = "25.02b0"
 authors = [
     { name="Tsz Kiu Pang" },
 ]
@@ -15,8 +15,8 @@ description = "{{project_description}}"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "abjad @ git+https://github.com/Abjad/abjad.git@8f66aa297c15a6f87d329c962b0d960fa6c6310c",
-    "abjad-ext-nauert @ git+https://github.com/Abjad/abjad-ext-nauert.git@f636f81f10db16583bd75c6397bd93881a80ce2f",
+    "abjad",
+    "abjad-ext-nauert",
     "pang",
     "numpy >= 2.0"
 ]

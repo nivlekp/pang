@@ -1,0 +1,12 @@
+\documentclass{article}
+\usepackage[a4paper]{geometry}
+\usepackage{pdfpages}
+
+\begin{document}
+\includepdf[pages=-]{{{project_name}}/builds/score/front-cover.pdf}
+\shipout\null
+\includepdf[pages=-]{{{project_name}}/builds/score/preface.pdf}
+\shipout\null
+\includepdf[pages=-]{{{project_name}}/builds/score/music.pdf}
+\includepdf[pages=-]{{{project_name}}/builds/score/back-cover.pdf}
+\end{document}
