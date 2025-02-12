@@ -24,7 +24,7 @@ class AbstractNoteServer(abc.ABC):
         if curr_time > self._offset_instance:
             self._durations.append(curr_time - self._offset_instance)
             self._pitches.append(None)
-            self._attachments.append(None)
+            self._attachments.append(())
         self._durations.append(sound_point.duration)
         self._pitches.append(sound_point.pitch)
         self._attachments.append(sound_point.attachments)
