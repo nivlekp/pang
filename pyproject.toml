@@ -7,7 +7,7 @@ allow-direct-references = true
 
 [project]
 name = "pang"
-version = "24.11b0"
+version = "25.02b0"
 authors = [
   { name="Tsz Kiu Pang" },
 ]
@@ -15,8 +15,8 @@ description = "Tsz Kiu Pang's Abjad library"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "abjad @ git+https://github.com/Abjad/abjad.git@7bca4dc7ab9b55441c3196e6e6d5b9e9184cc36f",
-    "abjad-ext-nauert @ git+https://github.com/Abjad/abjad-ext-nauert.git@8dec05b66f537fba9ec153742658c05694c3aaec",
+    "abjad @ git+https://github.com/Abjad/abjad.git@8f66aa297c15a6f87d329c962b0d960fa6c6310c",
+    "abjad-ext-nauert @ git+https://github.com/Abjad/abjad-ext-nauert.git@f636f81f10db16583bd75c6397bd93881a80ce2f",
     "numpy",
     "tomlkit",
 ]
