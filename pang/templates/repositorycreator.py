@@ -33,6 +33,6 @@ def _replace_placeholders(
                     "{{project_description}}", project_description
                 )
             )
-        if file_path.suffix == "template":
-            file_path.rename(file_path.stem)
+        if file_path.suffix == ".template":
+            file_path.rename(file_path.parent / file_path.stem)
     (directory_path / "{{project_name}}").rename(directory_path / project_name)
