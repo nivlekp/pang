@@ -1,5 +1,4 @@
-from . import build
-from . import templates
+from . import build, templates
 from .indicators import Indicator
 from .noteserver import NoteServer
 from .paths import (
