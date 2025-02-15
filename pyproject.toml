@@ -7,7 +7,7 @@ allow-direct-references = true
 
 [project]
 name = "pang"
-version = "25.02b0"
+version = "25.02b1"
 authors = [
   { name="Tsz Kiu Pang" },
 ]
@@ -35,6 +35,7 @@ test = [
 ]
 
 [project.scripts]
+make_repository = "pang.scripts.make_repository:main"
 make_sections = "pang.scripts.make_sections:main"
 make_score = "pang.scripts.make_score:main"
 import_abjad_ily = "pang.scripts.import_abjad_ily:main"

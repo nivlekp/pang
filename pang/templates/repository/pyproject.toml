@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[project]
+name = "{{project_name}}"
+version = "25.02b0"
+authors = [
+    { name="Tsz Kiu Pang" },
+]
+description = "{{project_description}}"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "abjad",
+    "abjad-ext-nauert",
+    "pang",
+    "numpy >= 2.0"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+test = [
+    "black",
+    "flake8",
+    "isort",
+    "mypy",
+    "pytest",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["{{project_name}}"]

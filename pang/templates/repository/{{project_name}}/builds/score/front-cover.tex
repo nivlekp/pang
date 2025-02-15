@@ -1,0 +1,37 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage[a4paper]{geometry}
+\usepackage{fontspec, graphicx, nopageno, tikz}
+
+\usetikzlibrary{calc}
+\pagenumbering{gobble}
+
+\begin{document}
+    \begin{titlepage}
+        \begin{tikzpicture}[remember picture, overlay]
+            \draw[line width = 6pt]
+                ($(current page.north west) + (0.5in, -0.5in)$)
+                rectangle
+                ($(current page.south east) + (-0.5in, 0.5in)$);
+            \draw[line width = 3pt]
+                ($(current page.north west) + (0.7in, -0.7in)$)
+                rectangle ($(current page.south east) + (-0.7in, 0.7in)$);
+        \end{tikzpicture}
+
+        \begin{center}
+            {\fontsize{60}{62}\selectfont \textbf{{{composition_title}}}}
+        \end{center}
+
+        \vfill
+
+        {\slshape for piano}
+
+        \vspace*{1\baselineskip}
+
+        {\slshape 2024}
+
+        \vspace*{1\baselineskip}
+
+        Tsz Kiu Pang
+    \end{titlepage}
+\end{document}

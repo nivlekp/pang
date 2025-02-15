@@ -1,0 +1,21 @@
+*.DS_Store
+
+*.swp
+__pycache__
+
+# latex stuff
+*.aux
+*.log
+*.out
+
+**/segments/*/music.pdf
+**/builds/*/*.pdf
+**/builds/*/*.midi
+
+# directory where I store some lilypond examples that I reference to
+lilypond_examples
+
+# stylesheets from abjad (which will get imported using a script)
+**/stylesheets/abjad_contrib
+
+.envrc
