@@ -1,7 +1,7 @@
-from collections.abc import Iterator
 import dataclasses
 import pathlib
 import shutil
+from collections.abc import Iterator
 
 TEMPLATE_REPOSITORY = pathlib.Path(__file__).parent / "repository"
 
