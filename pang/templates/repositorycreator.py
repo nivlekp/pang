@@ -1,4 +1,5 @@
 import dataclasses
+import functools
 import pathlib
 import shutil
 from collections.abc import Iterator
@@ -40,9 +41,11 @@ def _replace_placeholders(
 def _replace_placeholders_in_file_content(
     content: str, placeholders: Placeholders
 ) -> str:
-    for key, value in dataclasses.asdict(placeholders).items():
-        content = content.replace(f"{{{{{key}}}}}", value)
-    return content
+    return functools.reduce(
+        lambda c, i: c.replace("f{{{{{i[0]}}}}}", i[1]),
+        dataclasses.asdict(placeholders).items(),
+        content,
+    )
 
 
 def _rename_source_directory(directory_path: pathlib.Path, project_name: str) -> None:
