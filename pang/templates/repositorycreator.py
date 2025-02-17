@@ -71,4 +71,4 @@ def _all_files_in(directory_path: pathlib.Path) -> Iterator[pathlib.Path]:
 
 
 def _git_revision_hash() -> str:
-    return subprocess.check_output(["git", "rev-parse", "main"]).decode("ascii").strip()
+    return subprocess.check_output(["git", "rev-parse", "origin/main"]).decode("ascii").strip()
