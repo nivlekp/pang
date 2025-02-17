@@ -42,7 +42,7 @@ def _replace_placeholders_in_file_content(
     content: str, placeholders: Placeholders
 ) -> str:
     return functools.reduce(
-        lambda c, i: c.replace("f{{{{{i[0]}}}}}", i[1]),
+        lambda c, i: c.replace(f"{{{{{i[0]}}}}}", i[1]),
         dataclasses.asdict(placeholders).items(),
         content,
     )
