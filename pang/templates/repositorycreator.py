@@ -24,7 +24,12 @@ def make_new_repository(
     shutil.copytree(TEMPLATE_REPOSITORY, directory_path)
     _replace_placeholders(
         directory_path,
-        Placeholders(project_name, project_name.title(), project_description, _git_revision_hash()),
+        Placeholders(
+            project_name,
+            project_name.title(),
+            project_description,
+            _git_revision_hash(),
+        ),
     )
     _rename_file_extensions(directory_path)
     _rename_source_directory(directory_path, project_name)
