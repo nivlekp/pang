@@ -83,5 +83,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: full-score
-        path: sisyphus/builds/score/score.pdf
+        path: {{project_name}}/builds/score/score.pdf
         compression-level: 0
