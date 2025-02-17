@@ -2,6 +2,7 @@ import dataclasses
 import functools
 import pathlib
 import shutil
+import subprocess
 from collections.abc import Iterator
 
 TEMPLATE_REPOSITORY = pathlib.Path(__file__).parent / "repository"
@@ -12,6 +13,7 @@ class Placeholders:
     project_name: str
     composition_title: str
     project_description: str
+    pang_commit: str
 
 
 def make_new_repository(
@@ -22,7 +24,12 @@ def make_new_repository(
     shutil.copytree(TEMPLATE_REPOSITORY, directory_path)
     _replace_placeholders(
         directory_path,
-        Placeholders(project_name, project_name.title(), project_description),
+        Placeholders(
+            project_name,
+            project_name.title(),
+            project_description,
+            _git_revision_hash(),
+        ),
     )
     _rename_file_extensions(directory_path)
     _rename_source_directory(directory_path, project_name)
@@ -61,3 +68,11 @@ def _rename_file_extensions(directory_path: pathlib.Path) -> None:
 def _all_files_in(directory_path: pathlib.Path) -> Iterator[pathlib.Path]:
     for file_path in (path for path in directory_path.rglob("*") if path.is_file()):
         yield file_path
+
+
+def _git_revision_hash() -> str:
+    return (
+        subprocess.check_output(["git", "rev-parse", "origin/main"])
+        .decode("ascii")
+        .strip()
+    )

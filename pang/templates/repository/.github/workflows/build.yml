@@ -1,5 +1,4 @@
-# Github workflow to test Pang
-
+# Github workflow to test compositions
 name: build
 
 on:
@@ -10,6 +9,8 @@ on:
 
 env:
   LILYPOND_VERSION: 2.25.16
+  PANG_COMMIT: {{pang_commit}}
+  PANG_PATH: /tmp/pang
 
 jobs:
   build:
@@ -21,16 +22,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0 # fetch full history
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install LilyPond
       run: |
         lilypond_archive=lilypond-${LILYPOND_VERSION}-linux-x86_64.tar.gz
-        lilypond_url=https://gitlab.com/lilypond/lilypond/-/releases/
+        lilypond_url=https://gitlab.com/lilypond/lilypond/-/releases
         lilypond_url=${lilypond_url}/v${LILYPOND_VERSION}/downloads/${lilypond_archive}
         echo ${lilypond_url}
         cd /tmp
@@ -42,22 +41,47 @@ jobs:
     - name: Log environment variable(s)
       run: |
         echo $PATH
+    - name: Install Pang
+      run: |
+        git clone https://github.com/nivlekp/pang.git ${PANG_PATH}
+        cd ${PANG_PATH}
+        git checkout ${PANG_COMMIT}
+        pip install ${PANG_PATH}
     - name: Install dependencies
       run: |
         export PATH=/tmp/lilypond-${LILYPOND_VERSION}/bin:/home/runner/bin:$PATH
         python -m pip install -e .[test]
+        import_abjad_ily
         black --version
         flake8 --version
         isort --version
-        mypy --version
         pip --version
         pytest --version
         lilypond --version
     - name: Checks and Tests
       run: |
         export PATH=/tmp/lilypond-${LILYPOND_VERSION}/bin:/home/runner/bin:$PATH
-        make black-check
-        make flake8
-        make isort-check
-        make mypy
-        make pytest
+        make test
+    - name: Test Segments
+      run: |
+        export PATH=/tmp/lilypond-${LILYPOND_VERSION}/bin:/home/runner/bin:$PATH
+        export PANG_PATH=${PANG_PATH}
+        make test-sections
+    - name: Install LuaLaTeX
+      run: |
+        sudo apt update
+        sudo apt install -y texlive-latex-base texlive-fonts-recommended
+        sudo apt install -y texlive texlive-latex-extra texlive-luatex
+        lualatex --version
+    - name: Test Score
+      run: |
+        export PATH=/tmp/lilypond-${LILYPOND_VERSION}/bin:/home/runner/bin:$PATH
+        export PANG_PATH=${PANG_PATH}
+        make test-score
+        make full-score
+    - name: Upload Full Score
+      uses: actions/upload-artifact@v4
+      with:
+        name: full-score
+        path: {{project_name}}/builds/score/score.pdf
+        compression-level: 0
