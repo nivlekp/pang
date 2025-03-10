@@ -1,4 +1,4 @@
-from . import build, templates
+from . import build, find, templates
 from .indicators import Indicator
 from .noteserver import NoteServer
 from .paths import (
@@ -27,6 +27,7 @@ from .soundpointsgenerators import (
 
 __all__ = [
     "build",
+    "find",
     "AtaxicSoundPointsGenerator",
     "Indicator",
     "ManualOttavaHandler",
