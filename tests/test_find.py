@@ -1,5 +1,3 @@
-import pytest
-
 import abjad
 import pang
 
@@ -22,5 +20,4 @@ def test_find_q_event_attachment__attachment_absent() -> None:
     leaf = abjad.get.leaf(voice, 0)
     assert leaf is not None
     abjad.annotate(leaf, "q_event_attachments", [abjad.ColorFingering(1)])
-    with pytest.raises(pang.find.AttachmentNotFoundError):
-        pang.find.q_event_attachment(leaf, abjad.Dynamic)
+    assert pang.find.q_event_attachment(leaf, abjad.Dynamic) is None
