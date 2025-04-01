@@ -1,7 +1,7 @@
+import pytest
+
 import abjad
 import pang
-
-import pytest
 
 
 def test_get_leaf__leaf_exists() -> None:
