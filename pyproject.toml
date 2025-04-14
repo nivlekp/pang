@@ -7,7 +7,7 @@ allow-direct-references = true
 
 [project]
 name = "pang"
-version = "25.03b6"
+version = "25.04b0"
 authors = [
   { name="Tsz Kiu Pang" },
 ]
