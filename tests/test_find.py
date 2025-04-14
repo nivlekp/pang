@@ -33,9 +33,16 @@ def test_find_q_event_attachment__q_events_attachments_absent() -> None:
 def test_find_next_q_event_attachment__present() -> None:
     voice = abjad.Voice("c'4 c'4 c'4 c'4")
     abjad.annotate(voice[2], "q_event_attachments", [abjad.Dynamic("p")])
-    assert pang.find.q_event_attachment(voice[2], abjad.Dynamic) == abjad.Dynamic("p")
+    assert pang.find.next_q_event_attachment(
+        abjad.select.logical_ties(voice), abjad.Dynamic
+    ) == abjad.Dynamic("p")
 
 
 def test_find_next_q_event_attachment__absent() -> None:
     voice = abjad.Voice("c'4 c'4 c'4 c'4")
-    assert pang.find.q_event_attachment(voice[2], abjad.Dynamic) is None
+    assert (
+        pang.find.next_q_event_attachment(
+            abjad.select.logical_ties(voice), abjad.Dynamic
+        )
+        is None
+    )
