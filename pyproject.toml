@@ -7,7 +7,7 @@ allow-direct-references = true
 
 [project]
 name = "pang"
-version = "25.03b6"
+version = "25.04b0"
 authors = [
   { name="Tsz Kiu Pang" },
 ]
@@ -31,7 +31,7 @@ test = [
     "flake8",
     "isort",
     "pytest",
-    "mypy>=1.4.1, <1.5.0",
+    "mypy>=1.15.0",
 ]
 
 [project.scripts]
