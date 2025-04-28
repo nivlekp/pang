@@ -10,7 +10,10 @@ def glissando_to_next_leaf(logical_tie: abjad.LogicalTie) -> None:
     starting_pitch = next(iter(abjad.get.pitches(all_leaves[0])))
     destination_pitch = next(iter(abjad.get.pitches(all_leaves[-1])))
     for leaf in logical_tie_leaves[1:]:
-        pitch_number = round((destination_pitch.number - starting_pitch.number) * current_time / timespan)
+        pitch_number = round(
+            (destination_pitch.number - starting_pitch.number) * current_time / timespan
+            + starting_pitch.number
+        )
         assert isinstance(leaf, abjad.Note)
         leaf.written_pitch = pitch_number
         current_time += float(abjad.get.duration(leaf))
