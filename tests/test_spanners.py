@@ -15,8 +15,8 @@ def test_glissando_to_next_leaf() -> None:
             \override Accidental.stencil = ##f
             \override NoteColumn.glissando-skip = ##t
             \override NoteHead.no-ledgers = ##t
-            c'4
-            c'4
+            d'4
+            ef'4
             \revert Accidental.stencil
             \revert NoteColumn.glissando-skip
             \revert NoteHead.no-ledgers
