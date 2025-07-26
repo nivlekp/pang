@@ -1,6 +1,7 @@
+import nauert
+
 import abjad
 import pang
-from abjadext import nauert
 
 from .utils import to_sound_points
 

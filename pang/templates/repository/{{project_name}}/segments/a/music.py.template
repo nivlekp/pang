@@ -2,7 +2,7 @@ import fractions
 
 import abjad
 import pang
-from abjadext import nauert
+import nauert
 
 from {{project_name}} import library
 from {{project_name}}.soundpointsgenerators import SoundPointsGenerator

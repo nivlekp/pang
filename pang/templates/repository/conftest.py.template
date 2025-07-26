@@ -2,7 +2,7 @@ import pytest
 
 import abjad
 import pang
-from abjadext import nauert
+import nauert
 
 
 @pytest.fixture(autouse=True)
