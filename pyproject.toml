@@ -15,8 +15,8 @@ description = "Tsz Kiu Pang's Abjad library"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "abjad @ git+https://github.com/Abjad/abjad.git@8f66aa297c15a6f87d329c962b0d960fa6c6310c",
-    "abjad-ext-nauert @ git+https://github.com/Abjad/abjad-ext-nauert.git@f636f81f10db16583bd75c6397bd93881a80ce2f",
+    "abjad @ git+https://github.com/Abjad/abjad.git@91ec9f0bc12605e9c9f8597b2604be8448bdfb0b",
+    "abjad-ext-nauert @ git+https://github.com/Abjad/abjad-ext-nauert.git@95b850e07834f1edcb1e5055028b53b0982da762",
     "numpy",
     "tomlkit",
 ]
