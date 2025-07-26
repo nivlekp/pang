@@ -1,5 +1,5 @@
 import abjad
-from pang import aligner
+from pang import aligner, get
 
 
 def test_align_voices_length_noop() -> None:
@@ -45,8 +45,8 @@ def test_align_voices_length_consistent_time_signature() -> None:
     voice_1 = abjad.Voice("c'4 c'4")
     # put this in a staff group within a score to make time signatures visible
     abjad.Score([abjad.StaffGroup([voice_0, voice_1])])
-    abjad.attach(abjad.TimeSignature((2, 4)), abjad.get.leaf(voice_0, 0))
-    abjad.attach(abjad.TimeSignature((2, 4)), abjad.get.leaf(voice_1, 0))
+    abjad.attach(abjad.TimeSignature((2, 4)), get.leaf(voice_0, 0))
+    abjad.attach(abjad.TimeSignature((2, 4)), get.leaf(voice_1, 0))
     voices = (voice_0, voice_1)
     aligner.align_voices_length(voices)
     assert abjad.lilypond(voices[0]) == abjad.string.normalize(
