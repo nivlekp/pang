@@ -10,7 +10,7 @@ def _get_tuplet_multiplier(container):
     ]
     if tuplets == []:
         return fractions.Fraction(1, 1)
-    multiplier = fractions.Fraction(*tuplets[0].multiplier)
+    multiplier = tuplets[0].multiplier()
     for tuplet in tuplets[1:]:
         multiplier = multiplier.multiply_with_cross_cancelation(tuplet.multiplier)
     return multiplier
