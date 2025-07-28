@@ -5,6 +5,7 @@ import subprocess
 
 import abjad
 
+from . import get
 from .paths import get___main___path, get_score_directory
 from .sequencemapper import QuantizingMetadata
 
@@ -37,16 +38,14 @@ def _get_empty_beatspan(score):
     return max_empty_beatspan
 
 
-def _get_last_metronome_mark(score):
-    last_leaf = abjad.get.leaf(score, -1)
-    prototype = abjad.MetronomeMark
-    return abjad.get.effective(last_leaf, prototype)
+def _get_last_metronome_mark(score) -> abjad.MetronomeMark:
+    last_leaf = get.leaf(score, -1)
+    return abjad.get.effective_indicator(last_leaf, abjad.MetronomeMark)
 
 
-def _get_last_time_signature(score):
-    last_leaf = abjad.get.leaf(score, -1)
-    prototype = abjad.TimeSignature
-    return abjad.get.effective(last_leaf, prototype)
+def _get_last_time_signature(score) -> abjad.TimeSignature:
+    last_leaf = get.leaf(score, -1)
+    return abjad.get.effective_indicator(last_leaf, abjad.TimeSignature)
 
 
 def collect_metadata(

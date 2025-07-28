@@ -22,7 +22,7 @@ def test_collect_metadata() -> None:
 
 def make_score() -> abjad.Score:
     voice = abjad.Voice("c'4 c'4 c'4 c'8 r8", name=VOICE_NAME)
-    first_leaf = abjad.get.leaf(voice, 0)
+    first_leaf = pang.get.leaf(voice, 0)
     abjad.attach(abjad.MetronomeMark(abjad.Duration(1, 4), 60), first_leaf)
     abjad.attach(abjad.TimeSignature((4, 4)), first_leaf)
     staff = abjad.Staff([voice], name="Staff")

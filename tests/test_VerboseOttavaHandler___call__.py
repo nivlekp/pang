@@ -2,7 +2,7 @@ import abjad
 import pang
 
 
-def test_VerboseOttavaHandler___call___01():
+def test_VerboseOttavaHandler___call___01() -> None:
     voice = abjad.Voice(r"c''''4 c'4 c'4 c''''4")
     handler = pang.VerboseOttavaHandler()
     handler(voice)
@@ -22,10 +22,10 @@ def test_VerboseOttavaHandler___call___01():
     ), print(string)
 
 
-def test_VerboseOttavaHandler___call___02():
+def test_VerboseOttavaHandler___call___02() -> None:
     voice = abjad.Voice(r"c,,,4 c,4 c,4 c,,,4")
     clef = abjad.Clef("bass")
-    abjad.attach(clef, abjad.get.leaf(voice, 0))
+    abjad.attach(clef, pang.get.leaf(voice, 0))
     handler = pang.VerboseOttavaHandler()
     handler(voice)
     string = abjad.lilypond(voice)

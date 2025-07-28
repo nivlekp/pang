@@ -1,7 +1,8 @@
 import dataclasses
 
+import nauert
+
 import abjad
-from abjadext import nauert
 
 from .aligner import align_voices_length
 from .noteserver import NoteServer

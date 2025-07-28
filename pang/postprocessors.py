@@ -10,7 +10,7 @@ def _get_tuplet_multiplier(container):
     ]
     if tuplets == []:
         return fractions.Fraction(1, 1)
-    multiplier = fractions.Fraction(*tuplets[0].multiplier)
+    multiplier = tuplets[0].multiplier()
     for tuplet in tuplets[1:]:
         multiplier = multiplier.multiply_with_cross_cancelation(tuplet.multiplier)
     return multiplier
@@ -21,8 +21,8 @@ def _get_longest_durations(voices):
     for voice in voices:
         for measure_number, measure in enumerate(voice):
             first_leaf = abjad.get.leaf(measure, 0)
-            if abjad.get.grace(first_leaf):
-                container = abjad.get.parentage(first_leaf).parent
+            if abjad.get.is_grace_music(first_leaf):
+                container = abjad.get.parentage(first_leaf).get_parent()
                 assert isinstance(container, abjad.BeforeGraceContainer)
                 duration = abjad.get.duration(container)
                 multiplier = _get_tuplet_multiplier(container)
@@ -47,8 +47,8 @@ def pad_voices_with_grace_skips(voices):
             first_leaf = abjad.get.leaf(voice[measure_number], 0)
             multiplier = _get_tuplet_multiplier(first_leaf)
             stored_duration, stored_multiplier = longest_durations[measure_number]
-            if abjad.get.grace(first_leaf):
-                container = abjad.get.parentage(first_leaf).parent
+            if abjad.get.is_grace_music(first_leaf):
+                container = abjad.get.parentage(first_leaf).get_parent()
                 assert isinstance(container, abjad.BeforeGraceContainer)
                 duration = abjad.get.duration(container)
                 if duration < stored_duration:
@@ -119,7 +119,9 @@ class VerboseOttavaHandler(OttavaHandler):
 
     def _attach_note_name(self, leaf, direction):
         assert isinstance(leaf, abjad.Note)
-        pitch_name = leaf.written_pitch.pitch_class.name[0]
+        written_pitch = leaf.written_pitch
+        assert written_pitch is not None
+        pitch_name = written_pitch.get_pitch_class().get_name()[0]
         string = rf"\markup {{ {pitch_name} }}"
         markup = abjad.Markup(string)
         abjad.attach(markup, leaf, direction=direction)

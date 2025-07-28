@@ -1,6 +1,6 @@
 import abc
 
-from abjadext import nauert
+import nauert
 
 from .soundpointsgenerators import SoundPoint
 
